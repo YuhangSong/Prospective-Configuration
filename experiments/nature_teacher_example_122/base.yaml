@@ -1,0 +1,188 @@
+main_import_code: |-
+    from supervised_learning_trainable import SupervisedLearningTrainable
+
+ray_paradigm: "run"
+
+run_or_experiment: "SupervisedLearningTrainable"
+
+resources_per_trial:
+    cpu: 1
+    gpu: 0
+stop:
+    is_num_iterations_reached: 1
+
+config:
+    version: 0.1
+
+    device: "torch.device('cpu')"
+
+    seed:
+        grid_search:
+            - 1482555873
+            - 698841058
+            - 2283198659
+            - 1855152618
+            - 2444264003
+            - 4191194675
+            # - 2563230118
+            # - 2508066235
+            # - 690101352
+            # - 1489128536
+            # - 193493729
+
+    num_iterations: 128
+
+    data_loader_fn_kwargs:
+        teacher_net_hidden_size: 2
+        teacher_dataset_generate_batch_size: 4
+        teacher_dataset_size: 64
+    DataLoader_kwargs:
+        batch_size: 4
+
+    student_net_hidden_size: 2
+
+    # exec-code before/after the setup of the specified Trainable
+    before_DatasetLearningTrainable_creating_data_packs_code: |-
+        def data_loader_fn(teacher_dataset_size, teacher_net_hidden_size, teacher_dataset_generate_batch_size, DataLoader_kwargs):
+            
+            class TeacherNet(torch.nn.Module):
+                def __init__(self):
+                    super(TeacherNet, self).__init__()
+                    self.fc1 = torch.nn.Linear(2, teacher_net_hidden_size, bias=False)
+                    self.fc2 = torch.nn.Linear(teacher_net_hidden_size, 1, bias=False)
+
+                def forward(self, x):
+                    x = self.fc1(x)
+                    x = torch.nn.functional.relu(x)
+                    x = self.fc2(x)
+                    return x
+
+            teacher_net = TeacherNet()
+
+            datas = []
+            targets = []
+            for i in range(int(teacher_dataset_size/teacher_dataset_generate_batch_size)):
+                data = torch.zeros(teacher_dataset_generate_batch_size, 2).normal_()
+                target = teacher_net(data).sign()
+                datas.append(data)
+                targets.append(target)
+
+            data = torch.cat(datas, dim=0).detach()
+            target = torch.cat(targets, dim=0).detach()
+
+            dataset = TensorDataset(
+                data,
+                target,
+            )
+
+            return DataLoader(
+                dataset,
+                **DataLoader_kwargs,
+            )
+
+    data_packs:
+        train:
+            data_loader: |-
+                data_loader_fn(
+                    **self.config['data_loader_fn_kwargs'],
+                    DataLoader_kwargs=self.config['DataLoader_kwargs'],
+                )
+            do: "['predict','learn']"
+
+    predictive_coding:
+        grid_search:
+            - True
+            - False
+
+    T: 128
+
+    PCTrainer_kwargs:
+        update_x_at: "all"
+        optimizer_x_fn: "SGD"
+        optimizer_x_kwargs:
+            lr: 0.1
+        x_lr_discount: 0.8
+        x_lr_amplifier: 1.0
+
+        update_p_at: "last"
+        optimizer_p_fn: "SGD"
+        optimizer_p_kwargs:
+            lr:
+                grid_search:
+                    - 0.05
+                    - 0.025
+                    - 0.01
+                    - 0.0075
+                    - 0.005
+                    - 0.0025
+                    - 0.001
+                    - 0.00075
+                    - 0.0005
+
+        T: "self.config['T'] if self.config['predictive_coding'] else 1"
+
+        plot_progress_at: "[]"
+
+    model_creation_code: |-
+        # import
+        import predictive_coding as pc
+        import torch.optim as optim
+
+        import experiments.nature_teacher_example_122.utils as eu
+
+        self.model = eu.StudentNet(
+            self.config['predictive_coding'],
+            self.config['student_net_hidden_size'],
+        ).to(self.device)
+
+        # create pc_trainer kwargs
+        self.config['PCTrainer_kwargs']['optimizer_x_fn']=eval(
+            'optim.{}'.format(self.config['PCTrainer_kwargs']['optimizer_x_fn'])
+        )
+        self.config['PCTrainer_kwargs']['optimizer_p_fn']=eval(
+            'optim.{}'.format(self.config['PCTrainer_kwargs']['optimizer_p_fn'])
+        )
+        self.config['PCTrainer_kwargs']['T']=eval(
+            self.config['PCTrainer_kwargs']['T']
+        )
+        self.config['PCTrainer_kwargs']['plot_progress_at']=eval(
+            self.config['PCTrainer_kwargs']['plot_progress_at']
+        )
+
+        # create pc_trainer
+        self.pc_trainer = pc.PCTrainer(
+            self.model,
+            **self.config['PCTrainer_kwargs'],
+        )
+
+    predict_code: |-
+
+        self.model.eval()
+        prediction = self.model(data)
+        self.loss = (
+            prediction-target
+        ).pow(2).sum()
+
+    train_on_batch_kwargs:
+        is_log_progress: False
+        is_return_results_every_t: False
+        is_checking_after_callback_after_t: False
+
+    learn_code: |-
+        self.model.train()
+
+        def loss_fn(outputs, target):
+            return (outputs - target).pow(2).sum() * 0.5
+
+        self.pc_trainer.train_on_batch(
+            data, loss_fn,
+            loss_fn_kwargs={
+                'target': target,
+            },
+            **self.config['train_on_batch_kwargs'],
+        )
+
+    log_packs:
+        loss:
+            log: "self.loss.item()"
+            at_data_pack: "['train']"
