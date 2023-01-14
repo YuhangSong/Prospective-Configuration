@@ -6,8 +6,8 @@ def plot_mean(df):
     df = au.nature_pre(df)
     g = au.nature_relplot(
         data=df,
-        x='Learning rate',
-        y='Mean of test error',
+        x='pc_learning_rate',
+        y='Mean of test__classification_error',
         hue='Rule', style='Rule',
         col='Dataset',
         row='energy_fn_str',
@@ -20,12 +20,12 @@ def plot(df):
 
     df = au.nature_pre(df)
 
-    groups = ['Dataset', 'Rule', 'energy_fn_str', 'Learning rate']
+    groups = ['Dataset', 'Rule', 'energy_fn_str', 'pc_learning_rate']
 
     df = au.add_metric_per_group(
         df, groups,
         lambda df: (
-            'mean per group', df['Mean of test error'].mean()
+            'mean per group', df['Mean of test__classification_error'].mean()
         ),
     )
 
@@ -38,12 +38,13 @@ def plot(df):
 
     df = au.drop_cols(df, ['mean per group'])
 
-    df = au.extract_plot(df, 'test:classification_error', 'training_iteration')
+    df = au.extract_plot(df, 'test__classification_error',
+                         'training_iteration')
 
     g = au.nature_relplot_curve(
         data=df,
         x='training_iteration',
-        y='test:classification_error',
+        y='test__classification_error',
         hue='log_task_i',
         style='Rule',
         col='Dataset',
@@ -58,8 +59,8 @@ def plot_mean_shuffle_task_3(df):
     df = au.nature_pre(df)
     g = au.nature_relplot(
         data=df,
-        x='Learning rate',
-        y='Mean of test error',
+        x='pc_learning_rate',
+        y='Mean of test__classification_error',
         hue='Rule', style='Rule',
         col='Dataset',
         row='energy_fn_str',
@@ -74,12 +75,12 @@ def plot_shuffle_task_3(df):
 
     df = au.nature_pre(df)
 
-    groups = ['Dataset', 'Rule', 'energy_fn_str', 'Learning rate']
+    groups = ['Dataset', 'Rule', 'energy_fn_str', 'pc_learning_rate']
 
     df = au.add_metric_per_group(
         df, groups,
         lambda df: (
-            'mean per group', df['Mean of test error'].mean()
+            'mean per group', df['Mean of test__classification_error'].mean()
         ),
     )
 
@@ -92,12 +93,13 @@ def plot_shuffle_task_3(df):
 
     df = au.drop_cols(df, ['mean per group'])
 
-    df = au.extract_plot(df, 'test:classification_error', 'training_iteration')
+    df = au.extract_plot(df, 'test__classification_error',
+                         'training_iteration')
 
     g = au.nature_relplot_curve(
         data=df,
         x='training_iteration',
-        y='test:classification_error',
+        y='test__classification_error',
         style='log_task_i',
         hue='Rule',
         col='Dataset',
@@ -114,8 +116,8 @@ def plot_mean_shuffle_task_5(df):
     df = au.nature_pre(df)
     g = au.nature_relplot(
         data=df,
-        x='Learning rate',
-        y='Mean of test error',
+        x='pc_learning_rate',
+        y='Mean of test__classification_error',
         hue='Rule', style='Rule',
         col='Dataset',
         row='energy_fn_str',
@@ -130,12 +132,12 @@ def plot_shuffle_task_5(df):
 
     df = au.nature_pre(df)
 
-    groups = ['Dataset', 'Rule', 'energy_fn_str', 'Learning rate']
+    groups = ['Dataset', 'Rule', 'energy_fn_str', 'pc_learning_rate']
 
     df = au.add_metric_per_group(
         df, groups,
         lambda df: (
-            'mean per group', df['Mean of test error'].mean()
+            'mean per group', df['Mean of test__classification_error'].mean()
         ),
     )
 
@@ -148,17 +150,18 @@ def plot_shuffle_task_5(df):
 
     df = au.drop_cols(df, ['mean per group'])
 
-    df = au.extract_plot(df, 'test:classification_error', 'training_iteration')
+    df = au.extract_plot(df, 'test__classification_error',
+                         'training_iteration')
 
     df = df.loc[df['training_iteration'] < 84]
 
     g = au.nature_relplot_curve(
         data=df,
         x='training_iteration',
-        y='test:classification_error',
+        y='test__classification_error',
         style='log_task_i',
         hue='Rule',
-        hue_order=['RD', 'BP'],
+        hue_order=['PC', 'BP'],
         col='Dataset',
         row='energy_fn_str',
         sharey=False,
@@ -173,8 +176,8 @@ def plot_mean_shuffle_task_5_fr(df):
     df = au.nature_pre(df)
     g = au.nature_relplot(
         data=df,
-        x='Learning rate',
-        y='Mean of test error',
+        x='pc_learning_rate',
+        y='Mean of test__classification_error',
         hue='Rule', style='log_id',
         col='Dataset',
         row='energy_fn_str',

@@ -125,6 +125,9 @@ logger = getLogger(__name__)
     For general purposes.
 '''
 
+def get_commit_hash():
+    return subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode("utf-8")
+
 
 def hardcode_w_update(w, x_pre, e_post, lr, acf, acf_at):
     """
@@ -290,8 +293,8 @@ def reflect_scale(scale):
     scale = scale.split('/')
     data_loader_kwargs['dataset_name'] = str(scale[0])
     data_loader_kwargs['data_image_size'] = int(scale[1])
-    data_loader_kwargs['data_is_gray'] = bool(scale[2])
-    data_loader_kwargs['data_is_flatten'] = bool(scale[3])
+    data_loader_kwargs['data_is_gray'] = eval(scale[2])
+    data_loader_kwargs['data_is_flatten'] = eval(scale[3])
     data_loader_kwargs['target_min'] = float(scale[4])
     data_loader_kwargs['target_max'] = float(scale[5])
     data_loader_kwargs['partial_targets_num'] = int(scale[6])

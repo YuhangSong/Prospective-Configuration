@@ -15,7 +15,7 @@ python analysis_v1.py \
 -p "sns.set_theme()" \
 -t "mean" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "df['test:classification_error'].mean()" \
+-m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_forgetting/base.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" \
 -v \
@@ -32,7 +32,7 @@ python analysis_v1.py \
 -p "sns.set_theme()" \
 -t "plot" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "compress_plot('test:classification_error','training_iteration')" "df['test:classification_error'].mean()" \
+-m "compress_plot('test__classification_error','training_iteration')" "df['test__classification_error'].mean()" \
 -f "./experiments/nature_forgetting/base.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" \
 -v \
@@ -57,7 +57,7 @@ python analysis_v1.py \
 -p "sns.set_theme()" \
 -t "base-1-mean" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "df['test:classification_error'].mean()" \
+-m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_forgetting/base-1.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" \
 -v \
@@ -74,7 +74,7 @@ python analysis_v1.py \
 -p "sns.set_theme()" \
 -t "base-1-plot" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "compress_plot('test:classification_error','training_iteration')" "df['test:classification_error'].mean()" \
+-m "compress_plot('test__classification_error','training_iteration')" "df['test__classification_error'].mean()" \
 -f "./experiments/nature_forgetting/base-1.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" \
 -v \
@@ -99,7 +99,7 @@ python analysis_v1.py \
 -p "sns.set_theme()" \
 -t "base-2-mean" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "df['test:classification_error'].mean()" \
+-m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_forgetting/base-2.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" "num_repeatations" \
 -v \
@@ -116,7 +116,7 @@ python analysis_v1.py \
 -p "sns.set_theme()" \
 -t "base-2-plot" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "compress_plot('test:classification_error','training_iteration')" "df['test:classification_error'].mean()" \
+-m "compress_plot('test__classification_error','training_iteration')" "df['test__classification_error'].mean()" \
 -f "./experiments/nature_forgetting/base-2.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" "num_repeatations" \
 -v \
@@ -141,7 +141,7 @@ python analysis_v1.py \
 -p "sns.set_theme()" \
 -t "base-shuffle-task-mean" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "df['test:classification_error'].mean()" \
+-m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_forgetting/base-shuffle-task.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" "num_repeatations" \
 -v \
@@ -158,7 +158,7 @@ python analysis_v1.py \
 -p "sns.set_theme()" \
 -t "base-shuffle-task-plot" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "compress_plot('test:classification_error','training_iteration')" "df['test:classification_error'].mean()" \
+-m "compress_plot('test__classification_error','training_iteration')" "df['test__classification_error'].mean()" \
 -f "./experiments/nature_forgetting/base-shuffle-task.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" "num_repeatations" \
 -v \
@@ -181,7 +181,7 @@ python analysis_v1.py \
 -p "sns.set_theme()" \
 -t "base-shuffle-task-1-mean" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "df['test:classification_error'].mean()" \
+-m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_forgetting/base-shuffle-task-1.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" "num_repeatations" \
 -v \
@@ -198,7 +198,7 @@ python analysis_v1.py \
 -p "sns.set_theme()" \
 -t "base-shuffle-task-1-plot" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "compress_plot('test:classification_error','training_iteration')" "df['test:classification_error'].mean()" \
+-m "compress_plot('test__classification_error','training_iteration')" "df['test__classification_error'].mean()" \
 -f "./experiments/nature_forgetting/base-shuffle-task-1.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" "num_repeatations" \
 -v \
@@ -230,7 +230,7 @@ python analysis_v1.py \
 -p "sns.set_theme()" \
 -t "base-shuffle-task-2-mean" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "df['test:classification_error'].mean()" \
+-m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_forgetting/base-shuffle-task-2.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" "num_repeatations" "partial_num" \
 -v \
@@ -247,7 +247,7 @@ python analysis_v1.py \
 -p "sns.set_theme()" \
 -t "base-shuffle-task-2-plot" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "compress_plot('test:classification_error','training_iteration')" "df['test:classification_error'].mean()" \
+-m "compress_plot('test__classification_error','training_iteration')" "df['test__classification_error'].mean()" \
 -f "./experiments/nature_forgetting/base-shuffle-task-2.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" "num_repeatations" "partial_num" \
 -v \
@@ -273,7 +273,7 @@ CUDA_VISIBLE_DEVICES=3 ray job submit --runtime-env runtime_envs/runtime_env_wit
 python analysis_v1.py \
 -t "base-shuffle-task-3-mean" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "df['test:classification_error'].mean()" \
+-m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_forgetting/base-shuffle-task-3-FashionMNIST.yaml" "./experiments/nature_forgetting/base-shuffle-task-3-CIFAR10.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" "num_repeatations" \
 -v \
@@ -289,7 +289,7 @@ python analysis_v1.py \
 python analysis_v1.py \
 -t "base-shuffle-task-3-plot" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "compress_plot('test:classification_error','training_iteration')" "df['test:classification_error'].mean()" \
+-m "compress_plot('test__classification_error','training_iteration')" "df['test__classification_error'].mean()" \
 -f "./experiments/nature_forgetting/base-shuffle-task-3-FashionMNIST.yaml" "./experiments/nature_forgetting/base-shuffle-task-3-CIFAR10.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" "num_repeatations" \
 -v \
@@ -314,7 +314,7 @@ CUDA_VISIBLE_DEVICES=0,3 ray job submit --runtime-env runtime_envs/runtime_env_w
 python analysis_v1.py \
 -t "base-shuffle-task-4-mean" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "df['test:classification_error'].mean()" \
+-m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_forgetting/base-shuffle-task-4-FashionMNIST.yaml" "./experiments/nature_forgetting/base-shuffle-task-4-CIFAR10.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" "num_repeatations" \
 -v \
@@ -330,7 +330,7 @@ python analysis_v1.py \
 python analysis_v1.py \
 -t "base-shuffle-task-4-plot" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "compress_plot('test:classification_error','training_iteration')" "df['test:classification_error'].mean()" \
+-m "compress_plot('test__classification_error','training_iteration')" "df['test__classification_error'].mean()" \
 -f "./experiments/nature_forgetting/base-shuffle-task-4-FashionMNIST.yaml" "./experiments/nature_forgetting/base-shuffle-task-4-CIFAR10.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" "num_repeatations" \
 -v \
@@ -345,7 +345,6 @@ python analysis_v1.py \
 forcus on 'num_repeatations': 20 for publication
 
 ```bash
-# running
 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_forgetting/base-shuffle-task-5-FashionMNIST
 # ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_forgetting/base-shuffle-task-5-CIFAR10
 ```
@@ -356,7 +355,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 python analysis_v1.py \
 -t "base-shuffle-task-5-mean" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "df['test:classification_error'][:84].mean()" \
+-m "df['test__classification_error'][:84].mean()" \
 -f "./experiments/nature_forgetting/base-shuffle-task-5-FashionMNIST.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" "num_repeatations" \
 -v \
@@ -374,7 +373,7 @@ python analysis_v1.py \
 python analysis_v1.py \
 -t "base-shuffle-task-5-plot" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "compress_plot('test:classification_error','training_iteration')" "df['test:classification_error'][:84].mean()" \
+-m "compress_plot('test__classification_error','training_iteration')" "df['test__classification_error'][:84].mean()" \
 -f "./experiments/nature_forgetting/base-shuffle-task-5-FashionMNIST.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" "num_repeatations" \
 -v \
@@ -399,7 +398,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 python analysis_v1.py \
 -t "base-shuffle-task-5-mean-fr" \
 -l "../general-energy-nets-results/nature_forgetting/" \
--m "df['test:classification_error'][:84].mean()" \
+-m "df['test__classification_error'][:84].mean()" \
 -f "./experiments/nature_forgetting/base-shuffle-task-5-FashionMNIST-fr.yaml" "./experiments/nature_forgetting/base-shuffle-task-5-CIFAR10-fr.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" "num_repeatations" \
 -v \

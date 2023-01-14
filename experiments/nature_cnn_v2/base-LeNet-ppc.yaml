@@ -7,7 +7,7 @@ scheduler: |-
     # comment out stop and num_iterations (replaced by max_t in the following) when using this
     tune.schedulers.ASHAScheduler(
         time_attr='training_iteration',
-        metric='test:classification_error',
+        metric='test__classification_error',
         mode='min',
         max_t=90,
         # grace_period=3,

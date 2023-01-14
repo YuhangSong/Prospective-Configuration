@@ -17,7 +17,6 @@ import pandas as pd
 import tqdm
 import pickle
 import argparse
-import uuid
 import time
 
 matplotlib.use("Agg")
@@ -176,8 +175,8 @@ if __name__ == "__main__":
 
     experiment_name = args.output_dir.split('/')[-1]
 
-    # uid is a unique identifier for runing this script
-    uid = str(uuid.uuid4())
+    # uid is a unique identifier for runing this script (set as  the commit hash of the current git repo)
+    uid = u.get_commit_hash()
 
     # print title
     print(" TITLE: {}; UID: {} ".format(
