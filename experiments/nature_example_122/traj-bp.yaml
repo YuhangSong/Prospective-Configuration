@@ -1,0 +1,211 @@
+main_import_code: |-
+    from supervised_learning_trainable import SupervisedLearningTrainable
+
+ray_paradigm: "run"
+
+run_or_experiment: "SupervisedLearningTrainable"
+
+resources_per_trial:
+    cpu: 1
+    gpu: 0
+stop:
+    is_num_iterations_reached: 1
+
+config:
+    version: 0.1
+
+    device: "torch.device('cpu')"
+
+    seed: 1482555873
+
+    num_iterations:
+        grid_search:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+
+    batch_size: 1
+
+    dataset_kwargs:
+        data: "[[1.0]]"
+        target: "[[1.0,1.0]]"
+
+    # exec-code before/after the setup of the specified Trainable
+    before_DatasetLearningTrainable_creating_data_packs_code: |-
+        def data_loader_fn(batch_size, dataset_kwargs={}):
+            
+            data = eval(dataset_kwargs['data'])
+            target = eval(dataset_kwargs['target'])
+
+            dataset = TensorDataset(
+                torch.Tensor(data),
+                torch.Tensor(target),
+            )
+
+            return DataLoader(
+                dataset,
+                batch_size=batch_size,
+                pin_memory=True,
+                shuffle=True,
+                drop_last=True,
+            )
+
+    data_packs:
+        train:
+            data_loader: |-
+                data_loader_fn(
+                    batch_size=self.config['batch_size'],
+                    dataset_kwargs=self.config['dataset_kwargs'],
+                )
+            do: "['learn']"
+
+    predictive_coding: False
+
+    T: 128
+
+    PCTrainer_kwargs:
+        update_x_at: "all"
+        optimizer_x_fn: "SGD"
+        optimizer_x_kwargs:
+            lr: 0.1
+        x_lr_discount: 0.8
+        x_lr_amplifier: 1.0
+
+        update_p_at: "last"
+        optimizer_p_fn: "SGD"
+        optimizer_p_kwargs:
+            lr:
+                grid_search:
+                    # - 0.0
+                    # - 1.0
+                    # - 0.6
+                    - 0.4
+                    # - 0.2
+                    # - 0.1
+                    # - 0.01
+                    # - 0.005
+                    # - 0.001
+                    # - 0.0005
+                    # - 0.0001
+
+        T: "self.config['T'] if self.config['predictive_coding'] else 1"
+
+        plot_progress_at: "[]"
+        # debug
+        # plot_progress_at: "np.arange(0,64*600*10,6000).tolist()"
+
+    Layer1_init_kwargs:
+        w_1: 0.0
+        w_2: 0.0
+    Layer2_kwargs:
+        w_1: 1.0
+        w_2: 2.0
+
+    model_creation_code: |-
+        # import
+        import predictive_coding as pc
+        import torch.optim as optim
+        import experiments.nature_example_122.utils as u
+
+        # create model
+
+        self.layer1 = u.Layer1(**self.config['Layer1_init_kwargs'])
+        self.layer2 = u.Layer2(**self.config['Layer2_kwargs'])
+        self.model = [
+            self.layer1,
+            pc.PCLayer(),
+            self.layer2,
+        ]
+
+        # decide pc_layer
+        for model_ in self.model:
+            if isinstance(model_, pc.PCLayer):
+                if not self.config['predictive_coding']:
+                    self.model.remove(model_)
+
+        # create sequential
+        self.model = nn.Sequential(*self.model).to(self.device)
+
+        # create pc_trainer kwargs
+        self.config['PCTrainer_kwargs']['optimizer_x_fn']=eval(
+            'optim.{}'.format(self.config['PCTrainer_kwargs']['optimizer_x_fn'])
+        )
+        self.config['PCTrainer_kwargs']['optimizer_p_fn']=eval(
+            'optim.{}'.format(self.config['PCTrainer_kwargs']['optimizer_p_fn'])
+        )
+        self.config['PCTrainer_kwargs']['T']=eval(
+            self.config['PCTrainer_kwargs']['T']
+        )
+        self.config['PCTrainer_kwargs']['plot_progress_at']=eval(
+            self.config['PCTrainer_kwargs']['plot_progress_at']
+        )
+
+        # create pc_trainer
+        self.pc_trainer = pc.PCTrainer(
+            self.model,
+            **self.config['PCTrainer_kwargs'],
+        )
+
+    # predict_code: |-
+
+    #     self.model.eval()
+    #     prediction = self.model(data)
+    #     self.loss = (
+    #         prediction-target
+    #     ).pow(2).sum()
+
+    train_on_batch_kwargs:
+        is_log_progress: False
+        is_return_results_every_t: False
+        # debug
+        # is_return_results_every_t: True
+        is_checking_after_callback_after_t: False
+
+    learn_code: |-
+        self.model.train()
+
+        def loss_fn(outputs, target):
+            return (outputs - target).pow(2).sum() * 0.5
+
+        self.w_1 = self.layer1.w_1.item()
+        self.w_2 = self.layer1.w_2.item()
+
+        # w_before = torch.tensor([self.layer1.w_1.item(), self.layer1.w_2.item()])
+
+        self.pc_trainer.train_on_batch(
+            data, loss_fn,
+            loss_fn_kwargs={
+                'target': target,
+            },
+            **self.config['train_on_batch_kwargs'],
+        )
+
+        w_after = torch.tensor([self.layer1.w_1.item(), self.layer1.w_2.item()])
+
+        # step_size = (w_after - w_before).norm(2)
+
+        # input(step_size)
+
+    # !debug
+    log_packs:
+        w_1:
+            log: "self.w_1"
+            at_data_pack: "['train']"
+        w_2:
+            log: "self.w_2"
+            at_data_pack: "['train']"
+        # loss:
+        #     log: "self.loss.item()"
+        #     at_data_pack: "['train']"

@@ -1,0 +1,126 @@
+main_import_code: |-
+    from hand_coded_rules_trainable import HandCodedRulesTrainable
+
+ray_paradigm: "run"
+
+run_or_experiment: "HandCodedRulesTrainable"
+
+resources_per_trial:
+    cpu: 1
+    gpu: 0.0
+stop:
+    is_num_iterations_reached: 1
+
+config:
+    num_iterations: 2
+    device: "torch.device('cpu')"
+    seed: 1482555873
+    batch_size: 1
+    experiment_noise_std: 0.0
+
+    f: "utils.identity"
+    f_inverse: "utils.identity_inverse"
+
+    before_DatasetLearningTrainable_creating_data_packs_code: |-
+
+        self.f = eval(self.config["f"])
+        self.f_inverse = eval(self.config["f_inverse"])
+
+        # input and target
+        self.input = torch.FloatTensor(
+            [
+                [1.0],
+            ],
+        )
+        self.target = torch.FloatTensor(
+            [
+                [1.0, 1.0],
+            ],
+        )
+
+        # # learning_rate decay
+        # self.losses = []
+
+        self.save_visualize_path = os.path.join(
+            os.environ.get('WORKING_HOME'),
+            'general-energy-nets',
+            'experiments',
+            'nature_example_122',
+            'video',
+        )
+
+    before_inference_step_code: |-
+        is_predicting = include_output
+        if not is_predicting:
+            self.inference_rate = 0.05
+
+    after_inference_step_code: |-
+        is_predicting = include_output
+        # predict - learn - predict
+        if (not is_predicting and self._iteration in [0]) or (is_predicting and self._iteration in [0,1]):
+            # input(self.xs)
+            self.visualize(
+                title=self.rule,
+                fix_output=not is_predicting,
+            )
+
+    after_prediction_code: |-
+        if self._iteration == (self.config['num_iterations']-1):
+            input("Press enter to quit visualizing.")
+            self.make_video()
+
+    data_packs:
+        train:
+            data_loader: |-
+                DataLoader(
+                    TensorDataset(
+                        self.input.clone(),
+                        self.target.clone(),
+                    ),
+                    batch_size=self.config['batch_size'],
+                    num_workers=1,
+                    pin_memory=True,
+                    shuffle=False,
+                )
+
+    before_iteration_code: |-
+
+        # # learning_rate decay
+        # if len(self.losses)>1:
+        #     if self.losses[-1]>=self.losses[-2]:
+        #         self.learning_rate *= 0.5
+
+    after_iteration_code: |-
+        # restrict weight
+        self.Ws[1].data[0,0] = 2.0
+        self.Ws[1].data[0,1] = 0.0
+        self.Ws[1].data[1,0] = 0.0
+        self.Ws[1].data[1,1] = 0.5
+
+        # # learning_rate decay
+        # self.losses.append(loss.item())
+
+    rule:
+        grid_search:
+            # - "Back-Propagation"
+            - "Predictive-Coding"
+
+    inference_rate: 0.2
+    inference_duration: 50
+    inference_rate_discount: 1.0
+    minimal_inference_rate_discount_times: 2
+    inference_include_input: False
+
+    learning_rate: 1
+    ns: "[1,2,2]"
+    after_HandCodedRulesTrainable_setup_code: |-
+        # init
+        self.Ws[0].fill_(0.0)
+        self.Ws[1].data[0,0] = 2.0
+        self.Ws[1].data[0,1] = 0.0
+        self.Ws[1].data[1,0] = 0.0
+        self.Ws[1].data[1,1] = 1.0
+
+    log_packs:
+        loss:
+            log: "self.loss.item()"
