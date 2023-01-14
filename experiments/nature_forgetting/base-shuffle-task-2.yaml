@@ -1,0 +1,387 @@
+run_or_experiment: "SupervisedLearningTrainable"
+
+resources_per_trial:
+    cpu: 1
+    gpu: 'fit_cpu'
+    # debug
+    # gpu: 0
+stop:
+    is_num_iterations_reached: 1
+checkpoint_freq: 0
+checkpoint_at_end: False
+
+config:
+
+    version: 0.7
+
+    device: "torch.device('cuda')"
+    # debug
+    # device: "torch.device('cpu')"
+
+    seed:
+        grid_search:
+            - 1482555873
+            - 698841058
+            - 2283198659
+            - 1855152618
+            - 2444264003
+            - 4191194675
+            # - 2563230118
+            # - 2508066235
+            # - 690101352
+            # - 1489128536
+            # - 193493729
+            # - 3247095100
+            # - 2569134589
+            # - 3859394752
+            # - 3982413761
+            # - 2889788203
+            # - 3507183834
+
+    num_iterations: 160
+
+    num_repeatations: 4
+
+    num_tasks: 2
+
+    dataset:
+        grid_search:
+            - FashionMNIST
+            - CIFAR10
+
+    partial_num:
+        grid_search:
+            - 600
+            - 6000
+    # debug
+    # partial_num: 60
+
+    batch_size: 500
+
+    log_task_i:
+        grid_search:
+            - 0
+            - 1
+
+    share_output_across_tasks: True
+
+    block_error_unused_output: False
+
+    after_DatasetLearningTrainable_creating_data_packs_code: |- # exec-code before/after the setup of the specified Trainable
+
+        def data_loader_fn(dataset, train, batch_size, partial_dateset_kwargs, num_targets_per_task, mapper, share_output_across_tasks, shuffle_mapper):
+
+            dataset = dataset_utils.partial_dateset(
+                eval(
+                    'datasets.{}'.format(dataset)
+                )(
+                    os.path.join(os.environ.get('WORKING_HOME'),'data'),
+                    train=train,
+                    download=False,
+                    transform=transforms.Compose(
+                        [
+                            transforms.Grayscale(),
+                            transforms.ToTensor(),
+                            utils.transforms_flatten,
+                        ]
+                    ),
+                    target_transform=transforms.Compose(
+                        [
+                            transforms.Lambda(
+                                lambda idx: utils.np_idx2onehot(idx, num_targets_per_task if share_output_across_tasks else 10)
+                            ),
+                        ]
+                    )
+                ),
+                **partial_dateset_kwargs,
+            )
+
+            # shuffle the targets so that the creation of tasks would not be biased
+            dataset = dataset_utils.map_dataset_targets(
+                dataset,
+                shuffle_mapper,
+            )
+
+            if share_output_across_tasks:
+                dataset = dataset_utils.map_dataset_targets(
+                    dataset,
+                    mapper,
+                )
+
+            return DataLoader(
+                dataset,
+                batch_size=batch_size,
+                num_workers=1,
+                pin_memory=True,
+                shuffle=True,
+                drop_last=False,
+            )
+
+        self.num_iterations_per_repeatation = int(self.config['num_iterations']/self.config['num_repeatations'])
+        self.num_iterations_per_task = int(self.num_iterations_per_repeatation/self.config['num_tasks'])
+        self.num_targets_per_task = int(10/self.config['num_tasks'])
+
+        from functools import partial
+
+        if self.config['share_output_across_tasks']:
+            mapper = {}
+            for target_i in range(10):
+                mapper[target_i] = target_i%self.num_targets_per_task
+        else:
+            mapper = None
+
+        shuffle_mapper = {}
+        shuffled_targets = np.arange(10)
+        np.random.shuffle(shuffled_targets)
+        for i in range(10):
+            shuffle_mapper[i] = shuffled_targets[i]
+
+        data_loader_fn = partial(
+            data_loader_fn,
+            dataset=self.config['dataset'],
+            batch_size=self.config['batch_size'],
+            num_targets_per_task=self.num_targets_per_task,
+            mapper=mapper,
+            share_output_across_tasks=self.config['share_output_across_tasks'],
+            shuffle_mapper=shuffle_mapper,
+        )
+
+        for task_i in range(self.config['num_tasks']):
+
+            self.data_packs[f'train_{task_i}'] = {}
+            self.data_packs[f'train_{task_i}']['data_loader'] = data_loader_fn(
+                train=True,
+                partial_dateset_kwargs={
+                    'partial_num': self.config['partial_num'],
+                    'partial_targets': list(range(self.num_targets_per_task*task_i, self.num_targets_per_task*(task_i+1))),
+                },
+            )
+            self.data_packs[f'train_{task_i}']['do'] = ['learn']
+
+            at_iteration = []
+            for repeatation_i in range(self.config['num_repeatations']):
+                iteration_base = repeatation_i * self.num_iterations_per_repeatation
+                at_iteration += list(
+                    range(
+                        iteration_base+self.num_iterations_per_task* task_i,
+                        iteration_base+self.num_iterations_per_task*(task_i+1)
+                    )
+                )
+            self.data_packs[f'train_{task_i}']['at_iteration'] = at_iteration
+
+        self.log_task_i = self.config['log_task_i']
+
+        self.data_packs['test'] = {}
+        self.data_packs['test']['data_loader'] = data_loader_fn(
+            train=False,
+            partial_dateset_kwargs={
+                'partial_targets': list(range(self.num_targets_per_task*self.log_task_i, self.num_targets_per_task*(self.log_task_i+1))),
+            },
+        )
+        self.data_packs['test']['do'] = ['predict']
+        self.data_packs['test']['at_iteration'] = "all"
+
+    predictive_coding:
+        grid_search:
+            - True
+            - False
+
+    T: 64
+
+    PCTrainer_kwargs:
+        update_x_at: "all"
+        optimizer_x_fn: "SGD"
+        optimizer_x_kwargs:
+            lr: 0.1
+        x_lr_discount: 0.9
+        x_lr_amplifier: 1.0
+
+        update_p_at: "last"
+        optimizer_p_fn: "SGD"
+        optimizer_p_kwargs:
+            lr:
+                grid_search:
+                    - 0.05
+                    - 0.01
+                    - 0.005
+                    - 0.001
+                    - 0.0005
+                    - 0.0001
+                    - 0.00005
+                    - 0.00001
+                    - 0.000005
+
+        T: "self.config['T'] if self.config['predictive_coding'] else 1"
+
+        plot_progress_at: "[]"
+        # debug
+        # plot_progress_at: "np.arange(0,64*600*10,6000).tolist()"
+
+    acf: Sigmoid
+
+    structure: "['Linear', 'PCLayer', 'Acf']"
+
+    norm_layer: 'BatchNorm1d(h,affine=True,track_running_stats=True)'
+
+    num_layers: 4
+
+    init_fn: "torch.nn.init.xavier_normal_"
+
+    init_fn_kwargs:
+        gain: 1.0
+
+    bias: False
+
+    energy_fn_str: "0.5*error**2"
+
+    model_creation_code: |-
+
+        # import
+        import predictive_coding as pc
+        import torch.optim as optim
+
+        # create model
+
+        input_size = {
+            'FashionMNIST': 784,
+            'CIFAR10': 1024,
+        }[self.config['dataset']]
+
+        hidden_size = {
+            'FashionMNIST': 32,
+            'CIFAR10': 64,
+        }[self.config['dataset']]
+
+        PCLayer_kwargs = {}
+
+        def energy_fn(inputs, energy_fn_str):
+            mu = inputs['mu']
+            x = inputs['x']
+            error = mu - x
+            return eval(energy_fn_str)
+
+
+        from functools import partial
+
+        PCLayer_kwargs['energy_fn'] = partial(
+            energy_fn,
+            energy_fn_str=self.config['energy_fn_str'],
+        )
+
+        self.model = []
+        for l in range(self.config['num_layers']-1):
+            for model_type in eval(self.config['structure']):
+                if model_type=='Linear':
+                    self.model.append(
+                        nn.Linear(
+                            input_size if l==0 else hidden_size,
+                            hidden_size,
+                            bias=self.config['bias'],
+                        )
+                    )
+                elif model_type=='PCLayer':
+                    self.model.append(
+                        pc.PCLayer(**PCLayer_kwargs),
+                    )
+                elif model_type=='Acf':
+                    self.model.append(
+                        eval('nn.{}()'.format(self.config['acf'])),
+                    )
+                elif model_type=='Norm':
+                    h = hidden_size
+                    self.model.append(
+                        eval('nn.{}'.format(self.config['norm_layer'])),
+                    )
+                else:
+                    raise NotImplementedError
+
+        self.model.append(
+            nn.Linear(
+                hidden_size,
+                self.num_targets_per_task if self.config['share_output_across_tasks'] else 10,
+                bias=self.config['bias'],
+            )
+        )
+
+        # decide pc_layer
+        for model_ in self.model:
+            if isinstance(model_, pc.PCLayer):
+                if not self.config['predictive_coding']:
+                    self.model.remove(model_)
+
+        # init
+        for model_ in self.model:
+            if isinstance(model_, nn.Linear):
+                eval(self.config['init_fn'])(
+                    model_.weight,
+                    **self.config['init_fn_kwargs'],
+                )
+
+        # create sequential
+        self.model = nn.Sequential(*self.model).to(self.device)
+
+        # create pc_trainer
+        self.config['PCTrainer_kwargs']['optimizer_x_fn']=eval(
+            'optim.{}'.format(self.config['PCTrainer_kwargs']['optimizer_x_fn'])
+        )
+        self.config['PCTrainer_kwargs']['optimizer_p_fn']=eval(
+            'optim.{}'.format(self.config['PCTrainer_kwargs']['optimizer_p_fn'])
+        )
+        self.config['PCTrainer_kwargs']['T']=eval(
+            self.config['PCTrainer_kwargs']['T']
+        )
+        self.config['PCTrainer_kwargs']['plot_progress_at']=eval(
+            self.config['PCTrainer_kwargs']['plot_progress_at']
+        )
+        self.pc_trainer = pc.PCTrainer(
+            self.model,
+            **self.config['PCTrainer_kwargs'],
+        )
+
+    predict_code: |-
+
+        self.model.eval()
+        prediction = self.model(data)
+        self.classification_error = utils.get_classification_error(
+            prediction, target
+        )
+
+    train_on_batch_kwargs:
+        is_log_progress: False
+        is_return_results_every_t: False
+        # debug
+        # is_return_results_every_t: True
+        is_checking_after_callback_after_t: False
+
+    learn_code: |-
+
+        self.model.train()
+
+        def loss_fn(outputs, target, error_start_index, error_end_index):
+            return (outputs - target)[:,error_start_index:error_end_index].pow(2).sum() * 0.5
+
+        error_start_index = 0
+        error_end_index = -1
+
+        if not self.config['share_output_across_tasks']:
+            if self.config['block_error_unused_output']:
+                task_i = int(
+                    data_pack_key.split('_')[1]
+                )
+                error_start_index = self.num_targets_per_task*task_i
+                error_end_index   = self.num_targets_per_task*(task_i+1)
+
+        self.pc_trainer.train_on_batch(
+            data, loss_fn,
+            loss_fn_kwargs={
+                'target': target,
+                'error_start_index': error_start_index,
+                'error_end_index': error_end_index,
+            },
+            **self.config['train_on_batch_kwargs'],
+        )
+
+    log_packs:
+        classification_error:
+            log: "self.classification_error.item()"
+            at_data_pack: "['test']"
