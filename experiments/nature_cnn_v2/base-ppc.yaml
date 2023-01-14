@@ -1,0 +1,247 @@
+ray_init_kwargs:
+    num_cpus: "fit_machine"
+
+run_or_experiment: "SupervisedLearningTrainable"
+
+resources_per_trial:
+    cpu: 1
+    # gpu: "fit_cpu"
+    # debug
+    gpu: 0.33
+    # debug
+    # gpu: 0
+stop:
+    is_num_iterations_reached: 1
+# max_failures: -1 # keep retry if fail, it could be recourses shortage, not recommended as it produces lots of log files
+# fail_fast: False # stay alive if fail, not recommended as it produces lots of log files
+checkpoint_freq: 0
+checkpoint_at_end: False
+
+config:
+    version: 1.3
+
+    device: "torch.device('cuda')"
+    # debug
+    # device: "torch.device('cpu')"
+
+    seed:
+        grid_search:
+            - 1482555873
+            - 698841058
+            - 2283198659
+
+    num_iterations: 80
+    # debug
+    # num_iterations: 2
+
+    dataset: CIFAR10
+
+    partial_num: 5000
+    # debug
+    # partial_num: 100
+
+    batch_size: 200
+
+    # exec-code before/after the setup of the specified Trainable
+    before_DatasetLearningTrainable_setup_code: |-
+        def data_loader_fn(dataset, train, batch_size, partial_num=-1):
+            
+            transform = []
+            transform.append(transforms.ToTensor())
+
+            target_transform = []
+            target_transform.append(
+                transforms.Lambda(
+                    lambda idx: utils.np_idx2onehot(idx, 10)
+                )
+            )
+
+            return DataLoader(
+                dataset_utils.partial_dateset(
+                    eval(
+                        'datasets.{}'.format(dataset)
+                    )(
+                        os.path.join(os.environ.get('WORKING_HOME'),'data'),
+                        train=train,
+                        download=False,
+                        transform=transforms.Compose(transform),
+                        target_transform=transforms.Compose(target_transform)
+                    ),
+                    partial_num=partial_num,
+                ),
+                batch_size=batch_size,
+                num_workers=1,
+                pin_memory=True,
+                shuffle=True,
+                drop_last=True,
+            )
+
+    data_packs:
+        train:
+            data_loader: |-
+                data_loader_fn(
+                    dataset=self.config['dataset'],
+                    train=True,
+                    batch_size=self.config['batch_size'],
+                    partial_num=self.config['partial_num'],
+                )
+            do: "['learn']"
+        # !debug
+        test:
+            data_loader: |-
+                data_loader_fn(
+                    dataset=self.config['dataset'],
+                    train=False,
+                    batch_size=self.config['batch_size'],
+                    # debug
+                    # partial_num=100,
+                )
+            do: "['predict']"
+
+    predictive_coding:
+        grid_search:
+            - True
+            # - False
+
+    PCTrainer_kwargs:
+        update_x_at: "all"
+        optimizer_x_fn: "SGD"
+        optimizer_x_kwargs:
+            lr: 0.5
+        x_lr_discount: 0.5
+        x_lr_amplifier: 1.0
+
+        update_p_at: "all"
+        optimizer_p_fn: "Adam"
+        optimizer_p_kwargs:
+            lr:
+                grid_search:
+                    # - 0.005
+                    # - 0.001
+                    # - 0.0005
+                    - 0.00025
+                    - 0.0001
+                    - 0.000075
+                    - 0.00005
+                    - 0.000025
+                    - 0.00001
+                    # - 0.000005
+                    # - 0.000001
+                    # - 0.0000005
+            weight_decay:
+                grid_search:
+                    # - 0.0
+                    # - 0.001
+                    - 0.01
+                    # - 0.1
+                    # - 1.0
+
+        T: 16
+
+        plot_progress_at: "[]"
+        # debug
+        # plot_progress_at: "np.arange(0,64*600*10,6000).tolist()"
+
+    model:
+        acf: "torch.nn.ReLU"
+        model_type_order: "['Weights', 'PCLayer', 'Acf']"
+        cnn_layers:
+            cnn_0:
+                fn: "torch.nn.Conv2d"
+                kwargs:
+                    in_channels: 3
+                    out_channels: 64
+                    kernel_size: 3
+                    stride: 2
+                    padding: 1
+                    bias: False
+
+            cnn_1:
+                fn: "torch.nn.Conv2d"
+                kwargs:
+                    in_channels: 64
+                    out_channels: 128
+                    kernel_size: 3
+                    stride: 2
+                    padding: 1
+                    bias: False
+        linear_layers:
+            linear_0:
+                fn: "torch.nn.Linear"
+                kwargs:
+                    in_features: 8192
+                    out_features: 512
+                    bias: True
+            last:
+                fn: "torch.nn.Linear"
+                kwargs:
+                    in_features: 512
+                    out_features: 10
+                    bias: True
+        # init_fn: 'torch.nn.init.xavier_normal_'
+        # init_fn_kwarg:
+        #     gain: 1.0
+
+    model_creation_code: |-
+        # import
+        import predictive_coding as pc
+        import torch.optim as optim
+        import experiments.nature_cnn_v2.utils as u
+
+        # create model
+        self.model = u.create_model(
+            self.config['predictive_coding'],
+            **self.config['model'],
+        ).to(self.device)
+
+        # create pc_trainer kwargs
+        self.config['PCTrainer_kwargs']['optimizer_x_fn']=eval(
+            'optim.{}'.format(self.config['PCTrainer_kwargs']['optimizer_x_fn'])
+        )
+        self.config['PCTrainer_kwargs']['optimizer_p_fn']=eval(
+            'optim.{}'.format(self.config['PCTrainer_kwargs']['optimizer_p_fn'])
+        )
+        self.config['PCTrainer_kwargs']['plot_progress_at']=eval(
+            self.config['PCTrainer_kwargs']['plot_progress_at']
+        )
+
+        # create pc_trainer
+        self.pc_trainer = pc.PCTrainer(
+            self.model,
+            **self.config['PCTrainer_kwargs'],
+        )
+
+    predict_code: |-
+
+        self.model.eval()
+        prediction = self.model(data)
+        self.classification_error = utils.get_classification_error(
+            prediction, target
+        )
+
+    train_on_batch_kwargs:
+        is_log_progress: False
+        is_return_results_every_t: False
+        # debug
+        # is_return_results_every_t: True
+        is_checking_after_callback_after_t: False
+
+    learn_code: |-
+        self.model.train()
+
+        def loss_fn(outputs, target):
+            return (outputs - target).pow(2).sum() * 0.5
+
+        self.pc_trainer.train_on_batch(
+            data, loss_fn,
+            loss_fn_kwargs={
+                'target': target,
+            },
+            **self.config['train_on_batch_kwargs'],
+        )
+
+    # !debug
+    log_packs:
+        classification_error:
+            log: "self.classification_error.item()"
+            at_data_pack: "['test']"

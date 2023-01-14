@@ -1,6 +1,7 @@
 <!-- TOC -->
 
 - [base-focus](#base-focus)
+  - [mean](#mean)
   - [mean-select\_lr](#mean-select_lr)
   - [curve-select\_lr](#curve-select_lr)
 
@@ -14,11 +15,11 @@ python main.py -c nature_search_depth/base
 
 ## mean
 
-```bash5
+```bash
 python analysis_v1.py \
 -t "mean" \
 -l "../general-energy-nets-results/nature_search_depth/" \
--m "df['test:classification_error'].mean()" \
+-m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_search_depth/base.yaml" \
 -g "init_fn" \
 -v \
@@ -31,17 +32,16 @@ python analysis_v1.py \
 # base-focus
 
 ```bash
-# running
 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_search_depth/base-focus
 ```
 
-<!-- ## mean
+## mean
 
-```bash5
+```bash
 python analysis_v1.py \
 -t "mean-focus" \
 -l "../general-energy-nets-results/nature_search_depth/" \
--m "df['test:classification_error'].mean()" \
+-m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_search_depth/base-focus.yaml" \
 -g "init_fn" \
 -v \
@@ -49,7 +49,9 @@ python analysis_v1.py \
 "u.plot_mean(df)"
 ```
 
-[doc](./mean-focus.md) -->
+[doc](./mean-focus.md)
+
+![](./mean-focus-torch_nn_init_xavier_normal.png)
 
 ## mean-select_lr
 
@@ -57,7 +59,7 @@ python analysis_v1.py \
 python analysis_v1.py \
 -t "mean-focus-select_lr" \
 -l "../general-energy-nets-results/nature_search_depth/" \
--m "df['test:classification_error'].mean()" \
+-m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_search_depth/base-focus.yaml" \
 -g "init_fn" \
 -v \
@@ -71,11 +73,11 @@ python analysis_v1.py \
 
 <!-- ## curve-deep
 
-```bash5
+```bash
 python analysis_v1.py \
 -t "curve-focus-curve-deep" \
 -l "../general-energy-nets-results/nature_search_depth/" \
--m "compress_plot('test:classification_error','training_iteration')" "df['test:classification_error'].mean()" \
+-m "compress_plot('test__classification_error','training_iteration')" "df['test__classification_error'].mean()" \
 -f "./experiments/nature_search_depth/base-focus-curve-deep.yaml" \
 -v \
 "import experiments.nature_search_depth.utils as u" \
@@ -90,7 +92,7 @@ python analysis_v1.py \
 python analysis_v1.py \
 -t "curve-focus-select_lr" \
 -l "../general-energy-nets-results/nature_search_depth/" \
--m "compress_plot('test:classification_error','training_iteration')" "df['test:classification_error'].mean()" \
+-m "compress_plot('test__classification_error','training_iteration')" "df['test__classification_error'].mean()" \
 -f "./experiments/nature_search_depth/base-focus.yaml" \
 -g "init_fn" \
 -v \
@@ -114,7 +116,7 @@ CUDA_VISIBLE_DEVICES=0 python main.py -c nature_search_depth/base-regression-bp 
 
 ## mean
 
-```bash5
+```bash
 python analysis_v1.py \
 -t "mean-regression" \
 -l "../general-energy-nets-results/nature_search_depth/" \
@@ -130,7 +132,7 @@ python analysis_v1.py \
 
 ## mean-select_lr
 
-```bash5
+```bash
 python analysis_v1.py \
 -t "mean-regression-select_lr" \
 -l "../general-energy-nets-results/nature_search_depth/" \

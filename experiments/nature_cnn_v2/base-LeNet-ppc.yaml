@@ -1,0 +1,304 @@
+ray_init_kwargs:
+    num_cpus: "fit_machine"
+
+run_or_experiment: "SupervisedLearningTrainable"
+
+scheduler: |-
+    # comment out stop and num_iterations (replaced by max_t in the following) when using this
+    tune.schedulers.ASHAScheduler(
+        time_attr='training_iteration',
+        metric='test:classification_error',
+        mode='min',
+        max_t=90,
+        # grace_period=3,
+    )
+
+resources_per_trial:
+    cpu: 1
+    gpu: 0.25
+
+checkpoint_freq: 0
+checkpoint_at_end: False
+
+config:
+    version: 2.0
+
+    device: "torch.device('cuda')"
+    # debug
+    # device: "torch.device('cpu')"
+
+    seed:
+        grid_search:
+            - 1482555873
+            # - 698841058
+            # - 2283198659
+
+    dataset: CIFAR10
+
+    partial_num: -1
+
+    batch_size:
+        grid_search:
+            - 200
+            - 100
+
+    # exec-code before/after the setup of the specified Trainable
+    before_DatasetLearningTrainable_setup_code: |-
+        def data_loader_fn(dataset, train, batch_size, partial_num=-1):
+            
+            transform = []
+            transform.append(transforms.RandomCrop(32, padding=4))
+            transform.append(transforms.RandomHorizontalFlip())
+            transform.append(transforms.ToTensor())
+
+            target_transform = []
+            target_transform.append(
+                transforms.Lambda(
+                    lambda idx: utils.np_idx2onehot(idx, 10)
+                )
+            )
+
+            return DataLoader(
+                dataset_utils.partial_dateset(
+                    eval(
+                        'datasets.{}'.format(dataset)
+                    )(
+                        os.path.join(os.environ.get('WORKING_HOME'),'data'),
+                        train=train,
+                        download=False,
+                        transform=transforms.Compose(transform),
+                        target_transform=transforms.Compose(target_transform)
+                    ),
+                    partial_num=partial_num,
+                ),
+                batch_size=batch_size,
+                num_workers=1,
+                pin_memory=True,
+                shuffle=True,
+                drop_last=True,
+            )
+
+    data_packs:
+        train:
+            data_loader: |-
+                data_loader_fn(
+                    dataset=self.config['dataset'],
+                    train=True,
+                    batch_size=self.config['batch_size'],
+                    partial_num=self.config['partial_num'],
+                )
+            do: "['learn']"
+        # !debug
+        test:
+            data_loader: |-
+                data_loader_fn(
+                    dataset=self.config['dataset'],
+                    train=False,
+                    batch_size=self.config['batch_size'],
+                    partial_num=self.config['partial_num'],
+                )
+            do: "['predict']"
+
+    predictive_coding:
+        grid_search:
+            - True
+
+    PCTrainer_kwargs:
+        update_x_at: "all"
+        optimizer_x_fn:
+            grid_search:
+                - "SGD"
+                - "Adam"
+        optimizer_x_kwargs:
+            lr:
+                grid_search:
+                    - 0.5
+                    - 1.0
+                    - 0.1
+            weight_decay:
+                grid_search:
+                    - 0.0
+                    # - 0.01
+                    # - 0.1
+        x_lr_discount:
+            grid_search:
+                - 0.5
+                - 1.0
+        x_lr_amplifier:
+            grid_search:
+                - 1.0
+                - 1.1
+
+        update_p_at:
+            grid_search:
+                - "all"
+                - "last_half"
+                - "last"
+        optimizer_p_fn:
+            grid_search:
+                - "Adam"
+                - "SGD"
+        optimizer_p_kwargs:
+            lr:
+                grid_search:
+                    - 0.001
+                    - 0.0005
+                    - 0.0001
+            weight_decay:
+                grid_search:
+                    - 0.0
+                    - 0.01
+                    - 0.1
+
+        T:
+            grid_search:
+                - 16
+                - 8
+                - 32
+
+        plot_progress_at: "[]"
+        # debug
+        # plot_progress_at: "np.arange(0,64*600*10,6000).tolist()"
+
+    model:
+        acf:
+            grid_search:
+                - "torch.nn.ReLU"
+                - "torch.nn.ELU"
+                # - "torch.nn.Hardsigmoid"
+                # - "torch.nn.Hardtanh"
+                # - "torch.nn.Hardswish"
+                - "torch.nn.LeakyReLU"
+                # - "torch.nn.PReLU"
+                # - "torch.nn.ReLU6"
+                # - "torch.nn.RReLU"
+                # - "torch.nn.SELU"
+                # - "torch.nn.CELU"
+                # - "torch.nn.GELU"
+                # - "torch.nn.Sigmoid"
+                # - "torch.nn.SiLU"
+                # - "torch.nn.Softplus"
+                # - "torch.nn.Softsign"
+                - "torch.nn.Tanh"
+        model_type_order:
+            grid_search:
+                - "['Weights', 'PCLayer', 'Acf', 'Pool']"
+                - "['Weights', 'Acf', 'PCLayer', 'Pool']"
+                - "['Weights', 'Acf', 'Pool', 'PCLayer']"
+        cnn_layers:
+            cnn_0:
+                fn: "torch.nn.Conv2d"
+                kwargs:
+                    in_channels: 3
+                    out_channels: 32
+                    kernel_size: 5
+                    stride: 1
+                    padding: 2
+
+            cnn_1:
+                fn: "torch.nn.Conv2d"
+                kwargs:
+                    in_channels: 32
+                    out_channels: 64
+                    kernel_size: 5
+                    stride: 1
+                    padding: 2
+        linear_layers:
+            linear_0:
+                fn: "torch.nn.Linear"
+                kwargs:
+                    in_features: 4096
+                    out_features: 512
+            last:
+                fn: "torch.nn.Linear"
+                kwargs:
+                    in_features: 512
+                    out_features: 10
+        # init_fn: "torch.nn.init.xavier_normal_"
+        # init_fn_kwarg:
+        #     gain: 1.0
+
+    model_creation_code: |-
+        # import
+        import predictive_coding as pc
+        import torch.optim as optim
+        import experiments.nature_cnn_v2.utils as u
+
+        # create model
+        self.model = u.create_model(
+            self.config['predictive_coding'],
+            loss_fn=self.config['loss_fn'],
+            **self.config['model'],
+        ).to(self.device)
+
+        # create pc_trainer kwargs
+        self.config['PCTrainer_kwargs']['optimizer_x_fn']=eval(
+            'optim.{}'.format(self.config['PCTrainer_kwargs']['optimizer_x_fn'])
+        )
+        self.config['PCTrainer_kwargs']['optimizer_p_fn']=eval(
+            'optim.{}'.format(self.config['PCTrainer_kwargs']['optimizer_p_fn'])
+        )
+        self.config['PCTrainer_kwargs']['plot_progress_at']=eval(
+            self.config['PCTrainer_kwargs']['plot_progress_at']
+        )
+
+        # create pc_trainer
+        self.pc_trainer = pc.PCTrainer(
+            self.model,
+            **self.config['PCTrainer_kwargs'],
+        )
+
+    predict_code: |-
+
+        self.model.eval()
+        prediction = self.model(data)
+        self.classification_error = utils.get_classification_error(
+            prediction, target
+        )
+
+    train_on_batch_kwargs:
+        is_log_progress: False
+        is_return_results_every_t: False
+        # debug
+        # is_return_results_every_t: True
+        is_checking_after_callback_after_t: False
+
+    loss_fn:
+        grid_search:
+            - "squared_error"
+            - "cross_entropy"
+
+    loss_fn_coeff:
+        grid_search:
+            - 1.0
+            - 0.1
+            - 10.0
+
+    learn_code: |-
+        self.model.train()
+
+        def loss_fn(outputs, target, loss_fn, loss_fn_coeff, torch_onehot2idx):
+            if loss_fn == "squared_error":
+                loss = (outputs - target).pow(2).sum() * 0.5
+            elif loss_fn == "cross_entropy":
+                loss = torch.nn.functional.cross_entropy(outputs, torch_onehot2idx(target).squeeze())
+            else:
+                raise ValueError("loss_fn {} not recognized".format(loss_fn))
+            return loss * loss_fn_coeff
+
+        self.pc_trainer.train_on_batch(
+            data, loss_fn,
+            loss_fn_kwargs={
+                'target': target,
+                'loss_fn': self.config['loss_fn'],
+                'loss_fn_coeff': self.config['loss_fn_coeff'],
+                'torch_onehot2idx': u.torch_onehot2idx,
+            },
+            **self.config['train_on_batch_kwargs'],
+        )
+
+    # !debug
+    log_packs:
+        classification_error:
+            log: "self.classification_error.item()"
+            at_data_pack: "['test']"

@@ -15,12 +15,12 @@ def plot_mean(df, id='test'):
 
     df = au.nature_pre(df)
 
-    # input(df.loc[df['Learning rate'] == 0.005][f'Mean of {id} error'])
+    # input(df.loc[df['pc_learning_rate'] == 0.005][f'Mean of {id}__classification_error'])
 
     g = au.nature_relplot(
         data=df,
-        x='Learning rate',
-        y=f'Mean of {id} error',
+        x='pc_learning_rate',
+        y=f'Mean of {id}__classification_error',
         hue='Rule', style='Rule',
         col='num_layers',
         row='acf',
@@ -35,15 +35,15 @@ def plot_mean_select_lr(df, config_columns, id='test'):
 
     df = au.summarize_select(
         df, config_columns,
-        ['seed'], lambda df: df[f'Mean of {id} error'].mean(),
-        ['Learning rate'], lambda df: lambda df: df['summarize'] == df['summarize'].min(),
+        ['seed'], lambda df: df[f'Mean of {id}__classification_error'].mean(),
+        ['pc_learning_rate'], lambda df: lambda df: df['summarize'] == df['summarize'].min(),
     )
     df = df.sort_values(['Rule'], ascending=False)
 
     g = au.nature_relplot(
         data=df,
         x='num_layers',
-        y=f'Mean of {id} error',
+        y=f'Mean of {id}__classification_error',
         hue='Rule', style='Rule',
         row='acf',
         aspect=0.8,
@@ -59,13 +59,14 @@ def plot_curve(df, config_columns, id='test', is_select_lr=True):
     if is_select_lr:
         df = au.summarize_select(
             df, config_columns,
-            ['seed'], lambda df: df[f'Mean of {id} error'].mean(),
-            ['Learning rate'], lambda df: lambda df: df['summarize'] == df['summarize'].min(),
+            ['seed'], lambda df: df[f'Mean of {id}__classification_error'].mean(
+            ),
+            ['pc_learning_rate'], lambda df: lambda df: df['summarize'] == df['summarize'].min(),
         )
     df = df.sort_values(['Rule'], ascending=False)
 
     y_name = {
-        'test': 'test:classification_error',
+        'test': 'test__classification_error',
         'train': 'train:error',
     }[id]
 
@@ -102,7 +103,7 @@ def regression_plot_curve(df, id='test'):
     df = au.nature_pre(df)
 
     y_name = {
-        'test': 'test:classification_error',
+        'test': 'test__classification_error',
         'train': 'train:error',
     }[id]
 
