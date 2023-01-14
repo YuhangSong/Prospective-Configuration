@@ -112,7 +112,6 @@ python analysis_v1.py \
 ## base-depth-width-linear (nature)
 
 ```bash
-# running
 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-depth-width-linear
 ```
 
@@ -324,9 +323,7 @@ for levelmap, refers to experiment nature_target_alignment_levelmap
 Target alignment of bp, pc and tp (target propropagation)
 
 ```bash
-# running
 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-depth
-# running
 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-depth-tp
 ```
 
@@ -334,7 +331,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 python analysis_v1.py \
 -t "base-depth" \
 -l "../general-energy-nets-results/nature_target_alignment/" \
--m "df['train__nature_target_alignment'].iloc[-1]" \
+-m "df['train__target_alignment'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-depth.yaml" "./experiments/nature_target_alignment/base-depth-tp.yaml" \
 -v \
 "import experiments.nature_target_alignment.utils as u" \
@@ -346,7 +343,6 @@ python analysis_v1.py \
 ## base-depth-acf (nature)
 
 ```bash
-# running
 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-depth-acf
 ```
 
@@ -354,7 +350,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 python analysis_v1.py \
 -t "base-depth-acf" \
 -l "../general-energy-nets-results/nature_target_alignment/" \
--m "df['train__nature_target_alignment'].iloc[-1]" \
+-m "df['train__target_alignment'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-depth-acf.yaml" \
 -v \
 "import experiments.nature_target_alignment.utils as u" \
@@ -372,7 +368,6 @@ Notes:
 As suggested by the reviewer, use orthogonal init as in Exact solutions to the nonlinear dynamics of learning in deep linear neural networks - Saxe, A. et al. (2013).
 
 ```bash
-# running
 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-depth-init
 ```
 
@@ -380,7 +375,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 python analysis_v1.py \
 -t "base-depth-init" \
 -l "../general-energy-nets-results/nature_target_alignment/" \
--m "df['train__nature_target_alignment'].iloc[-1]" \
+-m "df['train__target_alignment'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-depth-init.yaml" \
 -v \
 "import experiments.nature_target_alignment.utils as u" \
@@ -394,7 +389,6 @@ python analysis_v1.py \
 Look at if orth init have difference with different learning rates.
 
 ```bash
-# running
 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-depth-orth-init
 ```
 
@@ -402,7 +396,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 python analysis_v1.py \
 -t "base-depth-orth-init" \
 -l "../general-energy-nets-results/nature_target_alignment/" \
--m "df['train__nature_target_alignment'].iloc[-1]" \
+-m "df['train__target_alignment'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-depth-orth-init.yaml" \
 -v \
 "import experiments.nature_target_alignment.utils as u" \
@@ -439,7 +433,7 @@ python analysis_v1.py \
 python analysis_v1.py \
 -t "base-target-alignment" \
 -l "../general-energy-nets-results/nature_target_alignment/" \
--m "df['train__nature_target_alignment'].iloc[-1]" \
+-m "df['train__target_alignment'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-prospective-index.yaml" \
 -v \
 "import experiments.nature_target_alignment.utils as u" \

@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import warnings
 import seaborn as sns
 import utils as u
+from utils import concatenate_dicts, fig_to_pil, report_via_email
 import analysis_utils as au
 import pandas as pd
 import tqdm
@@ -336,7 +337,7 @@ if __name__ == "__main__":
         # kw_id_with_uid is kw_id with a unique id
         # it is used to seperate multiple run of analysis
         # for now, it is used with comet_ml and wandb
-        kw_id_with_uid = u.concatenate_dicts(
+        kw_id_with_uid = concatenate_dicts(
             [kw_id, {'uid': uid}]
         )
 
@@ -414,7 +415,7 @@ if __name__ == "__main__":
         if args.comet:
             # BUG -> DEPRECIATED: comet_ml does not support add image panels (can only be viewed in each experiment)
             comet_experiment.log_image(
-                image_data=u.fig_to_pil(plt.gcf()),
+                image_data=fig_to_pil(plt.gcf()),
                 name="fig",
             )
 
@@ -480,6 +481,6 @@ if __name__ == "__main__":
 
     # If the analysis takes more than 60 seconds, send an email to the user when it is done.
     if (time.time()-starting_time) > 60.0:
-        u.report_via_email(
+        report_via_email(
             subject=f"Analysis [{args.title}] on [{args.log_dir.split('/')[-1 if args.log_dir[-1]!='/' else -2]}] done"
         )
