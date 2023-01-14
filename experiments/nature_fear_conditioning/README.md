@@ -43,7 +43,6 @@ python analysis_v1.py \
 # base
 
 ```bash
-# waiting rafal reply
 python analysis_v1.py \
 -t "base" \
 -l "../general-energy-nets-results/nature_fear_conditioning/" \
@@ -51,7 +50,7 @@ python analysis_v1.py \
 -f "./experiments/nature_fear_conditioning/base.yaml" \
 -v \
 "import experiments.nature_fear_conditioning.utils as eu" \
-"eu.fit_data_and_plot(df)"
+"eu.fit_data_and_plot(df,'strip')"
 ```
 
 ![](./base-.png)
@@ -65,7 +64,6 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```
 
 ```bash
-# waiting rafal reply
 python analysis_v1.py \
 -t "base-init_std" \
 -l "../general-energy-nets-results/nature_fear_conditioning/" \

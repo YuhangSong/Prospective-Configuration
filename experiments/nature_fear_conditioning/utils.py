@@ -148,6 +148,13 @@ def fit_data_and_plot(df, kind='bar'):
         'data': df,
         'x': method_column,
         'y': f'{metric_column}: fitted',
+        'palette': np.concatenate(
+            (
+                sns.color_palette()[3:4],
+                sns.color_palette()[0:1],
+                sns.color_palette()[1:2],
+            )
+        ),
         # 'hue': method_column,
         # 'palette': 'Blues',
         'order': [
@@ -161,6 +168,7 @@ def fit_data_and_plot(df, kind='bar'):
 
         g = au.nature_catplot(
             kind='strip',
+            hue=method_column,
             linewidth=1,
             alpha=0.5,
             **plot_kwargs,
