@@ -1,0 +1,612 @@
+ray_init_kwargs:
+    num_cpus: "machine_moderate"
+
+run_or_experiment: "BaseTrainable"
+
+resources_per_trial:
+    cpu: 1
+    gpu: "fit_cpu"
+stop:
+    is_stop: 1
+checkpoint_freq: 0
+checkpoint_at_end: False
+
+config:
+    version: 0.5
+
+    deterministic: True # setup for deterministic behaviour as possible (trial level)
+
+    seed: # seed
+        grid_search:
+            - 1482555873
+            - 698841058
+            - 2283198659
+            - 1855152618
+            - 2444264003
+            - 4191194675
+            - 2563230118
+            - 2508066235
+            - 690101352
+            - 1489128536
+            - 193493729
+            - 3247095100
+            - 2569134589
+            - 3859394752
+            - 3982413761
+            - 2889788203
+            - 3507183834
+            - 1288605031
+            - 1603403502
+            - 4110491292
+            - 3228301166
+            - 1625209643
+            - 3229422879
+            - 4117841395
+
+    device: "torch.device('cuda')"
+
+    init_std:
+        grid_search:
+            - 0.00001
+            - 0.0001
+            - 0.001
+            - 0.01
+            - 0.1
+            - 1.0
+
+    predictive_coding:
+        grid_search:
+            - True
+            - False
+
+    lr:
+        grid_search:
+            - 0.5
+            - 0.1
+            - 0.05
+            - 0.01
+            - 0.005
+            - 0.001
+            - 0.0005
+            - 0.0001
+            - 0.00005
+            - 0.00001
+            - 0.000005
+            - 0.000001
+
+    memory_lr:
+        grid_search:
+            - 0.1
+            - 0.05
+            - 0.01
+            - 0.005
+            - 0.001
+            - 0.0005
+
+    PCTrainer_kwargs:
+        update_x_at: "all"
+        optimizer_x_fn: "optim.SGD"
+        optimizer_x_kwargs:
+            lr: 0.1
+        x_lr_discount: 0.9
+
+        update_p_at: "last"
+        manual_optimizer_p_fn: |-
+            partial(
+                optim.SGD,
+                params=[
+                    {
+                        # first layer uses standard lr
+                        'params': self.model[0 ].parameters(),
+                        'lr': self.config['lr'],
+                    },
+                    {
+                        # second (last) layer uses memory_lr
+                        'params': self.model[-1].parameters(),
+                        'lr': self.config['memory_lr'],
+                    },
+                ],
+            )
+
+        T: "256 if self.config['predictive_coding'] else 1"
+
+        plot_progress_at: "[]"
+        # debug
+        # plot_progress_at: "list(range(0,1,1))"
+
+    is_fc:
+        grid_search:
+            # - True
+            - False
+
+    hidden_size:
+        grid_search:
+            - 2
+            # - 32
+
+    after_BaseTrainable_setup_code: |-
+        from functools import partial
+
+        # config of stimulus
+
+        color = 1.0
+        no_color = 0.0
+
+        force = 1.0
+        no_force = 0.0
+
+        # mapping function from id of stimulus to Tensor
+
+        def color_id2tensor(color_id, color, no_color):
+            return torch.Tensor(
+                [
+                    {
+                        '1': [color, no_color],
+                        '2': [no_color, color],
+                    }[color_id]
+                ]
+            )
+
+        self.color_id2tensor = partial(
+            color_id2tensor,
+            color=color, no_color=no_color,
+        )
+
+        def force_id2tensor(force_id, force, no_force):
+            return torch.Tensor(
+                [
+                    {
+                        '+': [force,    no_force],
+                        '-': [no_force, force   ],
+                        '0': [no_force, no_force],
+                    }[force_id]
+                ]
+            )
+
+        self.force_id2tensor = partial(
+            force_id2tensor,
+            force=force, no_force=no_force,
+        )
+
+        def DataLoaderTrials(trials, color_id2tensor, force_id2tensor, DataLoader_kwargs):
+
+            # create data loader with given trials
+
+            assert isinstance(trials, list)
+
+            from torch.utils.data import DataLoader, TensorDataset
+
+            return DataLoader(
+                TensorDataset(
+                    torch.cat(
+                        [color_id2tensor(trial[0:1]) for trial in trials],
+                        dim=0,
+                    ),
+                    torch.cat(
+                        [force_id2tensor(trial[1:2]) for trial in trials],
+                        dim=0,
+                    ),
+                ),
+                batch_size=1,
+                **DataLoader_kwargs,
+            )
+
+        self.DataLoaderTrials = partial(
+            DataLoaderTrials,
+            color_id2tensor=self.color_id2tensor,
+            force_id2tensor=self.force_id2tensor,
+        )
+
+        self.sessions = []
+
+        train_items = []
+
+        # 2 channel trials (one Pc1 and Pc2, order counterbalanced across consecutive blocks);
+        train_items.append({
+            'data_loader': self.DataLoaderTrials(
+                trials=['10', '20'],
+                DataLoader_kwargs={
+                    'shuffle': True,
+                },
+            ),
+            'num_iterations': 1,
+        })
+
+        # 32 force­field trials (equal number of P+1 and P−2 within each 8 trials in a pseudorandom order);
+        train_items.append({
+            'data_loader': self.DataLoaderTrials(
+                trials=['1+' for i in range(4)]+['2-' for i in range(4)],
+                DataLoader_kwargs={
+                    'shuffle': True,
+                },
+            ),
+            'num_iterations': 4,
+        })
+
+        # 2 channel trials (one Pc1 and Pc2, order counterbalanced across consecutive blocks);
+        train_items.append({
+            'data_loader': self.DataLoaderTrials(
+                trials=['10', '20'],
+                DataLoader_kwargs={
+                    'shuffle': True,
+                },
+            ),
+            'num_iterations': 1,
+        })
+
+        def create_train_item_washout(num_trials_list, DataLoaderTrials):
+            return {
+                'data_loader': {
+                    num_trials: DataLoaderTrials(
+                        trials=['10' for i in range(int(num_trials/2))]+['20' for i in range(int(num_trials/2))],
+                        DataLoader_kwargs={
+                            'shuffle': True,
+                        },
+                    ) for num_trials in num_trials_list
+                },
+                'num_iterations': 1,
+                'choice_type': 'washout',
+                'current_choices': num_trials_list.copy(),
+                'restore_to_choices': num_trials_list.copy(),
+            }
+
+        self.create_train_item_washout = partial(
+            create_train_item_washout,
+            DataLoaderTrials=self.DataLoaderTrials,
+        )
+
+        # 14, 16 or 18 washout trials (equal number of P01 and P02 in a pseudorandom order);
+        train_items.append(
+            self.create_train_item_washout([14, 16, 18])
+        )
+
+        def create_train_item_triplet(id, DataLoaderTrials):
+            return {
+                'data_loader': {
+                    trial: DataLoaderTrials(
+                        # The first and third trial in the triplet were always channel trials with sensory cue 1
+                        trials=['10', trial, '10'],
+                        DataLoader_kwargs={
+                            # for triplet trials, the sequence matters
+                            'shuffle': False,
+                        },
+                    ) for trial in ['1+', '2-']
+                },
+                'num_iterations': 1,
+                'choice_type': 'triplet',
+                'id': id,
+            }
+
+        self.create_train_item_triplet = partial(
+            create_train_item_triplet,
+            DataLoaderTrials=self.DataLoaderTrials,
+        )
+
+        # 1 triplet (exposure trial of P+1 or P−2 counterbalanced across consecutive blocks);
+        train_items.append(
+            self.create_train_item_triplet(1)
+        )
+
+        # 6, 8 or 10 washout trials (equal number of P01 and P02 in a pseudorandom order);
+        train_items.append(
+            self.create_train_item_washout([6, 8, 10])
+        )
+
+        # 1 triplet (exposure trial of P+1 or P−2, whichever was not used on the previous triplet).
+        train_items.append(
+            self.create_train_item_triplet(2)
+        )
+
+        # participants performed 24 blocks
+
+        self.sessions.append({
+            'items': train_items,
+            'id': 'train',
+            'num_blocks': 24,
+        })
+
+        post_train_items = []
+
+        # In the pre­training and post­training phases (Fig. 3c) participants performed blocks of trials which consisted of a variable number of P0 washout trials (8, 10 or 12 in the pre­training phase and 2, 4 or 6 in the post­ training phase) with an equal number of each sensory cue in a pseudorandom order,
+        post_train_items.append(
+            self.create_train_item_washout([2, 4, 6])
+        )
+
+        def create_post_train_item_triplet(DataLoaderTrials):
+            return {
+                'data_loader': {
+                    trial: DataLoaderTrials(
+                        trials=['10', trial, '10'],
+                        DataLoader_kwargs={
+                            # for triplet trials, the sequence matters
+                            'shuffle': False,
+                        },
+                    ) for trial in ['1+', '2+', '1-', '2-']
+                },
+                'num_iterations': 1,
+                'choice_type': 'triplet',
+            }
+
+        self.create_post_train_item_triplet = partial(
+            create_post_train_item_triplet,
+            DataLoaderTrials=self.DataLoaderTrials,
+        )
+
+        # followed by a triplet of trials to assess single­ trial learning (see below).
+        post_train_items.append(
+            self.create_post_train_item_triplet()
+        )
+
+        # Within each sequence of 4 blocks, each of these combinations was experienced once and the four blocks were repeated 4 times in pre­training and 8 times in posttraining. Importantly, the relationship between sensory cues and perturbations was balanced, such that each triplet type was presented an equal number of times and each cue was presented an equal number of times in the P0 trials.
+
+        self.sessions.append({
+            'items': post_train_items,
+            'id': 'post_train',
+            'num_blocks': 8,
+        })
+
+        # create model
+
+        # import
+        import predictive_coding as pc
+        import torch.optim as optim
+
+        # create model
+        self.model = [
+            nn.Linear(2, self.config['hidden_size'], bias=False),
+            pc.PCLayer(),
+            nn.Linear(self.config['hidden_size'], 2, bias=False),
+        ]
+
+        # decide pc_layer
+        for model_ in self.model:
+            if isinstance(model_, pc.PCLayer):
+                if not self.config['predictive_coding']:
+                    self.model.remove(model_)
+
+        # init
+        for model_ in self.model:
+            if isinstance(model_, nn.Linear):
+                torch.nn.init.normal_(model_.weight, std=self.config['init_std'])
+
+        def clamp_model(model, is_fc, hidden_size):
+            if not is_fc:
+                model[0].weight[:int(hidden_size/2),1].data.fill_(0.0)
+                model[0].weight[int(hidden_size/2):,0].data.fill_(0.0)
+
+        self.clamp_model = partial(clamp_model, model=self.model, is_fc=self.config['is_fc'], hidden_size=self.config['hidden_size'])
+
+        self.clamp_model()
+
+        # create sequential
+        self.model = nn.Sequential(*self.model).to(self.device)
+
+        # create pc_trainer
+        self.config["PCTrainer_kwargs"]["optimizer_x_fn"]=eval(
+            self.config["PCTrainer_kwargs"]["optimizer_x_fn"]
+        )
+        self.config["PCTrainer_kwargs"]["manual_optimizer_p_fn"]=eval(
+            self.config["PCTrainer_kwargs"]["manual_optimizer_p_fn"]
+        )
+        self.config["PCTrainer_kwargs"]["T"]=eval(
+            self.config["PCTrainer_kwargs"]["T"]
+        )
+        self.config["PCTrainer_kwargs"]["plot_progress_at"]=eval(
+            self.config["PCTrainer_kwargs"]["plot_progress_at"]
+        )
+        self.pc_trainer = pc.PCTrainer(
+            self.model,
+            **self.config["PCTrainer_kwargs"],
+        )
+
+        def train_on_datapoint(trainable, data, target):
+
+            trainable.model.train()
+
+            def loss_fn(outputs, target):
+                # potential problem here
+                return (
+                    (outputs - target).pow(2)
+                ).sum() * 0.5
+
+            trainable.pc_trainer.train_on_batch(
+                data, loss_fn,
+                loss_fn_kwargs={
+                    "target": target,
+                },
+                **trainable.config["train_on_batch_kwargs"],
+            )
+
+            trainable.clamp_model()
+
+        self.train_on_datapoint = partial(train_on_datapoint, trainable=self)
+
+    train_on_batch_kwargs:
+        is_log_progress: False
+        is_return_results_every_t: False
+        is_checking_after_callback_after_t: False
+
+    train_code: |-
+        for session in self.sessions:
+
+            if session['id']=='train':
+
+                for block_i in range(session['num_blocks']):
+
+                    for item in session['items']:
+
+                        for iteration in range(item['num_iterations']):
+
+                            if isinstance(item['data_loader'], dict):
+
+                                if item['choice_type']=='washout':
+
+                                    # We sampled without replacement the number of null­ field trials from the options above and replenished these options whenever they emptied.
+
+                                    choice = np.random.choice(item['current_choices'])
+
+                                    item['current_choices'].remove(choice)
+
+                                    if len(item['current_choices'])==0:
+                                        item['current_choices'] = item['restore_to_choices'].copy()
+
+                                    data_loader = item['data_loader'][
+                                        choice
+                                    ]
+
+                                elif item['choice_type']=='triplet':
+
+                                    if item['id']==1:
+
+                                        # 1 triplet (exposure trial of P+1 or P−2 counterbalanced across consecutive blocks);
+
+                                        triplet_choice = np.random.choice(['1+', '2-'])
+
+                                    elif item['id']==2:
+
+                                        # 1 triplet (exposure trial of P+1 or P−2, whichever was not used on the previous triplet).
+
+                                        tmp = ['1+', '2-']
+                                        tmp.remove(triplet_choice)
+                                        triplet_choice = tmp[0]
+
+                                    else:
+
+                                        raise NotImplementedError
+
+                                else:
+
+                                    raise NotImplementedError
+
+                            else:
+
+                                data_loader = item['data_loader']
+
+                            for batch_idx, batch in enumerate(data_loader):
+
+                                batch = list(batch)
+                                for batch_item_i in range(len(batch)):
+                                    batch[batch_item_i] = batch[batch_item_i].to(
+                                        self.device
+                                    )
+                                batch = tuple(batch)
+
+                                data, target = batch
+
+                                self.train_on_datapoint(data=data, target=target)
+
+            elif session['id']=='post_train':
+
+                adaptions = {
+                    '1+': [],
+                    '2+': [],
+                    '1-': [],
+                    '2-': [],
+                }
+
+                for block_i in range(session['num_blocks']):
+
+                    import random
+
+                    groups = ['1+', '2+', '1-', '2-']
+
+                    np.random.shuffle(groups)
+
+                    for group in groups:
+
+                        for item in session['items']:
+
+                            for iteration in range(item['num_iterations']):
+
+                                if isinstance(item['data_loader'], dict):
+
+                                    if item['choice_type']=='washout':
+
+                                        # We sampled without replacement the number of null­field trials from the options above and replenished these options whenever they emptied.
+
+                                        choice = np.random.choice(item['current_choices'])
+
+                                        item['current_choices'].remove(choice)
+
+                                        if len(item['current_choices'])==0:
+                                            item['current_choices'] = item['restore_to_choices'].copy()
+
+                                        data_loader = item['data_loader'][
+                                            choice
+                                        ]
+
+                                    elif item['choice_type']=='triplet':
+
+                                        data_loader = item['data_loader'][
+                                            group
+                                        ]
+
+                                    else:
+
+                                        raise NotImplementedError
+
+                                else:
+
+                                    data_loader = item['data_loader']
+
+                                for batch_idx, batch in enumerate(data_loader):
+
+                                    batch = list(batch)
+                                    for batch_item_i in range(len(batch)):
+                                        batch[batch_item_i] = batch[batch_item_i].to(
+                                            self.device
+                                        )
+                                    batch = tuple(batch)
+
+                                    data, target = batch
+
+                                    if isinstance(item['data_loader'], dict):
+
+                                        if item['choice_type']=='triplet':
+
+                                            # a triplet
+
+                                            # the prediction is made before the learning takes place
+
+                                            if batch_idx==0:
+
+                                                # first channel
+
+                                                self.model.eval()
+                                                last_prediction = self.model(
+                                                    data
+                                                )
+
+                                            elif batch_idx==2:
+
+                                                # second channel
+
+                                                self.model.eval()
+                                                this_prediction = self.model(
+                                                    data
+                                                )
+
+                                                delta_prediction = this_prediction - last_prediction
+
+                                                adaptions[group].append(
+                                                    {
+                                                        # potential problem here
+                                                        '+': delta_prediction[0,0].item() - delta_prediction[0,1].item(),
+                                                        '-': delta_prediction[0,1].item() - delta_prediction[0,0].item(),
+                                                    }[group[1:2]]
+                                                )
+
+                                    self.train_on_datapoint(data=data, target=target)
+
+        value = []
+        for group in ['1+', '2+', '1-', '2-']:
+            value.append(
+                np.mean(adaptions[group])
+            )
+
+        result_dict['value-along-index'] = torch.stack([
+            torch.Tensor(value),
+            torch.Tensor(list(range(4))),
+        ]).t().tolist()
+
+        result_dict['is_stop'] = 1
