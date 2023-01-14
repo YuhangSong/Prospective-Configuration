@@ -1,0 +1,193 @@
+run_or_experiment: "SupervisedLearningTrainable"
+
+resources_per_trial:
+    cpu: 1
+    gpu: 0
+stop:
+    is_num_iterations_reached: 1
+checkpoint_freq: 0
+checkpoint_at_end: False
+
+config:
+    version: 1.6
+
+    device: "torch.device('cpu')"
+
+    seed:
+        grid_search:
+            - 1482555873
+            - 698841058
+            - 2283198659
+
+    num_iterations: 1
+
+    batch_size: 1
+
+    input_target_std: 1.0
+
+    data_packs:
+        train:
+            data_loader: |-
+                DataLoader(
+                    TensorDataset(
+                        torch.normal(
+                            torch.FloatTensor(
+                                [
+                                    [0.0]*self.config['hidden_size'],
+                                ]*self.config['batch_size'],
+                            ),
+                            self.config['input_target_std'],
+                        ),
+                        torch.normal(
+                            torch.FloatTensor(
+                                [
+                                    [0.0]*self.config['hidden_size'],
+                                ]*self.config['batch_size'],
+                            ),
+                            self.config['input_target_std'],
+                        ),
+                    ),
+                    batch_size=self.config['batch_size'],
+                    num_workers=1,
+                    pin_memory=True,
+                    shuffle=False,
+                )
+            do: "['learn']"
+
+    predictive_coding:
+        grid_search:
+            - "TP"
+
+    acf: nn.Identity()
+
+    gain_lg: 0
+
+    num_layers:
+        grid_search:
+            - 1
+            - 2
+            - 4
+            - 5
+            # - 6
+            # - 8
+            # - 10
+            # - 12
+            # - 14
+            # - 15
+
+    hidden_size: 64
+
+    init_fn: "torch.nn.init.xavier_uniform_"
+
+    bias: False
+
+    learning_rate: 0.001
+
+    model_creation_code: |-
+        # import
+        import torch.optim as optim
+        import experiments.nature_target_alignment.utils as u
+
+        # create model
+
+        # debug
+        input_size = self.config['hidden_size']
+
+        # debug
+        hidden_size = self.config['hidden_size']
+
+        # debug
+        output_size = self.config['hidden_size']
+
+        self.model = []
+        self.linears = []
+        self.acfs = []
+        for l in range(self.config['num_layers']-1):
+            linear = nn.Linear(
+                input_size if l==0 else hidden_size,
+                hidden_size,
+                bias=self.config['bias'],
+            )
+            self.linears.append(linear)
+            self.model.append(linear)
+
+            acf = eval(self.config['acf'])
+            self.acfs.append(acf)
+            self.model.append(acf)
+                    
+        linear = nn.Linear(
+            hidden_size if (self.config['num_layers'] > 1) else input_size, output_size,
+            bias=self.config['bias'],
+        )
+        self.linears.append(linear)
+        self.model.append(linear)
+
+        # init
+        for model_ in self.model:
+            if isinstance(model_, nn.Linear):
+                eval(self.config['init_fn'])(
+                    model_.weight,
+                    gain=u.acf2gain[self.config['acf']]*(2**self.config['gain_lg']),
+                )
+
+        # create sequential
+        self.model = nn.Sequential(*self.model).to(self.device)
+
+    learn_code: |-
+        self.model.eval()
+        prediction_before = self.model(data).detach().clone()
+
+        self.prediction_std = torch.std(prediction_before, dim=0).mean()
+
+        self.model.train()
+
+        self.xs = [data]
+        for i in range(len(self.linears)-1):
+            self.xs.append(self.acfs[i](self.linears[i](self.xs[-1])))
+        self.xs.append(self.linears[len(self.linears)-1](self.xs[-1]))
+        output = self.xs[-1]
+
+        self.es = {}
+        self.es[len(self.linears)] = output - target
+        for i in range(len(self.linears)-1, 0, -1):
+            assert self.config['acf'] == 'nn.Identity()'
+            w_inverse = torch.linalg.pinv(self.linears[i].weight.data.t())
+            print(self.linears[i].weight.data.t())
+            print(w_inverse)
+            self.es[i] = torch.matmul(
+                self.es[i+1],
+                w_inverse,
+            )
+
+        # input(self.es)
+            
+        for i in range(len(self.linears)):
+            assert self.config['acf'] == 'nn.Identity()'
+            self.linears[i].weight.data -= self.config['learning_rate']*(
+                torch.bmm(
+                    self.xs[i].unsqueeze(2),
+                    self.es[i+1].unsqueeze(1)
+                ).sum(dim=0, keepdim=False).t()
+            )
+
+        self.model.eval()
+        prediction_after = self.model(data).detach().clone()
+
+        predictive_vector = (prediction_after - prediction_before)
+        target_vector = (target - prediction_before)
+
+        self.target_alignment = (
+            torch.bmm(
+                predictive_vector.unsqueeze(1), target_vector.unsqueeze(2)
+            ).squeeze(2)/(
+                torch.norm(predictive_vector, dim=1, keepdim=True) * torch.norm(target_vector, dim=1, keepdim=True)
+            )
+        ).mean()
+
+    log_packs:
+        target_alignment:
+            log: "self.target_alignment.item()"
+            at_data_pack: "['train']"
+        prediction_std:
+            log: "self.prediction_std.item()"
+            at_data_pack: "['train']"

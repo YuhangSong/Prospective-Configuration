@@ -1,0 +1,43 @@
+ray_init_kwargs:
+    num_cpus: 8
+
+run_or_experiment: "BaseTrainable"
+
+resources_per_trial:
+    cpu: 1
+    gpu: 0
+stop:
+    is_num_iterations_reached: 1
+checkpoint_freq: 0
+checkpoint_at_end: False
+
+config:
+    version: 1.4
+
+    device: "torch.device('cpu')"
+
+    seed: 1482555873
+
+    num_iterations: 1
+
+    x_0_level:
+        grid_search:
+            - 0.5
+            # - 0.4
+            # - 0.3
+            # - 0.2
+            # - 0.1
+            # - 0.0
+
+    loss_level:
+        grid_search:
+            - 0.5
+            # - 0.4
+            # - 0.3
+            # - 0.2
+            # - 0.1
+            # - 0.0
+
+    train_code: |-
+
+        result_dict['x_1_level'] = 1-(self.config['loss_level']*2-(self.config['x_0_level']-0)**2)**0.5
