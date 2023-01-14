@@ -1,0 +1,276 @@
+run_or_experiment: "SupervisedLearningTrainable"
+
+resources_per_trial:
+    cpu: 1
+    gpu: 0
+stop:
+    is_num_iterations_reached: 1
+checkpoint_freq: 0
+checkpoint_at_end: False
+
+config:
+    version: 0.3
+
+    num_iterations: 64
+    # debug
+    # num_iterations: 4
+
+    deterministic: True
+
+    seed: # seed
+        grid_search:
+            - 1482555873
+            - 698841058
+            - 2283198659
+            - 1855152618
+            - 2444264003
+            - 4191194675
+            - 2563230118
+            - 2508066235
+            # - 690101352
+            # - 1489128536
+            # - 193493729
+            # - 3247095100
+            # - 2569134589
+            # - 3859394752
+            # - 3982413761
+            # - 2889788203
+            # - 3507183834
+            # - 1288605031
+            # - 1603403502
+            # - 4110491292
+            # - 3228301166
+            # - 1625209643
+            # - 3229422879
+            # - 4117841395
+
+    device: "torch.device('cpu')"
+
+    group:
+        grid_search:
+            - N+
+            - LN+
+            - LN+,L-
+
+    L:
+        grid_search:
+            # - 0.1
+            # - 0.5
+            - 1
+            # - 2
+            # - 5
+
+    N:
+        grid_search:
+            # - 0.1
+            # - 0.5
+            - 1
+            # - 2
+            # - 5
+
+    before_DatasetLearningTrainable_creating_data_packs_code: |-
+        self.L=self.config['L']
+        self.N=self.config['N']
+        self.X=0
+        self.input_overshadowing_extinction = {
+            'N+':     [[self.X,self.N],[self.X,self.X]],
+            'LN+':    [[self.L,self.N],[self.X,self.X]],
+            'LN+,L-': [[self.L,self.N],[self.L,self.X]],
+        }[self.config['group']]
+        def data_loader_fn(input_, target_):
+            return DataLoader(
+                TensorDataset(
+                    torch.FloatTensor(
+                        [
+                            input_,
+                        ],
+                    ),
+                    torch.FloatTensor(
+                        [
+                            target_,
+                        ],
+                    ),
+                ),
+                batch_size=1,
+                num_workers=1,
+                pin_memory=True,
+                shuffle=False,
+            )
+
+    data_packs:
+        overshadowing:
+            data_loader: |-
+                data_loader_fn(
+                    self.input_overshadowing_extinction[0],
+                    [1],
+                )
+            at_iteration: "list(range(0,int(self.config['num_iterations']/2)))"
+            do: "['learn']"
+        extinction:
+            data_loader: |-
+                data_loader_fn(
+                    self.input_overshadowing_extinction[1],
+                    [0],
+                )
+            at_iteration: "list(range(int(self.config['num_iterations']/2),self.config['num_iterations']))"
+            do: "['learn']"
+
+    T: 200
+
+    L_lr:
+        grid_search:
+            - 1.0
+            - 0.1
+            - 0.01
+            - 0.001
+    N_lr:
+        grid_search:
+            - 1.0
+            - 0.1
+            - 0.01
+            - 0.001
+
+    perception_lr:
+        grid_search:
+            - 1.0
+            - 0.1
+            - 0.01
+            - 0.001
+
+    PCTrainer_kwargs:
+        update_x_at: "all"
+        optimizer_x_fn: "SGD"
+        optimizer_x_kwargs:
+            lr: 0.5
+        x_lr_discount: 0.5
+        x_lr_amplifier: 1.0
+
+        update_p_at: "last"
+        manual_optimizer_p_fn: |-
+            partial(
+                optim.SGD,
+                params=[
+                    {
+                        'params': [self.perception.w_L, self.perception.w_N],
+                        'lr': self.config['perception_lr'],
+                    },
+                    {
+                        'params': [self.mix.w_L],
+                        'lr': self.config['L_lr'],
+                    },
+                    {
+                        'params': [self.mix.w_N],
+                        'lr': self.config['N_lr'],
+                    },
+                ],
+            )
+
+        T: "self.config['T'] if self.config['predictive_coding'] else 1"
+
+        plot_progress_at: "[]"
+        # debug
+        # plot_progress_at: "np.arange(0,64*600*10,6000).tolist()"
+
+    predictive_coding:
+        grid_search:
+            - True
+            - False
+
+    init_std:
+        grid_search:
+            # - 0.0
+            - 0.5
+            - 0.1
+            - 0.05
+            - 0.01
+
+    model_creation_code: |-
+        # import
+        from functools import partial
+        import predictive_coding as pc
+        import torch.optim as optim
+        import experiments.nature_fear_conditioning.utils as u
+
+        # create model
+
+        self.perception = u.Perception(1,1).to(self.device)
+        self.mix = u.Mix().to(self.device)
+        self.mix.w_L.data.normal_(
+            0.1, self.config['init_std'],
+        ).abs_()
+        self.mix.w_N.data.normal_(
+            0.1, self.config['init_std'],
+        ).abs_()
+        self.model = [
+            self.perception,
+            pc.PCLayer(),
+            self.mix,
+        ]
+
+        # decide pc_layer
+        for model_ in self.model:
+            if isinstance(model_, pc.PCLayer):
+                if not self.config['predictive_coding']:
+                    self.model.remove(model_)
+
+        # create sequential
+        self.model = nn.Sequential(*self.model).to(self.device)
+
+        # create pc_trainer kwargs
+        self.config['PCTrainer_kwargs']['optimizer_x_fn']=eval(
+            'optim.{}'.format(self.config['PCTrainer_kwargs']['optimizer_x_fn'])
+        )
+        self.config["PCTrainer_kwargs"]["manual_optimizer_p_fn"]=eval(
+            self.config["PCTrainer_kwargs"]["manual_optimizer_p_fn"]
+        )
+        self.config['PCTrainer_kwargs']['T']=eval(
+            self.config['PCTrainer_kwargs']['T']
+        )
+        self.config['PCTrainer_kwargs']['plot_progress_at']=eval(
+            self.config['PCTrainer_kwargs']['plot_progress_at']
+        )
+
+        # create pc_trainer
+        self.pc_trainer = pc.PCTrainer(
+            self.model,
+            **self.config['PCTrainer_kwargs'],
+        )
+
+    train_on_batch_kwargs:
+        is_log_progress: False
+        is_return_results_every_t: False
+        # debug
+        # is_return_results_every_t: True
+        is_checking_after_callback_after_t: False
+
+    learn_code: |-
+        self.model.train()
+
+        def loss_fn(outputs, target):
+            return (outputs - target).pow(2).sum() * 0.5
+
+        self.pc_trainer.train_on_batch(
+            data, loss_fn,
+            loss_fn_kwargs={
+                'target': target,
+            },
+            **self.config['train_on_batch_kwargs'],
+        )
+
+        self.model.eval()
+        self.fear_to_N = self.model(
+            torch.Tensor([[self.X,self.N]]).to(self.device)
+        ).item()
+
+        # debug
+        # print(self.perception.w_L)
+        # print(self.perception.w_N)
+        # print(self.mix.w_L)
+        # print(self.mix.w_N)
+        # print(self.fear_to_N)
+        # print('================================================================')
+
+    log_key_holders: "['extinction__fear_to_N']"
+    log_packs:
+        fear_to_N:
+            log: "self.fear_to_N"
