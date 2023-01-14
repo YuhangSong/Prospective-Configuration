@@ -1,3 +1,4 @@
+import torch
 import warnings
 
 
@@ -14,3 +15,15 @@ def slow_down_warning(base, property, solution):
         ),
         category=RuntimeWarning
     )
+
+
+class NoneModule(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+        warnings.warn(
+            "this has been deprecated, use torch.nn.Identity() instead",
+            category=DeprecationWarning
+        )
+
+    def forward(self, x):
+        return x
