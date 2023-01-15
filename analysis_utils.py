@@ -9,6 +9,8 @@ import yaml
 import pprint
 import traceback
 
+import torch
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -1297,35 +1299,36 @@ def purge_analysis_df_with_config_dicts(analysis_df, config_dicts, rename_dict={
 
     return analysis_df
 
-# def explode_with(df, new_col_name, x):
-#     """Explode with x.
 
-#     Args:
-#         new_col_name: name of the new column.
-#         x:
-#             if (list): element of which to explode.
-#     """
+def explode_with(df, new_col_name, x):
+    """Explode with x.
 
-#     assert isinstance(df, pd.DataFrame)
-#     assert isinstance(new_col_name, str)
+    Args:
+        new_col_name: name of the new column.
+        x:
+            if (list): element of which to explode.
+    """
 
-#     if isinstance(x, list):
+    assert isinstance(df, pd.DataFrame)
+    assert isinstance(new_col_name, str)
 
-#         df = new_col(
-#             df, '{}-along-indexes'.format(new_col_name),
-#             lambda row: torch.stack([
-#                 torch.Tensor(x),
-#                 torch.Tensor(list(range(len(x)))),
-#             ]).t().tolist(),
-#         )
-#         df = extract_plot(df, new_col_name, 'indexes')
-#         df = df.drop(['indexes'], axis=1)
+    if isinstance(x, list):
 
-#     else:
+        df = new_col(
+            df, '{}-along-indexes'.format(new_col_name),
+            lambda row: torch.stack([
+                torch.Tensor(x),
+                torch.Tensor(list(range(len(x)))),
+            ]).t().tolist(),
+        )
+        df = extract_plot(df, new_col_name, 'indexes')
+        df = df.drop(['indexes'], axis=1)
 
-#         raise NotImplementedError
+    else:
 
-#     return df
+        raise NotImplementedError
+
+    return df
 
 
 def drop_cols(df, cols):

@@ -33,7 +33,7 @@ def plot(df):
 
     g = au.nature_relplot(
         data=df,
-        x='Learning rate',
+        x='pc_learning_rate',
         y='target_alignment',
         hue='Rule', style='Rule',
     ).set(xscale='log')
@@ -52,7 +52,7 @@ def plot_iteration(df, id='target_alignment'):
         x='training_iteration',
         y=f'train:{id}',
         hue='Rule', style='Rule',
-        row='Learning rate',
+        row='pc_learning_rate',
         sharey=False,
         aspect=3,
     )
@@ -144,7 +144,7 @@ def plot_acf_init(df):
 
     g = au.nature_relplot(
         data=df,
-        x='Learning rate',
+        x='pc_learning_rate',
         y='target_alignment',
         hue='Rule', style='Rule',
         col='Gain',

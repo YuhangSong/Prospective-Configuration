@@ -1,6 +1,11 @@
 # Inferring Neural Activity Before Plasticity: A Foundation for Learning Beyond Backpropagation
 
-![](./interfere.jpg)
+This repository contains the code for the paper [Inferring Neural Activity Before Plasticity: A Foundation for Learning Beyond Backpropagation](https://www.biorxiv.org/content/10.1101/2022.05.17.492325v1).
+By _Yuhang Song*_, _Beren Millidge_, _Tommaso Salvatori_, _Thomas Lukasiewicz_, _Zhenghua Xu_, _Rafal Bogacz*_.
+**doi**: https://doi.org/10.1101/2022.05.17.492325.
+Under 2nd round peer-review at _Nature Neuroscience_.
+
+![](./interfere.png)
 
 ## Setting up environment
 
@@ -42,6 +47,36 @@ The code is organized as follows:
 The simply look into each subfolders in `experiments` and follow the instructions in the `README.md` file, where the resulted figures are also documented.
 
 By reading each `README.md` file in a markdown editor (such as viewing it on github), the resulted figures are attached inline, so it is obvious which corresponding figure it produces in the paper.
+
+Before looking at each experiment folder, we explain the shared underlying logic of the code.
+In each experiment folder, the `README.md` documents two kinds of commands to run:
+
+- `python main.py -c <config_file.yaml>`: This command will launch the experiment. The experiment will be launched in parallel with multiple processes (with ray as backend), and the results will be saved to `$RESULTS_DIR` in your environment variable.
+  - You will see command `ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- ` before `python main.py -c <config_file.yaml>`, it is to submit the job to ray cluster to run instead of run locally. 
+    - If you want to run locally, you can simply remove this command, and run `python main.py -c <config_file.yaml>` on your local machine.
+    - If you want to run on a ray cluster, you will need to get yourself educated about [ray cluster](https://docs.ray.io/en/latest/cluster/getting-started.html). Then you need to set up a ray cluster and set the environment variable `$PSSR` to the address of the ray cluster.
+- `python analysis_v1.py -c <config_file.yaml>`: This command will load the results from `$RESULTS_DIR` and plot the figures. The figures will be saved to the experiment folder.
+  - This command does not limit to produce figures though, it loads the results as a pandas dataframe and do anything with it, depending on the exec commands you passed to it. For example, it is sometimes used to produced tables as well.
+
+## Other notes
+
+There are several other things to note.
+
+### Warning and error messages
+
+You may see some warning messages when running the code:
+
+- depreciation warning messages from the code base are very safe, it is there so that to remind me what functionalities/logic has been depreciated, but the code is fully backward compatible.
+- depreciation warning messages from dependencies are normally safe, as the dependencies of the code base are well maintained libaries like PyTorch, Numpy, Seaborn and etc, depreciation warning messages is almost guaranteed to have backward compatibility.
+
+You should not see any error messages if you are using the docker image.
+You may see error messages if you are using your own environment, but they are usually easy to fix by compring the `Dockerfile` with your procedure of setting up the environment.
+Open an issue if you have any problem in dealing with error messages and we will help out as we can.
+
+### Reproducibility
+
+Reproducibility should be guaranteed by the docker image and how we control the randomness of Pytorch, Numpy and Random packages.
+Please open an issue if you find any reproducibility issue.
 
 ## Citation
 

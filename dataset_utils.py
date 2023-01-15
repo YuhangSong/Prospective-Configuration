@@ -299,6 +299,7 @@ def data_loader_fn(dataset_name="XOR",
                    drop_last=True,
                    num_workers=0,
                    pin_memory=True,
+                   data_pil_transforms=[],
                    ):
 
     assert isinstance(dataset_name, str), (
@@ -318,6 +319,9 @@ def data_loader_fn(dataset_name="XOR",
     )
     assert isinstance(partial_targets_num, int), (
         f"partial_targets_num must be a int, but got {type(partial_targets_num)}."
+    )
+    assert isinstance(data_pil_transforms, list), (
+        f"data_pil_transforms must be a list, but got {type(data_pil_transforms)}."
     )
 
     if dataset_name in ['XOR']:
@@ -352,6 +356,7 @@ def data_loader_fn(dataset_name="XOR",
             if data_is_gray:
                 transform.append(transforms.Grayscale())
         transform.append(transforms.Resize(data_image_size))
+        transform.extend(data_pil_transforms)
         transform.append(transforms.ToTensor())
         if data_is_flatten:
             transform.append(u.transforms_flatten)

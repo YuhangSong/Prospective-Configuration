@@ -1,0 +1,6 @@
+
+# Figures
+
+| Optimizer for inference=SGD; Optimizer for learn=SGD; is_q_target=False; bias=True; Inference rate=0.05; is_norm_obs=True; is_norm_rew=False; batch_size=60; buffer_limit=50000; gamma=0.98; num_learn_epochs_per_eposide=10; interval_update_target_q=20; is_detach_target=True; MainT=32; pc_layer_at=before_acf; acf=Sigmoid;    |
+|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ![](./base-focus-curve-SGD_SGD_False_True_0_05_True_False_60_50000_0_98_10_20_True_32_before_acf_Sigmoid.png)                                                                                                                                                                                                                       |

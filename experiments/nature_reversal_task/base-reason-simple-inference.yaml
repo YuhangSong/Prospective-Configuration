@@ -1,0 +1,158 @@
+run_or_experiment: "SupervisedLearningTrainable"
+
+resources_per_trial:
+    cpu: 1
+    gpu: 0
+stop:
+    is_stop: 1
+
+config:
+
+    version: 0.9
+
+    at_iteration:
+        grid_search:
+            - 3
+            - 5
+            - 7
+
+    deterministic: True # setup for deterministic behaviour as possible (trial level)
+
+    seed: 1482555873
+
+    device: "torch.device('cpu')"
+
+    data_packs:
+        train:
+            data_loader: |-
+                DataLoader(
+                    TensorDataset(
+                        torch.Tensor(
+                            [[1.0]]
+                        ),
+                        torch.Tensor(
+                            [[-1.0,1.0]]
+                        ),
+                    ),
+                    batch_size=1,
+                )
+            do: "['learn']"
+
+    ns: "[1,1,2]"
+
+    predictive_coding: True
+
+    PCTrainer_kwargs:
+        update_x_at: "all"
+        optimizer_x_fn: "optim.SGD"
+        optimizer_x_kwargs:
+            lr: 0.1
+        x_lr_discount: 0.9
+
+        update_p_at: "last"
+        optimizer_p_fn: "optim.SGD"
+        optimizer_p_kwargs:
+            lr: 0.1
+
+        T: "32 if self.config['predictive_coding'] else 1"
+
+        plot_progress_at: "[]"
+        # debug
+        # plot_progress_at: "list(range(0,16,1))"
+
+
+    model_creation_code: |-
+
+        # import
+        import predictive_coding as pc
+        import torch.optim as optim
+
+        # create model
+        self.ns = eval(self.config["ns"])
+        self.model = [
+            nn.Linear(1, 1, bias=False),
+            pc.PCLayer(),
+            nn.Linear(1, 2, bias=False),
+        ]
+
+        # decide pc_layer
+        for model_ in self.model:
+            if isinstance(model_, pc.PCLayer):
+                if not self.config['predictive_coding']:
+                    self.model.remove(model_)
+
+        # init
+        self.linears = []
+        for model_ in self.model:
+            if isinstance(model_, nn.Linear):
+                self.linears.append(model_)
+
+        self.linears[0].weight.data[0,0].fill_(1.0)
+        self.linears[1].weight.data[0,0].fill_(1.0)
+        self.linears[1].weight.data[1,0].fill_(-1.0)
+
+        # create sequential
+        self.model = nn.Sequential(*self.model).to(self.device)
+
+        # create pc_trainer
+        self.config["PCTrainer_kwargs"]["optimizer_x_fn"]=eval(
+            self.config["PCTrainer_kwargs"]["optimizer_x_fn"]
+        )
+        self.config["PCTrainer_kwargs"]["optimizer_p_fn"]=eval(
+            self.config["PCTrainer_kwargs"]["optimizer_p_fn"]
+        )
+        self.config["PCTrainer_kwargs"]["T"]=eval(
+            self.config["PCTrainer_kwargs"]["T"]
+        )
+        self.config["PCTrainer_kwargs"]["plot_progress_at"]=eval(
+            self.config["PCTrainer_kwargs"]["plot_progress_at"]
+        )
+        self.pc_trainer = pc.PCTrainer(
+            self.model,
+            **self.config["PCTrainer_kwargs"],
+        )
+
+    train_on_batch_kwargs:
+        is_log_progress: False
+        is_return_results_every_t: False
+        is_checking_after_callback_after_t: False
+
+    learn_code: |-
+
+        action = 0
+
+        self.model.train()
+
+        self.value = []
+
+        def loss_fn(outputs, action, target, value, pc_layer):
+            value.append(pc_layer.get_x().item())
+            return (outputs[:,action:action+1] - target[:,action:action+1]).pow(2).sum() * 0.5
+
+        results = self.pc_trainer.train_on_batch(
+            data, loss_fn,
+            loss_fn_kwargs={
+                "action": action,
+                "target": target,
+                "value": self.value,
+                "pc_layer": self.model[1],
+            },
+            **self.config["train_on_batch_kwargs"],
+        )
+
+    after_iteration_data_packs_code: |-
+
+        if self._iteration == (self.config['at_iteration']-1):
+
+            result_dict['value-along-t'] = torch.stack([
+                torch.Tensor(self.value),
+                torch.Tensor(list(range(len(self.value)))),
+            ]).t().tolist()
+
+            result_dict['is_stop'] = 1
+
+        else:
+
+            result_dict['value-along-t'] = None
+
+            result_dict['is_stop'] = 0

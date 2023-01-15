@@ -12,6 +12,7 @@ import warnings
 import seaborn as sns
 import utils as u
 from utils import concatenate_dicts, fig_to_pil, report_via_email
+from analysis_utils import df2tb
 import analysis_utils as au
 import pandas as pd
 import tqdm

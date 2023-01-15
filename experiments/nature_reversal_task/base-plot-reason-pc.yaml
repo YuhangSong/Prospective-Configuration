@@ -1,0 +1,299 @@
+run_or_experiment: "SupervisedLearningTrainable"
+
+resources_per_trial:
+    cpu: 1
+    gpu: 0
+stop:
+    training_iteration: 128
+
+config:
+
+    deterministic: True # setup for deterministic behaviour as possible (trial level)
+
+    seed: # seed
+        grid_search:
+            - 1482555873
+            - 698841058
+            - 2283198659
+            - 1855152618
+            - 2444264003
+            - 4191194675
+            - 2563230118
+            - 2508066235
+            - 690101352
+            - 1489128536
+            - 193493729
+            - 3247095100
+            - 2569134589
+            - 3859394752
+            - 3982413761
+            - 2889788203
+            - 3507183834
+            - 1288605031
+            - 1603403502
+            - 4110491292
+            - 3228301166
+            - 1625209643
+
+    device: "torch.device('cpu')"
+
+    data_packs:
+        train:
+            data_loader: |-
+                DataLoader(
+                    TensorDataset(
+                        torch.Tensor(
+                            # representing the task
+                            [[1.0]]
+                        ),
+                        torch.Tensor(
+                            # target will be overwritten by correct_id and action, so numbers here don't matter
+                            [[0.0,0.0]]
+                        ),
+                    ),
+                    batch_size=1,
+                )
+            do: "['learn']"
+
+    ns: "[1,1,2]"
+
+    predictive_coding: True
+
+    PCTrainer_kwargs:
+        update_x_at: "all"
+        optimizer_x_fn: "optim.SGD"
+        optimizer_x_kwargs:
+            lr: 0.1
+        x_lr_discount: 0.9
+
+        update_p_at: "last"
+        optimizer_p_fn: "optim.SGD"
+        optimizer_p_kwargs:
+            lr: 0.1
+
+        T: "256 if self.config['predictive_coding'] else 1"
+
+        plot_progress_at: "[]"
+        # debug
+        # plot_progress_at: "list(range(0,16,1))"
+
+    init_fn: "torch.nn.init.normal_"
+
+    init_std: 0.05
+
+    model_creation_code: |-
+
+        # import
+        import predictive_coding as pc
+        import torch.optim as optim
+
+        # create model
+        self.ns = eval(self.config["ns"])
+        self.model = [
+            nn.Linear(1, 1, bias=False),
+            pc.PCLayer(),
+            nn.Linear(1, 2, bias=False),
+        ]
+
+        # decide pc_layer
+        for model_ in self.model:
+            if isinstance(model_, pc.PCLayer):
+                if not self.config['predictive_coding']:
+                    self.model.remove(model_)
+
+        # init
+        self.linears = []
+        for model_ in self.model:
+            if isinstance(model_, nn.Linear):
+                eval(self.config['init_fn'])(model_.weight, std=self.config['init_std'])
+                self.linears.append(model_)
+
+        # debug
+        # self.linears[0].weight.data[0,0].fill_(1.0)
+        # self.linears[1].weight.data[0,0].fill_(1.0)
+        # self.linears[1].weight.data[1,0].fill_(-1.0)
+
+        # create sequential
+        self.model = nn.Sequential(*self.model).to(self.device)
+
+        # create pc_trainer
+        self.config["PCTrainer_kwargs"]["optimizer_x_fn"]=eval(
+            self.config["PCTrainer_kwargs"]["optimizer_x_fn"]
+        )
+        self.config["PCTrainer_kwargs"]["optimizer_p_fn"]=eval(
+            self.config["PCTrainer_kwargs"]["optimizer_p_fn"]
+        )
+        self.config["PCTrainer_kwargs"]["T"]=eval(
+            self.config["PCTrainer_kwargs"]["T"]
+        )
+        self.config["PCTrainer_kwargs"]["plot_progress_at"]=eval(
+            self.config["PCTrainer_kwargs"]["plot_progress_at"]
+        )
+        self.pc_trainer = pc.PCTrainer(
+            self.model,
+            **self.config["PCTrainer_kwargs"],
+        )
+
+        self.correct_id = 0
+
+        self.success_history = []
+
+        self.switching = False
+
+        self.last_was_punish = False
+
+        self.last_action = None
+
+    train_on_batch_kwargs:
+        is_log_progress: False
+        is_return_results_every_t: False
+        is_checking_after_callback_after_t: False
+
+    reverse_every_success: 4
+    # debug
+    # reverse_every_success: 1
+
+    deterministic_policy: False
+    # debug
+    # deterministic_policy: True
+
+    learn_code: |-
+
+        # model predict
+        self.model.eval()
+        self.prediction = self.model(data)
+
+        if self.config['deterministic_policy']:
+
+            if self.prediction[0,0].item() > self.prediction[0,1].item():
+                action = 0
+            elif self.prediction[0,0].item() < self.prediction[0,1].item():
+                action = 1
+
+        else:
+
+            # get policy from prediction
+            self.policy = torch.nn.functional.softmax(
+                self.prediction, dim=1
+            ).squeeze(0).detach()
+
+            # action selection
+            action = np.random.choice(
+                [0, 1],
+                p=self.policy.numpy(),
+            )
+
+        # log
+        self.value_at_punish = None
+        self.value_next_trial = None
+        self.is_switch = None
+        if self.last_was_punish and (self.last_action is not None):
+            self.value_at_punish = self.value_at_last_publish
+            self.value_next_trial = self.prediction[:,action:action+1].item()
+            self.is_switch = not (action == self.last_action)
+
+        # reward is generated to the entry of the selected action based on self.correct_id
+        target.fill_(0.0)
+        self.correct_id_this_trial = self.correct_id
+        if action == self.correct_id:
+            target[:,action:action+1].fill_(
+                np.random.choice(
+                    [1.0, -1.0],
+                    # One stimulus was designated the correct stimulus in that choice of that stimulus lead to a monetary reward (winning 25 cents) on 70% of occasions and a monetary loss (losing 25 cents) 30% of the time.
+                    p=[0.7, 0.3],
+                    # debug
+                    # p=[1.0, 0.0],
+                )
+            )
+            self.success_history.append(1)
+        elif action != self.correct_id:
+            target[:,action:action+1].fill_(
+                np.random.choice(
+                    [1.0, -1.0],
+                    # The other stimulus was incorrect in that choice of that stimulus lead to a reward 40% of the time and a punishment 60% of the time, thus leading to a cumulative monetary loss.
+                    p=[0.4, 0.6],
+                    # debug
+                    # p=[0.0, 1.0],
+                )
+            )
+            self.success_history.append(0)
+
+        # train model
+
+        self.model.train()
+
+        def loss_fn(outputs, action, target):
+            return (outputs[:,action:action+1] - target[:,action:action+1]).pow(2).sum() * 0.5
+
+        self.pc_trainer.train_on_batch(
+            data, loss_fn,
+            loss_fn_kwargs={
+                "action": action,
+                "target": target,
+            },
+            **self.config["train_on_batch_kwargs"],
+        )
+
+        # After having chosen the correct stimulus on four consecutive occasions,
+        if sum(self.success_history[-self.config['reverse_every_success']:]) == self.config['reverse_every_success']:
+            self.switching = True
+        if self.switching:
+            tmp = np.random.choice(
+                [True, False],
+                # the contingencies reversed with a probability of 0.25 on each successive trial.
+                p=[0.25, 0.75],
+                # debug
+                # p=[1.0, 0.0],
+            )
+            if tmp:
+                self.correct_id = 1 - self.correct_id
+                # Once reversal occurred, subjects then needed to choose the new correct stimulus, on four consecutive occasions, before reversal could occur again (with 0.25 probability).
+                self.switching = False
+
+        if target[:,action:action+1].item() == -1.0:
+            self.last_was_punish = True
+            self.value_at_last_publish = self.prediction[:, action:action+1].item()
+        else:
+            self.last_was_punish = False
+
+        self.last_action = action
+
+        # debug
+        # print_dic = {
+        #     'prediction': self.prediction[0].detach().tolist(),
+        #     'action': action,
+        #     'target': target[0].tolist(),
+        #     'success_history': self.success_history,
+        #     'correct_id': self.correct_id_this_trial,
+        #     'correct_id_next_trial': self.correct_id,
+        #     'w0-00': self.linears[0].weight[0,0].data.item(),
+        #     'w1-00': self.linears[1].weight[0,0].data.item(),
+        #     'w1-01': self.linears[1].weight[1,0].data.item(),
+        #     'last_was_punish': self.last_was_punish,
+        #     'is_switch': self.is_switch,
+        #     'value_at_punish': self.value_at_punish,
+        #     'value_next_trial': self.value_next_trial,
+        # }
+        # import pprint as pp
+        # print('================================================================')
+        # input(
+        #     pp.pformat(
+        #         print_dic,
+        #     )
+        # )
+
+    which_weight:
+        grid_search:
+            - 'w0-00'
+            - 'w1-00'
+            - 'w1-10'
+
+    after_iteration_data_packs_code: |-
+
+        result_dict['correct_id'] = self.correct_id
+
+        result_dict['weight'] = {
+            'w0-00': self.linears[0].weight[0,0].data.item(),
+            'w1-00': self.linears[1].weight[0,0].data.item(),
+            'w1-10': self.linears[1].weight[1,0].data.item(),
+        }[self.config['which_weight']]

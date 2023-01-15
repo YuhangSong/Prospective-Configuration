@@ -1,0 +1,380 @@
+run_or_experiment: "BaseTrainable"
+
+resources_per_trial:
+    cpu: 1
+    # running on cpu might be faster
+    gpu: "fit_cpu"
+stop:
+    training_iteration: 10000
+    # debug
+    # training_iteration: 2
+checkpoint_freq: 0
+checkpoint_at_end: False
+
+config:
+    seed: # seed
+        grid_search:
+            - 1482555873
+            - 698841058
+            - 2283198659
+            # - 1855152618
+            # - 2444264003
+            # - 4191194675
+            # - 2563230118
+            # - 2508066235
+            # - 690101352
+            # - 1489128536
+            # - 193493729
+            # - 3247095100
+            # - 2569134589
+            # - 3859394752
+            # - 3982413761
+            # - 2889788203
+            # - 3507183834
+            # - 1288605031
+            # - 1603403502
+            # - 4110491292
+
+    # running on cpu might be faster
+    device: "torch.device('cuda')"
+
+    predictive_coding:
+        grid_search:
+            - True
+            - False
+
+    gamma:
+        grid_search:
+            # default
+            - 0.98
+
+    buffer_limit:
+        grid_search:
+            # default
+            - 50000
+
+    batch_size:
+        grid_search:
+            # default
+            - 60
+
+    # disable this for the naive dqn (without double q learning)
+    is_q_target:
+        grid_search:
+            # - True
+            - False
+
+    T:
+        grid_search:
+            # - 16 # bad performance, depreciated
+            - 32
+            # - 64
+
+    PCTrainer_kwargs:
+        update_x_at: "all"
+        optimizer_x_fn:
+            grid_search:
+                - "SGD"
+        optimizer_x_kwargs:
+            lr:
+                grid_search:
+                    # - 0.1
+                    - 0.05
+                    # - 0.01
+        x_lr_discount: 1.0
+        x_lr_amplifier: 1.0
+
+        update_p_at: "last"
+        optimizer_p_fn:
+            grid_search:
+                - "SGD"
+                # - "Adam"
+        optimizer_p_kwargs:
+            lr:
+                grid_search:
+                    - 0.05
+                    - 0.01
+                    - 0.005
+                    - 0.001
+                    - 0.0005
+                    - 0.0001
+
+        T: "self.config['T'] if self.config['predictive_coding'] else 1"
+
+        plot_progress_at: "[]"
+        # debug
+        # plot_progress_at: "list(range(0,32,2))"
+
+    train_on_batch_kwargs:
+        is_log_progress: False
+        is_return_results_every_t: False
+        # debug
+        # is_return_results_every_t: True
+        is_checking_after_callback_after_t: False
+
+    env:
+        grid_search:
+            - "CartPole-v1"
+            - "Acrobot-v1"
+            - "MountainCar-v0"
+
+    Qnet_kwargs:
+        # I don't think this matters
+        num_hidden: 1
+        # I don't think this matters
+        hidden_size: 128
+        bias:
+            grid_search:
+                - True
+                # - False
+        pc_layer_at:
+            grid_search:
+                - "before_acf"
+                # - 'after_acf'
+        acf:
+            grid_search:
+                - "Sigmoid"
+                # - 'LeakyReLU'
+
+    is_norm_obs:
+        grid_search:
+            - True
+            # - False
+
+    is_norm_rew:
+        grid_search:
+            # - True # bad performance, depreciated
+            - False
+
+    after_BaseTrainable_setup_code: |-
+
+        # an adaption from https://github.com/seungeunrho/minimalRL/blob/master/dqn.py
+
+        import gym
+
+        import torch
+        import torch.nn as nn
+        import torch.nn.functional as F
+        import torch.optim as optim
+
+        from experiments.nature_simple_dqn_new.utils import ReplayBuffer, Qnet, RunningStats
+
+        import predictive_coding as pc
+
+        # create env
+        self.env = gym.make(self.config['env'])
+        self.env.seed(self.seed)
+
+        # kwargs for Qnet
+        Qnet_kwargs = {
+            'predictive_coding': self.config['predictive_coding'],
+            'num_obs': self.env.observation_space.shape[0],
+            'num_act': self.env.action_space.n,
+        }
+
+        Qnet_kwargs.update(self.config['Qnet_kwargs'])
+
+        # create q
+        self.q = Qnet(**Qnet_kwargs).to(self.device)
+
+        # create q_target
+        if self.config['is_q_target']:
+            self.q_target = Qnet(**Qnet_kwargs).to(self.device)
+            self.q_target.load_state_dict(self.q.state_dict(), strict=False)
+        else:
+            self.q_target = None
+
+        # create memory
+        self.memory = ReplayBuffer(
+            buffer_limit=self.config['buffer_limit'],
+            sample_to_device=self.device,
+        )
+
+        # create pc_trainer
+        # # T
+        self.config['PCTrainer_kwargs']['T']=eval(
+            self.config['PCTrainer_kwargs']['T']
+        )
+        # # optimizer_x_fn
+        self.config['PCTrainer_kwargs']['optimizer_x_fn']=eval(
+            "optim.{}".format(self.config['PCTrainer_kwargs']['optimizer_x_fn'])
+        )
+        # # optimizer_p_fn
+        self.config['PCTrainer_kwargs']['optimizer_p_fn']=eval(
+            "optim.{}".format(self.config['PCTrainer_kwargs']['optimizer_p_fn'])
+        )
+        # # plot_progress_at
+        self.config['PCTrainer_kwargs']['plot_progress_at']=eval(
+            self.config['PCTrainer_kwargs']['plot_progress_at']
+        )
+        # # create pc_trainer
+        self.pc_trainer = pc.PCTrainer(
+            self.q,
+            **self.config['PCTrainer_kwargs'],
+        )
+
+        # episode_rewards is a list holding episode_reward
+        self.episode_rewards=[]
+
+        # functions that will be used
+        import numpy as np
+        self.np_mean = np.mean
+
+        # running stats
+        if self.config['is_norm_obs']:
+            self.rs_s = RunningStats()
+        else:
+            self.rs_s = None
+        if self.config['is_norm_rew']:
+            self.rs_r = RunningStats()
+        else:
+            self.rs_r = None
+
+    # I don't think this matters
+    start_learn_at_memory_size: 2000
+
+    num_learn_epochs_per_eposide:
+        grid_search:
+            # default
+            - 10
+
+    interval_update_target_q:
+        grid_search:
+            # default
+            - 20
+
+    is_detach_target:
+        grid_search:
+            # default
+            - True
+            # - False
+
+    # I don't think this matters
+    interval_compute_episode_reward: 200
+
+    # I don't think this matters
+    top_epsilon: 0.08
+    # I don't think this matters
+    bottom_epsilon: 0.01
+    # I don't think this matters
+    anneal_epsilon_scaler: 200
+
+    train_code: |- # exec-code for train
+
+
+
+
+        # linear annealing epsilon
+        epsilon = max(
+            self.config['bottom_epsilon'], self.config['top_epsilon'] - 0.01 * (self._iteration / self.config['anneal_epsilon_scaler'])
+        )
+
+        # reset
+        s = self.env.reset()
+        episode_reward = 0.0
+        done = False
+
+        # collect
+        # # during collect, q has to be at eval state
+        self.q.eval()
+        # # collect an episode
+        while not done:
+            # # running stats for s
+            if self.rs_s is not None:
+                self.rs_s += s
+            # # sample action
+            a = self.q.sample_action(
+                obs=torch.from_numpy(
+                    self.rs_s.normalize(s) if self.rs_s is not None else s
+                ).float().to(
+                    self.device
+                ),
+                epsilon=epsilon,
+            )
+            # # step env
+            s_prime, r, done, info = self.env.step(a)
+            # # running stats for r
+            if self.rs_r is not None:
+                self.rs_r += np.asarray([r])
+            # # done_mask
+            done_mask = 0.0 if done else 1.0
+            # # collect to memory
+            self.memory.put(
+                (
+                    self.rs_s.normalize(s) if self.rs_s is not None else s,
+                    a,
+                    self.rs_r.normalize(np.asarray([r])).item() if self.rs_r is not None else r,
+                    self.rs_s.normalize(s_prime) if self.rs_s is not None else s_prime,
+                    done_mask,
+                )
+            )
+            # # move forward
+            s = s_prime
+
+            episode_reward += r
+            if done:
+                # # running stats for s
+                if self.rs_s is not None:
+                    self.rs_s += s_prime
+                break
+
+        # learn
+        if self.memory.size() > self.config['start_learn_at_memory_size']:
+
+            for i in range(self.config['num_learn_epochs_per_eposide']):
+
+                s, a, r, s_prime, done_mask = self.memory.sample(
+                    batch_size=self.config['batch_size'],
+                )
+
+                # # max_q_prime
+                if self.config['is_q_target']:
+                    max_q_prime_estimator = self.q_target
+                else:
+                    max_q_prime_estimator = self.q
+                max_q_prime_estimator.eval()
+                max_q_prime = max_q_prime_estimator(s_prime).max(1)[0].unsqueeze(1)
+
+                # # target
+                target = r + self.config['gamma'] * max_q_prime * done_mask
+
+                self.q.train()
+
+                def loss_fn(outputs, a, target):
+                    # debug
+                    # input('loss_fn')
+                    q_a = outputs.gather(1, a)
+                    loss = (q_a - target).pow(2).sum() * 0.5
+                    return loss
+
+                self.pc_trainer.train_on_batch(
+                    s, loss_fn,
+                    loss_fn_kwargs={
+                        'a': a,
+                        'target': target.detach() if self.config['is_detach_target'] else target,
+                    },
+                    **self.config['train_on_batch_kwargs'],
+                )
+
+                # debug
+                # input('train_on_batch')
+
+        # update q_target
+        if self.config['is_q_target']:
+            if self._iteration % self.config['interval_update_target_q'] == 0 and self._iteration != 0:
+                self.q_target.load_state_dict(self.q.state_dict(), strict=False)
+
+        # log
+        self.episode_rewards.append(episode_reward)
+        # # self.episode_rewards only stores some recent episode_reward
+        if len(self.episode_rewards)>self.config['interval_compute_episode_reward']:
+            self.episode_rewards.pop(0)
+        # # mean over them to reduce the noise of the curve
+        result_dict['Episode Reward'] = self.np_mean(self.episode_rewards)
+
+    stop_code: |- # exec-code for stop
+
+
+
+
+        self.env.close()
