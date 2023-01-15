@@ -178,11 +178,11 @@ python analysis_v1.py \
 Show the reason of such learnign effects with a simple example, the inference of the hidden neuron.
 
 ```bash
-# running
 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_reversal_task/base-reason-simple-inference
 ```
 
 ```bash
+# syncing
 python analysis_v1.py \
 -t "base-reason-simple-inference" \
 -l "../general-energy-nets-results/nature_reversal_task/" \
