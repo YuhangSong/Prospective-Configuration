@@ -1,7 +1,113 @@
 import pytest
+
 import torch
+from torch.utils.data import DataLoader
+
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+
+import analysis_utils as au
 
 from dataset_utils import *
+
+
+@pytest.fixture
+def get_fig_save_dir():
+    return os.path.join(
+        'tests',
+        'test_dataset_utils',
+    )
+
+
+@pytest.fixture
+def plot_test_AngleDataset():
+
+    def plot_test_AngleDataset(angle_dataset, get_fig_save_dir, fig_name, num_targets=2, is_positive_only=False):
+
+        data_loader = DataLoader(
+            dataset=angle_dataset,
+        )
+
+        x = []
+        y = []
+        colors = []
+
+        for data, target in data_loader:
+            x.append(data[0][0])
+            y.append(data[0][1])
+            target_i = np.argmax(target.numpy())
+            colors.append(
+                mcolors.BASE_COLORS[
+                    list(mcolors.BASE_COLORS.keys())[target_i]
+                ]
+            )
+
+            angle = np.rad2deg(np.arctan2(y[-1], x[-1]))
+            if not is_positive_only:
+                if angle < 0:
+                    angle = 180 + angle
+                assert int(angle / (180/num_targets)) == target_i
+            else:
+                if angle > 45:
+                    angle = angle - 45
+                assert int(angle / (45/num_targets)) == target_i
+
+        plt.scatter(x, y, c=colors)
+
+        fig_save_dir = os.path.join(
+            get_fig_save_dir, 'test_AngleDataset',
+        )
+
+        au.save_fig(fig_save_dir, fig_name)
+
+        plt.close()
+
+    return plot_test_AngleDataset
+
+
+def test_AngleDataset(get_fig_save_dir, plot_test_AngleDataset):
+
+    plot_test_AngleDataset(
+        AngleDataset(),
+        get_fig_save_dir,
+        'default',
+    )
+
+    plot_test_AngleDataset(
+        AngleDataset(
+            num_samples=500,
+        ),
+        get_fig_save_dir,
+        'num_samples=500',
+    )
+
+    plot_test_AngleDataset(
+        AngleDataset(
+            num_targets=3,
+        ),
+        get_fig_save_dir,
+        'num_targets=3',
+        num_targets=3,
+    )
+
+    plot_test_AngleDataset(
+        AngleDataset(
+            num_samples=500,
+            num_targets=3,
+        ),
+        get_fig_save_dir,
+        'num_samples=500; num_targets=3',
+        num_targets=3,
+    )
+
+    plot_test_AngleDataset(
+        AngleDataset(
+            is_positive_only=True,
+        ),
+        get_fig_save_dir,
+        'is_positive_only=True',
+        is_positive_only=True,
+    )
 
 
 def test_partial_dateset_v1():

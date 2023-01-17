@@ -167,6 +167,8 @@
   "df['val_ppl'].min()": "val_ppl-min",
   "df['accuracy'].max()": "max of accuracy",
   "('test', 'test_by_data')": "test_by_data",
+  "df['train__x'].iloc[-1]": "x",
+  "df['train__y'].iloc[-1]": "y",
   "('VNet_kwargs', 'head_energy_fn')": "head_energy_fn",
   "('dataset', 'name')": "dataset",
   "('dataset', 'partial_num')": "Datapoints per class",

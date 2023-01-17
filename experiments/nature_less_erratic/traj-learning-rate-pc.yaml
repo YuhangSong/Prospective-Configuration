@@ -1,0 +1,456 @@
+run_or_experiment: "SupervisedLearningTrainable"
+
+resources_per_trial:
+    cpu: 1
+    gpu: 0
+stop:
+    training_iteration: 64
+max_failures: 1
+fail_fast: False
+checkpoint_freq: 0
+checkpoint_at_end: False
+
+config:
+    deterministic: True # setup for deterministic behaviour as possible (trial level)
+
+    seed: # seed
+        grid_search:
+            - 1482555873
+            - 698841058
+            - 2283198659
+            - 1855152618
+            - 2444264003
+            - 4191194675
+            - 2563230118
+            - 2508066235
+            - 690101352
+            - 1489128536
+            - 193493729
+            - 3247095100
+            - 2569134589
+            - 3859394752
+            - 3982413761
+            - 2889788203
+            - 3507183834
+            - 1288605031
+            - 1603403502
+            - 4110491292
+            - 3228301166
+            - 1625209643
+            - 3229422879
+            - 4117841395
+            - 383017664
+            - 369370935
+            - 2278516753
+            - 2326123831
+            - 3558864999
+            - 281470168
+            - 3965936537
+            - 1095454788
+            - 4151697083
+            - 3549593167
+            - 3621705125
+            - 2951949230
+            - 2942809220
+            - 1412354999
+            - 3653984540
+            - 38155820
+            - 452984486
+            - 2219886835
+            - 1824037622
+            - 1223472929
+            - 375839252
+            - 2597045926
+            - 187775831
+            - 2291831353
+            - 3551958879
+            - 760971382
+            - 1019978323
+            - 3385238229
+            - 2124033150
+            - 2909826692
+            - 3761144171
+            - 2586511809
+            - 2821469938
+            - 3244598120
+            - 1195937429
+            - 3800305993
+            - 1106674707
+            - 1922347502
+            - 2999545244
+            - 1650175939
+            - 3200709490
+            - 1947803234
+            - 301456582
+            - 1611073380
+            - 3238577641
+            - 1446155378
+            - 1705511488
+            - 2777770570
+            - 3913116301
+            - 1525032703
+            - 3260116528
+            - 3235491768
+            - 2021899074
+            - 550305527
+            - 2227549273
+            - 3227763636
+            - 4034863635
+            - 2984716302
+            - 822586165
+            - 2244632731
+            - 2578193189
+            - 2806006426
+            - 364049366
+            - 2580805533
+            - 1471857781
+            - 636897984
+            - 3061662337
+            - 3640170982
+            - 3927284778
+            - 3117797531
+            - 1117650596
+            - 223429686
+            - 651134664
+            - 955904314
+            - 1703657804
+            # - 2162018890
+            # - 3983791924
+            # - 2051293528
+            # - 3697111793
+            # - 4136525490
+            # - 1525625255
+            # - 1758181331
+            # - 1348241635
+            # - 1069347311
+            # - 3759703151
+            # - 3768325739
+            # - 2496215928
+            # - 1314908379
+            # - 2389315871
+            # - 1742057502
+            # - 3704687631
+            # - 2730757861
+            # - 2098193211
+            # - 2310430616
+            # - 2331964118
+            # - 3044680832
+            # - 2493704377
+            # - 2654768721
+            # - 721569487
+            # - 3861440903
+            # - 451406133
+            # - 3180120029
+            # - 1711228162
+            # - 4068157885
+            # - 648444500
+            # - 1378548721
+            # - 2073713299
+            # - 2706259580
+            # - 3637595333
+            # - 1995748600
+            # - 3668680829
+            # - 358118889
+            # - 592898379
+            # - 1922812204
+            # - 1954422595
+            # - 3146659897
+            # - 2559833016
+            # - 1358173709
+            # - 1680926675
+            # - 4059583880
+            # - 1253411813
+            # - 387549639
+            # - 3297208972
+            # - 1108448982
+            # - 3373932037
+            # - 228951904
+            # - 3723165304
+            # - 1422343164
+            # - 1790150895
+            # - 1268666727
+            # - 320283637
+            # - 3435225406
+            # - 3670218900
+            # - 3587780635
+            # - 1656404804
+            # - 1748035093
+            # - 1203052924
+            # - 1296800060
+            # - 3422649237
+            # - 4140004095
+            # - 184496953
+            # - 2971320875
+            # - 847933184
+            # - 2266915067
+            # - 1960036656
+            # - 958447436
+            # - 1329372429
+            # - 4018760598
+            # - 718415948
+            # - 3708607490
+            # - 2732366518
+            # - 4074920920
+            # - 2058927453
+            # - 3353415427
+            # - 1190309382
+            # - 3681711608
+            # - 2490487605
+            # - 3724247607
+            # - 898712862
+            # - 3814048697
+            # - 1860046129
+            # - 732707587
+            # - 3706030719
+            # - 2484524168
+            # - 3991253759
+            # - 4020805225
+            # - 2511889582
+            # - 726817657
+            # - 2149209477
+            # - 1612847887
+            # - 2141717252
+            # - 646506558
+            # - 1568746234
+            # - 1112634826
+            # - 21024117
+
+    device: "torch.device('cpu')"
+
+    iteration_end: 64
+
+    num_datapoints: 1
+
+    batch_size: 1
+
+    data_packs:
+        train:
+            data_loader: |-
+                DataLoader(
+                    TensorDataset(
+                        torch.zeros(
+                            self.config['num_datapoints'], 32
+                        ).normal_(0.0,0.1),
+                        torch.zeros(
+                            self.config['num_datapoints'], 32
+                        ).normal_(0.0,0.1),
+                    ),
+                    batch_size=self.config['batch_size'],
+                    num_workers=1,
+                    pin_memory=True,
+                    shuffle=True,
+                    drop_last=False,
+                )
+            do: "['learn']"
+
+    ns: "[32,32,32,32]"
+
+    init_fn: "torch.nn.init.xavier_normal_"
+
+    predictive_coding:
+        grid_search:
+            - True
+
+    PCTrainer_kwargs:
+        update_x_at: "all"
+        optimizer_x_fn: "optim.SGD"
+        optimizer_x_kwargs:
+            lr: 0.1
+        x_lr_discount: 0.9
+
+        update_p_at: "last"
+        optimizer_p_fn: "optim.SGD"
+        optimizer_p_kwargs:
+            lr:
+                grid_search:
+                    # - 0.3600
+                    # - 0.3640
+                    # - 0.3680
+                    # - 0.3720
+                    # - 0.3760
+                    # - 0.3800
+                    # - 0.3840
+                    # - 0.3880
+                    # - 0.3920
+                    # - 0.3960
+                    # - 0.4000
+                    # - 0.4040
+                    # - 0.4080
+                    # - 0.4120
+                    # - 0.4160
+                    # - 0.4200
+                    # - 0.4240
+                    # - 0.4280
+                    # - 0.4320
+                    # - 0.4360
+                    # - 0.4400
+                    # - 0.4440
+                    # - 0.4480
+                    # - 0.4520
+                    # - 0.4560
+                    # - 0.4600
+                    # - 0.4640
+                    # - 0.4680
+                    # - 0.4720
+                    - 0.4760
+                    - 0.4800
+                    - 0.4840
+                    - 0.4880
+                    - 0.4920
+                    - 0.4960
+                    - 0.5000
+                    - 0.5040
+                    - 0.5080
+                    - 0.5120
+                    - 0.5160
+                    - 0.5200
+                    - 0.5240
+                    - 0.5280
+                    - 0.5320
+                    - 0.5360
+                    - 0.5400
+                    - 0.5440
+                    - 0.5480
+                    - 0.5520
+                    - 0.5560
+                    - 0.5600
+                    - 0.5640
+                    - 0.5680
+                    - 0.5720
+                    # - 0.5760
+                    # - 0.5800
+                    # - 0.5840
+                    # - 0.5880
+                    # - 0.5920
+                    # - 0.5960
+
+        T: "200 if self.config['predictive_coding'] else 1"
+
+        plot_progress_at: "[]"
+
+    model_creation_code: |-
+
+        # import
+        import predictive_coding as pc
+        import torch.optim as optim
+
+        # create model
+        self.ns = eval(self.config["ns"])
+        assert len(self.ns) == 4
+        self.model = [
+            nn.Linear(self.ns[0], self.ns[1], bias=False),
+            pc.PCLayer(),
+            nn.Sigmoid(),
+            nn.Linear(self.ns[1], self.ns[2], bias=False),
+            pc.PCLayer(),
+            nn.Sigmoid(),
+            nn.Linear(self.ns[2], self.ns[3], bias=False),
+        ]
+
+        # decide pc_layer
+        for model_ in self.model:
+            if isinstance(model_, pc.PCLayer):
+                if not self.config['predictive_coding']:
+                    self.model.remove(model_)
+
+        # init
+        for model_ in self.model:
+            if isinstance(model_, nn.Linear):
+                eval(self.config['init_fn'])(model_.weight)
+
+        # create sequential
+        self.model = nn.Sequential(*self.model).to(self.device)
+
+        # create pc_trainer
+        self.config["PCTrainer_kwargs"]["optimizer_x_fn"]=eval(
+            self.config["PCTrainer_kwargs"]["optimizer_x_fn"]
+        )
+        self.config["PCTrainer_kwargs"]["optimizer_p_fn"]=eval(
+            self.config["PCTrainer_kwargs"]["optimizer_p_fn"]
+        )
+        self.config["PCTrainer_kwargs"]["T"]=eval(
+            self.config["PCTrainer_kwargs"]["T"]
+        )
+        self.config["PCTrainer_kwargs"]["plot_progress_at"]=eval(
+            self.config["PCTrainer_kwargs"]["plot_progress_at"]
+        )
+        self.pc_trainer = pc.PCTrainer(
+            self.model,
+            **self.config["PCTrainer_kwargs"],
+        )
+
+        def get_weights(model):
+            weights = []
+            for model_ in model:
+                if isinstance(model_, nn.Linear):
+                    weights.append(
+                        model_.weight.data.clone()
+                    )
+            return weights
+
+        self.get_weights = get_weights
+
+        def get_path_lengths(v_start, v_end):
+            # get path_lengths of a list of vectors
+            path_lengths = []
+            assert len(v_start) == len(v_end)
+            for i in range(len(v_start)):
+                path_lengths.append(
+                    (v_end[i] - v_start[i]).norm().item()
+                )
+            return path_lengths
+
+        self.get_path_lengths = get_path_lengths
+
+        self.weights_history = [self.get_weights(self.model)]
+
+        self.trace_rate = None
+        self.traj_length = None
+        self.final_length = None
+
+    train_on_batch_kwargs:
+        is_log_progress: False
+
+    learn_code: |-
+
+        self.model.train()
+
+        def loss_fn(outputs, target):
+            return (outputs - target).pow(2).sum() * 0.5
+
+        self.pc_trainer.train_on_batch(
+            data, loss_fn,
+            loss_fn_kwargs={
+                "target": target,
+            },
+            **self.config["train_on_batch_kwargs"],
+        )
+
+        self.weights_history.append(
+            self.get_weights(self.model)
+        )
+
+    after_iteration_data_packs_code: |-
+
+        if self._iteration == (self.config['iteration_end'] - 1):
+
+            final_path_length = self.get_path_lengths(self.weights_history[0], self.weights_history[-1])
+            final_path_length = np.array(final_path_length)
+
+            path_lengths = []
+            for i in range(0, len(self.weights_history)-1):
+                this_path_length = self.get_path_lengths(self.weights_history[i], self.weights_history[i+1])
+                path_lengths.append(
+                    this_path_length
+                )
+            path_lengths = np.array(path_lengths)
+
+            path_lengths = np.sum(path_lengths, axis=0, keepdims=False)
+
+            self.trace_rate = np.mean(path_lengths/final_path_length)
+            self.traj_length = np.mean(path_lengths)
+            self.final_length = np.mean(final_path_length)
+
+        result_dict['trace_rate'] = self.trace_rate
+        result_dict['traj_length'] = self.traj_length
+        result_dict['final_length'] = self.final_length

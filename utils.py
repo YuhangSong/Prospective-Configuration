@@ -125,6 +125,7 @@ logger = getLogger(__name__)
     For general purposes.
 '''
 
+
 def get_commit_hash():
     return subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode("utf-8")
 
@@ -685,25 +686,25 @@ def grad(f):
     return result
 
 
-# def sigmoid_inverse(x, eps=0.03):
-#     """Inverse of torch.sigmoid.
-#     """
-#     x = x.clamp(0.0 + eps, 1.0 - eps)
-#     return torch.log(x / (1 - x))
+def sigmoid_inverse(x, eps=0.03):
+    """Inverse of torch.sigmoid.
+    """
+    x = x.clamp(0.0 + eps, 1.0 - eps)
+    return torch.log(x / (1 - x))
 
 
-# def hardtanh_inverse(x, min_val=-1.0, max_val=1.0, eps=0.03):
-#     """Inverse of F.hardtanh.
-#     """
-#     x = x.clamp(min_val + eps, max_val - eps)
-#     return x
+def hardtanh_inverse(x, min_val=-1.0, max_val=1.0, eps=0.03):
+    """Inverse of F.hardtanh.
+    """
+    x = x.clamp(min_val + eps, max_val - eps)
+    return x
 
 
-# def tanh_inverse(x, eps=0.03):
-#     """Inverse of F.tanh.
-#     """
-#     x = x.clamp(-1.0 + eps, 1.0 - eps)
-#     return torch.tan(x)
+def tanh_inverse(x, eps=0.03):
+    """Inverse of F.tanh.
+    """
+    x = x.clamp(-1.0 + eps, 1.0 - eps)
+    return torch.tan(x)
 
 
 def identity(x):

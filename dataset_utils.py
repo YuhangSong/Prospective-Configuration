@@ -1,5 +1,8 @@
 import os
 import random
+
+import numpy as np
+
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 from torchvision import datasets, transforms
@@ -7,6 +10,76 @@ from torchvision import datasets, transforms
 import utils as u
 
 logger = u.getLogger(__name__)
+
+
+class AngleDataset(TensorDataset):
+
+    def __init__(
+        self,
+        num_samples=100,
+        num_targets=2,
+        is_positive_only=False,
+    ):
+
+        assert isinstance(num_samples, int), (
+            f"num_samples must be an integer, not {type(num_samples)}"
+        )
+        assert num_samples > 0, (
+            f"num_samples must be greater than 0, not {num_samples}"
+        )
+
+        assert isinstance(num_targets, int), (
+            f"num_targets must be an integer, not {type(num_targets)}"
+        )
+        assert num_targets > 0, (
+            f"num_targets must be greater than 0, not {num_targets}"
+        )
+
+        assert isinstance(is_positive_only, bool), (
+            f"is_positive_only must be a boolean, not {type(is_positive_only)}"
+        )
+
+        def get_target(angle):
+
+            target = torch.zeros(num_targets)
+
+            if not is_positive_only:
+                if angle < 0:
+                    angle = 180 + angle
+                target[
+                    int(angle / (180/num_targets))
+                ] = 1
+            else:
+                if angle > 45:
+                    angle = angle - 45
+                target[
+                    int(angle / (45/num_targets))
+                ] = 1
+
+            return target
+
+        datas = []
+        targets = []
+
+        for i in range(num_samples):
+
+            if not is_positive_only:
+                x = np.random.uniform(-1, 1)
+                y = np.random.uniform(-1, 1)
+            else:
+                x = np.random.uniform(0, 1)
+                y = np.random.uniform(0, 1)
+
+            datas.append(torch.Tensor([x, y]))
+
+            angle = np.rad2deg(np.arctan2(y, x))
+
+            targets.append(get_target(angle))
+
+        super().__init__(
+            torch.stack(datas),
+            torch.stack(targets),
+        )
 
 
 def pre_dataset(dataset):

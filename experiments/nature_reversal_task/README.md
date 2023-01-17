@@ -182,7 +182,6 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```
 
 ```bash
-# syncing
 python analysis_v1.py \
 -t "base-reason-simple-inference" \
 -l "../general-energy-nets-results/nature_reversal_task/" \

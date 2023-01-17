@@ -9,7 +9,7 @@ Under 2nd round peer-review at _Nature Neuroscience_.
 
 ## Setting up environment
 
-A `Dockerfile` and a pre-built docker image from this `Dockerfile` is available on docker hub [here](yuhangsongchina/general-energy-nets:1.0).
+A `Dockerfile` and a pre-built docker image from this `Dockerfile` is available on docker hub here: [yuhangsongchina/general-energy-nets:1.0](https://hub.docker.com/r/dryuhangsong/general-energy-nets).
 
 For those who are not familiar with docker, it provides a image of a light-weighted virtual machine, which is widedly used as a frozen version of a environment ready for running the code with all dependencies installed.
 Our code is run and tested on major Linux distributions and Darwin/Mac systems, but not on Windows, in case users are on platforms that we haven't tested our code, such as Windows, and having difficulty setting up environment, one can use the docker image which will start a virtual machine with frozen environment ready to run our code.

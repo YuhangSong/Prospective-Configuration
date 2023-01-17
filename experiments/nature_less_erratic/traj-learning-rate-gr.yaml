@@ -1,0 +1,329 @@
+run_or_experiment: "HandCodedRulesTrainable"
+
+resources_per_trial:
+    cpu: 1
+    gpu: 0
+stop:
+    training_iteration: 64
+max_failures: 1
+fail_fast: False
+checkpoint_freq: 0
+checkpoint_at_end: False
+
+config:
+
+    deterministic: True # setup for deterministic behaviour as possible (trial level)
+
+    seed: # seed
+        grid_search:
+            - 1482555873
+            - 698841058
+            - 2283198659
+            - 1855152618
+            - 2444264003
+            # - 4191194675
+            # - 2563230118
+            # - 2508066235
+            # - 690101352
+            # - 1489128536
+            # - 193493729
+            # - 3247095100
+            # - 2569134589
+            # - 3859394752
+            # - 3982413761
+            # - 2889788203
+            # - 3507183834
+            # - 1288605031
+            # - 1603403502
+            # - 4110491292
+            # - 3228301166
+            # - 1625209643
+            # - 3229422879
+            # - 4117841395
+            # - 383017664
+            # - 369370935
+            # - 2278516753
+            # - 2326123831
+            # - 3558864999
+            # - 281470168
+            # - 3965936537
+            # - 1095454788
+            # - 4151697083
+            # - 3549593167
+            # - 3621705125
+            # - 2951949230
+            # - 2942809220
+            # - 1412354999
+            # - 3653984540
+            # - 38155820
+            # - 452984486
+            # - 2219886835
+            # - 1824037622
+            # - 1223472929
+            # - 375839252
+            # - 2597045926
+            # - 187775831
+            # - 2291831353
+            # - 3551958879
+            # - 760971382
+            # - 1019978323
+            # - 3385238229
+            # - 2124033150
+            # - 2909826692
+            # - 3761144171
+            # - 2586511809
+            # - 2821469938
+            # - 3244598120
+            # - 1195937429
+            # - 3800305993
+            # - 1106674707
+            # - 1922347502
+            # - 2999545244
+            # - 1650175939
+            # - 3200709490
+            # - 1947803234
+            # - 301456582
+            # - 1611073380
+            # - 3238577641
+            # - 1446155378
+            # - 1705511488
+            # - 2777770570
+            # - 3913116301
+            # - 1525032703
+            # - 3260116528
+            # - 3235491768
+            # - 2021899074
+            # - 550305527
+            # - 2227549273
+            # - 3227763636
+            # - 4034863635
+            # - 2984716302
+            # - 822586165
+            # - 2244632731
+            # - 2578193189
+            # - 2806006426
+            # - 364049366
+            # - 2580805533
+            # - 1471857781
+            # - 636897984
+            # - 3061662337
+            # - 3640170982
+            # - 3927284778
+            # - 3117797531
+            # - 1117650596
+            # - 223429686
+            # - 651134664
+            # - 955904314
+            # - 1703657804
+            # - 2162018890
+
+    device: "torch.device('cpu')"
+
+    iteration_end: 64
+
+    num_datapoints: 1
+
+    batch_size: 1
+
+    f: "torch.tanh"
+    f_inverse: "utils.tanh_inverse"
+
+    # before_DatasetLearningTrainable_setup_code: |- # exec-code before/after the setup of the specified Trainable
+    #     def data_loader_fn(dataset, train, batch_size, partial_num=-1):
+    #         return DataLoader(
+    #             dataset_utils.partial_dateset(
+    #                 eval(
+    #                     "datasets.{}".format(dataset)
+    #                 )(
+    #                     os.path.join(os.environ.get("WORKING_HOME"),"data"),
+    #                     train=train,
+    #                     download=False,
+    #                     transform=transforms.Compose(
+    #                         [
+    #                             transforms.ToTensor(),
+    #                             utils.transforms_flatten,
+    #                             transforms.Lambda(
+    #                                 lambda x: utils.tanh_inverse(x)
+    #                             )
+    #                         ]
+    #                     ),
+    #                     target_transform=transforms.Compose(
+    #                         [
+    #                             transforms.Lambda(
+    #                                 lambda idx: utils.np_idx2onehot(idx, 10)
+    #                             ),
+    #                         ]
+    #                     )
+    #                 ),
+    #                 partial_num=partial_num,
+    #             ),
+    #             batch_size=batch_size,
+    #             num_workers=1,
+    #             pin_memory=True,
+    #             shuffle=True,
+    #             drop_last=True,
+    #         )
+    #
+    # dataset: FashionMNIST
+
+    data_packs:
+        train:
+            # data_loader: |-
+            #     data_loader_fn(
+            #         dataset=self.config["dataset"],
+            #         train=True,
+            #         batch_size=self.config["batch_size"],
+            #         partial_num=100,
+            #     )
+            # do: "['predict','learn']"
+            data_loader: |-
+                DataLoader(
+                    TensorDataset(
+                        torch.zeros(
+                            self.config['num_datapoints'], 32
+                        ).normal_(0.0,0.1),
+                        torch.zeros(
+                            self.config['num_datapoints'], 32
+                        ).normal_(0.0,0.1),
+                    ),
+                    batch_size=self.config['batch_size'],
+                    num_workers=1,
+                    pin_memory=True,
+                    shuffle=True,
+                    drop_last=False,
+                )
+            do: "['learn']"
+
+    # ns: "[784,32,32,10]"
+    ns: "[32,32,32,32]"
+
+    init_fn: "torch.nn.init.xavier_normal_"
+
+    init_code: |-
+        for l in range(self.l_start, self.l_end):
+            eval(self.config['init_fn'])(self.Ws[l].t())
+
+    rule:
+        grid_search:
+            # - "Almeida-Pineda"
+            - "GeneRec"
+
+    inference_duration: 128
+    inference_rate: 0.01
+    inference_rate_discount: 1.0
+
+    learning_rate:
+        grid_search:
+            - 0.00200
+            - 0.00208
+            - 0.00216
+            - 0.00224
+            - 0.00232
+            - 0.00240
+            - 0.00248
+            - 0.00256
+            - 0.00264
+            - 0.00272
+            - 0.00280
+            - 0.00288
+            - 0.00296
+            - 0.00304
+            - 0.00312
+            - 0.00320
+            - 0.00328
+            - 0.00336
+            - 0.00344
+            # - 0.00352
+            # - 0.00360
+            # - 0.00368
+            # - 0.00376
+            # - 0.00384
+            # - 0.00392
+            # - 0.00400
+            # - 0.00408
+            # - 0.00416
+            # - 0.00424
+            # - 0.00432
+            # - 0.00440
+            # - 0.00448
+            # - 0.00456
+            # - 0.00464
+            # - 0.00472
+            # - 0.00480
+            # - 0.00488
+            # - 0.00496
+            # - 0.00504
+            # - 0.00512
+            # - 0.00520
+            # - 0.00528
+            # - 0.00536
+            # - 0.00544
+            # - 0.00552
+            # - 0.00560
+            # - 0.00568
+            # - 0.00576
+            # - 0.00584
+            # - 0.00592
+
+
+    after_HandCodedRulesTrainable_setup_code: |-
+
+        def get_weights(Ws, l_start, l_end):
+            weights = []
+            for l in range(l_start, l_end):
+                weights.append(
+                    Ws[l].data.clone()
+                )
+            return weights
+
+        self.get_weights = get_weights
+
+        def get_path_lengths(v_start, v_end):
+            # get path_lengths of a list of vectors
+            path_lengths = []
+            assert len(v_start) == len(v_end)
+            for i in range(len(v_start)):
+                path_lengths.append(
+                    (v_end[i] - v_start[i]).norm().item()
+                )
+            return path_lengths
+
+        self.get_path_lengths = get_path_lengths
+
+        self.weights_history = [self.get_weights(self.Ws, self.l_start, self.l_end)]
+
+        self.trace_rate = None
+        self.traj_length = None
+        self.final_length = None
+
+    after_iteration_code: |-
+
+        self.weights_history.append(
+            self.get_weights(self.Ws, self.l_start, self.l_end)
+        )
+        # input(self.Ws)
+
+    after_iteration_data_packs_code: |-
+
+        if self._iteration == (self.config['iteration_end'] - 1):
+
+            final_path_length = self.get_path_lengths(self.weights_history[0], self.weights_history[-1])
+            final_path_length = np.array(final_path_length)
+
+            path_lengths = []
+            for i in range(0, len(self.weights_history)-1):
+                this_path_length = self.get_path_lengths(self.weights_history[i], self.weights_history[i+1])
+                path_lengths.append(
+                    this_path_length
+                )
+            path_lengths = np.array(path_lengths)
+
+            path_lengths = np.sum(path_lengths, axis=0, keepdims=False)
+
+            self.trace_rate = np.mean(path_lengths/final_path_length)
+            self.traj_length = np.mean(path_lengths)
+            self.final_length = np.mean(final_path_length)
+
+        result_dict['trace_rate'] = self.trace_rate
+        result_dict['traj_length'] = self.traj_length
+        result_dict['final_length'] = self.final_length

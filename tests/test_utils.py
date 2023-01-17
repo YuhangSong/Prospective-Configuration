@@ -694,46 +694,32 @@ def test_grad():
     assert torch.allclose(x.grad, grad_g(x))
 
 
-# @pytest.mark.parametrize('x, eps, expected', [
-#     (torch.tensor([0.0]), 0.03, float('-inf')),
-#     (torch.tensor([0.03]), 0.03, -2.7080503),
-#     (torch.tensor([0.5]), 0.03, 0.0),
-#     (torch.tensor([0.97]), 0.03, 2.7080503),
-#     (torch.tensor([1.0]), 0.03, float('inf')),
-# ])
-# def test_sigmoid_inverse(x, eps, expected):
-#     result = sigmoid_inverse(x, eps)
-#     assert result == expected, f'Error: {result}'
+def test_sigmoid_inverse():
+    x = torch.rand(3, 3)
+    assert torch.allclose(
+        sigmoid_inverse(
+            torch.sigmoid(x),
+            eps=0.0,
+        ),
+        x,
+    )
 
 
-# def test_hardtanh_inverse():
-#     # Test that hardtanh_inverse is the inverse of F.hardtanh
-#     x = torch.randn(10, 10)
-#     assert torch.allclose(x, hardtanh_inverse(torch.nn.functional.hardtanh(x)))
-
-#     # Test that hardtanh_inverse is close to the true inverse for small input values
-#     x = torch.tensor([-1+1e-5, -1+1e-4, -1+1e-3])
-#     assert torch.allclose(x, hardtanh_inverse(
-#         torch.nn.functional.hardtanh(x)), rtol=1e-3, atol=1e-3)
-
-#     # Test that hardtanh_inverse is close to the true inverse for large input values
-#     x = torch.tensor([1-1e-5, 1-1e-4, 1-1e-3])
-#     assert torch.allclose(x, hardtanh_inverse(
-#         torch.nn.functional.hardtanh(x)), rtol=1e-3, atol=1e-3)
+def test_hardtanh_inverse():
+    x = torch.rand(3, 3)
+    assert torch.allclose(
+        hardtanh_inverse(
+            torch.nn.functional.hardtanh(x),
+            eps=0.0,
+        ),
+        x,
+    )
 
 
-# def test_tanh_inverse():
-#     # Test that tanh_inverse is the inverse of F.tanh
-#     x = torch.randn(10, 10)
-#     assert torch.allclose(x, tanh_inverse(torch.tanh(x)))
-
-#     # Test that tanh_inverse is close to the true inverse for small input values
-#     x = torch.tensor([-1+1e-5, -1+1e-4, -1+1e-3])
-#     assert torch.allclose(x, tanh_inverse(torch.tanh(x)), rtol=1e-3, atol=1e-3)
-
-#     # Test that tanh_inverse is close to the true inverse for large input values
-#     x = torch.tensor([1-1e-5, 1-1e-4, 1-1e-3])
-#     assert torch.allclose(x, tanh_inverse(torch.tanh(x)), rtol=1e-3, atol=1e-3)
+def test_tanh_inverse():
+    x = torch.zeros(3, 3).uniform_(-1.0, 1.0)
+    assert torch.allclose(tanh_inverse(
+        torch.nn.functional.tanh(x), eps=0.0), x)
 
 
 def test_identity():

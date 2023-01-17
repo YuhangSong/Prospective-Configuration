@@ -12,13 +12,16 @@ import warnings
 import seaborn as sns
 import utils as u
 from utils import concatenate_dicts, fig_to_pil, report_via_email
-from analysis_utils import df2tb
 import analysis_utils as au
 import pandas as pd
 import tqdm
 import pickle
 import argparse
 import time
+
+# historically, we import these functions from analysis_utils for direct usage in exec commands, but it is better to use au.<the function>
+from analysis_utils import df2tb
+from analysis_utils import nature_pre, nature_post, nature_catplot, nature_catplot_sharey, nature_relplot, nature_relplot_curve
 
 matplotlib.use("Agg")
 

@@ -1,0 +1,247 @@
+run_or_experiment: "SupervisedLearningTrainable"
+
+resources_per_trial:
+    cpu: 1
+    gpu: 'fit_cpu'
+stop:
+    is_num_iterations_reached: 1
+checkpoint_freq: 0
+checkpoint_at_end: False
+
+config:
+
+    version: 0.4
+
+    num_iterations: 4096
+    # debug
+    # num_iterations: 1024
+
+    device: "torch.device('cuda')"
+
+    seed:
+        grid_search:
+            - 1482555873
+            - 698841058
+            - 2283198659
+
+    partial_num: 120
+
+    hidden_size: 32
+
+    dataset: FashionMNIST
+
+    before_DatasetLearningTrainable_setup_code: |- # exec-code before/after the setup of the specified Trainable
+        def data_loader_fn(dataset, train, batch_size, partial_num=-1, mapper=None):
+            return DataLoader(
+                dataset_utils.map_dataset_targets(
+                    dataset_utils.partial_dateset(
+                        eval(
+                            'datasets.{}'.format(dataset)
+                        )(
+                            os.path.join(os.environ.get('WORKING_HOME'),'data'),
+                            train=train,
+                            download=False,
+                            transform=transforms.Compose(
+                                [
+                                    # transforms.Grayscale(),
+                                    transforms.ToTensor(),
+                                    utils.transforms_flatten,
+                                ]
+                            ),
+                            target_transform=transforms.Compose(
+                                [
+                                    transforms.Lambda(
+                                        lambda idx: utils.np_idx2onehot(idx, 10)
+                                    ),
+                                ]
+                            )
+                        ),
+                        partial_num=partial_num,
+                    ),
+                    mapper,
+                ),
+                batch_size=batch_size,
+                num_workers=1,
+                pin_memory=True,
+                shuffle=True,
+            )
+
+        self.data_loader_fn = data_loader_fn
+    data_packs:
+        train:
+            data_loader: |-
+                self.data_loader_fn(
+                    dataset=self.config['dataset'],
+                    batch_size=20,
+                    train=True,
+                    partial_num=self.config['partial_num'],
+                )
+            do: "['learn']"
+        test:
+            data_loader: |-
+                self.data_loader_fn(
+                    dataset=self.config['dataset'],
+                    batch_size=20,
+                    train=False,
+                    partial_num=100,
+                )
+            do: "['predict']"
+
+    predictive_coding:
+        grid_search:
+            - True
+            - False
+
+    PCTrainer_kwargs:
+        update_x_at: "all"
+        optimizer_x_fn: "optim.SGD"
+        optimizer_x_kwargs:
+            lr: 0.1
+        x_lr_discount: 0.5
+
+        update_p_at: "last"
+        optimizer_p_fn: "optim.SGD"
+        optimizer_p_kwargs:
+            lr:
+                grid_search:
+                    # - 0.01
+                    # - 0.0075
+                    # - 0.005
+                    - 0.0025
+                    - 0.001
+                    - 0.00075
+                    - 0.0005
+                    - 0.00025
+                    - 0.0001
+                    # - 0.000075
+                    # - 0.00005
+                    # - 0.000025
+                    # - 0.00001
+
+        T: "64 if self.config['predictive_coding'] else 1"
+
+        plot_progress_at: "[]"
+
+        # update_p_at_early_stop: True
+        # early_stop_condition: "(self._optimizer_x is not None) and (self._optimizer_x.param_groups[0]['lr']<=0.0001)"
+
+    acf: Sigmoid
+
+    model_creation_code: |-
+
+        # import
+        import predictive_coding as pc
+        import torch.optim as optim
+
+        # create model
+        self.model = [
+            nn.Linear(
+            {
+                'FashionMNIST': 784,
+                'CIFAR10': 1024,
+            }[self.config['dataset']],
+            self.config['hidden_size'], bias=False),
+            pc.PCLayer(),
+            eval('nn.{}()'.format(self.config['acf'])),
+            nn.Linear(self.config['hidden_size'], self.config['hidden_size'], bias=False),
+            pc.PCLayer(),
+            eval('nn.{}()'.format(self.config['acf'])),
+            nn.Linear(self.config['hidden_size'], 10, bias=False),
+        ]
+
+        # decide pc_layer
+        for model_ in self.model:
+            if isinstance(model_, pc.PCLayer):
+                if not self.config['predictive_coding']:
+                    self.model.remove(model_)
+
+        # init
+        for model_ in self.model:
+            if isinstance(model_, nn.Linear):
+                torch.nn.init.xavier_uniform_(model_.weight, gain=1)
+
+        # create sequential
+        self.model = nn.Sequential(*self.model).to(self.device)
+
+        # create pc_trainer
+        self.config['PCTrainer_kwargs']['optimizer_x_fn']=eval(
+            self.config['PCTrainer_kwargs']['optimizer_x_fn']
+        )
+        self.config['PCTrainer_kwargs']['optimizer_p_fn']=eval(
+            self.config['PCTrainer_kwargs']['optimizer_p_fn']
+        )
+        self.config['PCTrainer_kwargs']['T']=eval(
+            self.config['PCTrainer_kwargs']['T']
+        )
+        self.config['PCTrainer_kwargs']['plot_progress_at']=eval(
+            self.config['PCTrainer_kwargs']['plot_progress_at']
+        )
+        self.pc_trainer = pc.PCTrainer(
+            self.model,
+            **self.config['PCTrainer_kwargs'],
+        )
+
+        def get_model_linear_only(model):
+            model_linear_only = []
+            for model_ in model:
+                if isinstance(model_, nn.Linear):
+                    model_linear_only.append(model_)
+            return nn.Sequential(*model_linear_only)
+
+        self.get_model_linear_only = get_model_linear_only
+
+        self.model_dir = os.path.join(os.environ.get('WORKING_HOME'),'general-energy-nets','experiments','concept_drift')
+
+        checkpoint_path = os.path.join(self.model_dir, "pre_model-FashionMNIST.pth")
+        self.get_model_linear_only(self.model).load_state_dict(torch.load(checkpoint_path))
+
+    predict_code: |-
+        self.model.eval()
+        prediction = self.model(data)
+        self.classification_error = utils.get_classification_error(
+            prediction, target
+        )
+
+    train_on_batch_kwargs:
+        is_log_progress: False
+        is_return_results_every_t: False
+        # debug
+        # is_return_results_every_t: True
+        is_checking_after_callback_after_t: False
+
+    learn_code: |-
+        self.model.train()
+
+        def loss_fn(outputs, target):
+            return (outputs - target).pow(2).sum() * 0.5
+
+        self.pc_trainer.train_on_batch(
+            data, loss_fn,
+            loss_fn_kwargs={
+                'target': target,
+            },
+            **self.config['train_on_batch_kwargs'],
+        )
+
+        if self._iteration % 512 == 0:
+
+            targets = np.arange(10)
+            np.random.shuffle(targets[5:])
+            mapper = {}
+            for i in range(10):
+                mapper[i] = targets[i]
+
+            import dataset_utils
+            for data_pack_key in ['train', 'test']:
+                self.data_packs[data_pack_key]['data_loader'] = self.data_loader_fn(
+                    dataset=self.config['dataset'],
+                    batch_size=20,
+                    train=True if data_pack_key == 'train' else False,
+                    partial_num=self.config['partial_num'] if data_pack_key == 'train' else 100,
+                    mapper=mapper,
+                )
+
+    log_packs:
+        classification_error:
+            log: "self.classification_error.item()"
+            at_data_pack: "['test']"
