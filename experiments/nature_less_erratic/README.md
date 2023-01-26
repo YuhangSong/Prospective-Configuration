@@ -174,7 +174,6 @@ python analysis_v1.py \
 -l "../general-energy-nets-results/nature_less_erratic/" \
 -m "df['traj_length'].iloc[-1]" "df['final_length'].iloc[-1]" \
 -f "./experiments/nature_less_erratic/base-path-rand-data.yaml" \
--d \
 -v \
 "df=nature_pre(df)" \
 "g=sns.relplot(data=df,x='final_length',y='traj_length',hue='Rule',size='pc_learning_rate',col='seed')"
@@ -209,9 +208,7 @@ python analysis_v1.py \
 try to put traj length and learning rate into the same plot
 
 ```bash
-# running
 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_less_erratic/traj-learning-rate-pc
-# running
 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_less_erratic/traj-learning-rate-bp
 ```
 
@@ -236,7 +233,6 @@ python analysis_v1.py \
 -l "../general-energy-nets-results/nature_less_erratic/" \
 -m "df['traj_length'].iloc[-1]" "df['final_length'].iloc[-1]" \
 -f "./experiments/nature_less_erratic/traj-learning-rate-pc.yaml" "./experiments/nature_less_erratic/traj-learning-rate-bp.yaml" \
--d \
 -v \
 "df=nature_pre(df)" \
 "from experiments.nature_less_erratic.utils import plot" \
@@ -248,9 +244,7 @@ python analysis_v1.py \
 ## traj-learning-rate-apgr
 
 ```bash
-# running
 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_less_erratic/traj-learning-rate-ap
-# running
 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_less_erratic/traj-learning-rate-gr
 ```
 
@@ -262,10 +256,9 @@ python analysis_v1.py \
 -l "../general-energy-nets-results/nature_less_erratic/" \
 -m "df['traj_length'].iloc[-1]" "df['final_length'].iloc[-1]" \
 -f "./experiments/nature_less_erratic/traj-learning-rate-ap.yaml" "./experiments/nature_less_erratic/traj-learning-rate-gr.yaml" \
--d \
 -v \
 "from experiments.nature_less_erratic.utils import plot" \
-"plot(df)"
+"plot(df,'learning_rate')"
 ```
 
 ![](./traj-learning-rate-apgr-two-ebars-.png)
