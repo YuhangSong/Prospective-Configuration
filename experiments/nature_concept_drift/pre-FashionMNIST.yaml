@@ -2,19 +2,18 @@ run_or_experiment: "SupervisedLearningTrainable"
 
 resources_per_trial:
     cpu: 1
-    gpu: 'fit_cpu'
+    gpu: 0.0
 stop:
     is_num_iterations_reached: 1
 checkpoint_freq: 0
 checkpoint_at_end: True
 
 config:
-
     version: 0.4
 
     num_iterations: 64
 
-    device: "torch.device('cuda')"
+    device: "torch.device('cpu')"
 
     seed: 1482555873
 
@@ -24,7 +23,7 @@ config:
 
     dataset: FashionMNIST
 
-    before_DatasetLearningTrainable_setup_code: |- # exec-code before/after the setup of the specified Trainable
+    before_DatasetLearningTrainable_setup_code: |-
         def data_loader_fn(dataset, train, batch_size, partial_num):
             return DataLoader(
                 dataset_utils.partial_dateset(
@@ -44,7 +43,7 @@ config:
                         target_transform=transforms.Compose(
                             [
                                 transforms.Lambda(
-                                    lambda idx: utils.np_idx2onehot(idx, 10)
+                                    lambda idx: utils.np_idx2onehot(idx, 10, target_min=-1.0)
                                 ),
                             ]
                         )
@@ -79,7 +78,6 @@ config:
     predictive_coding: False
 
     PCTrainer_kwargs:
-
         update_x_at: "all"
         optimizer_x_fn: "optim.SGD"
         optimizer_x_kwargs:
@@ -87,9 +85,9 @@ config:
         x_lr_discount: 0.5
 
         update_p_at: "last"
-        optimizer_p_fn: "optim.Adam"
+        optimizer_p_fn: "optim.SGD"
         optimizer_p_kwargs:
-            lr: 0.001
+            lr: 0.01
 
         T: "1"
 
@@ -98,7 +96,6 @@ config:
     acf: Sigmoid
 
     model_creation_code: |-
-
         # import
         import predictive_coding as pc
         import torch.optim as optim
@@ -160,10 +157,10 @@ config:
 
         self.get_model_linear_only = get_model_linear_only
 
-        self.model_dir = os.path.join(os.environ.get('WORKING_HOME'),'general-energy-nets','experiments','concept_drift')
+        self.model_dir = os.path.join(os.environ.get('WORKING_HOME'),'general-energy-nets','experiments','nature_concept_drift')
 
     save_checkpoint_code: |- # exec-code for saving checkpoint
-        checkpoint_path = os.path.join(self.model_dir, "pre_model-FashionMNIST.pth")
+        checkpoint_path = os.path.join(self.model_dir, "pre_model-FashionMNIST-2.pth")
         torch.save(self.get_model_linear_only(self.model).state_dict(), checkpoint_path)
 
     predict_code: |-

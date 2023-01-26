@@ -77,8 +77,13 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 # base
 
 ```bash
-# running with 1 energy coefficient
+python main.py -c nature_concept_drift/pre-FashionMNIST
+```
+
+```bash
+# waiting rafal reply
 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_concept_drift/base
+# backlog: num_iterations 1024->2048 slighlty better, batch_size 32->8 is slightly better, driff_interval 64-16 is a lot better, target_min -1->0 is slightly better
 ```
 
 ## curve
@@ -91,7 +96,7 @@ python analysis_v1.py \
 -f "./experiments/nature_concept_drift/base.yaml" \
 -v \
 "df=au.nature_pre(df)" \
-"df=pd.concat([au.filter_dataframe_by_dict(df,{'Rule':'PC','pc_learning_rate':0.00075}),au.filter_dataframe_by_dict(df,{'Rule':'BP','pc_learning_rate':0.00075})])" \
+"df=pd.concat([au.filter_dataframe_by_dict(df,{'Rule':'PC','pc_learning_rate':0.01}),au.filter_dataframe_by_dict(df,{'Rule':'BP','pc_learning_rate':0.01})])" \
 "df=au.extract_plot(df,'test__classification_error','training_iteration')" \
 "g=au.nature_relplot_curve(data=df,x='training_iteration',y='test__classification_error',hue='Rule',style='Rule')" \
 "au.nature_post(g,is_grid=False)"
