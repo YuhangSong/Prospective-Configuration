@@ -1,0 +1,199 @@
+run_or_experiment: "SupervisedLearningTrainable"
+
+resources_per_trial:
+    cpu: 1
+    gpu: "fit_cpu"
+stop:
+    training_iteration: 64
+
+config:
+    device: "torch.device('cuda')"
+
+    seed: # seed
+        grid_search:
+            - 1482555873
+            - 698841058
+            - 2283198659
+
+    partial_num:
+        grid_search:
+            - 6
+            - 60
+            - 600
+            - 6000
+
+    hidden_size:
+        grid_search:
+            - 32
+
+    dataset: FashionMNIST
+    # dataset: CIFAR10
+
+    before_DatasetLearningTrainable_setup_code:
+        |- # exec-code before/after the setup of the specified Trainable
+        def data_loader_fn(dataset, train, batch_size, partial_num):
+            return DataLoader(
+                dataset_utils.partial_dateset(
+                    eval(
+                        'datasets.{}'.format(dataset)
+                    )(
+                        os.path.join(os.environ.get('WORKING_HOME'),'data'),
+                        train=train,
+                        download=False,
+                        transform=transforms.Compose(
+                            [
+                                transforms.ToTensor(),
+                                utils.transforms_flatten,
+                            ]
+                        ),
+                        target_transform=transforms.Compose(
+                            [
+                                transforms.Lambda(
+                                    lambda idx: utils.np_idx2onehot(idx, 10)
+                                ),
+                            ]
+                        )
+                    ),
+                    partial_num=partial_num,
+                ),
+                batch_size=batch_size,
+                num_workers=1,
+                pin_memory=True,
+                shuffle=True,
+            )
+    data_packs:
+        train:
+            data_loader: |-
+                data_loader_fn(
+                    dataset=self.config['dataset'],
+                    train=True,
+                    batch_size=60,
+                    partial_num=self.config['partial_num'],
+                )
+            do: "['learn']"
+        test:
+            data_loader: |-
+                data_loader_fn(
+                    dataset=self.config['dataset'],
+                    train=False,
+                    batch_size=60,
+                    partial_num=self.config['partial_num'],
+                )
+            do: "['predict']"
+
+    predictive_coding:
+        grid_search:
+            - True
+            - False
+
+    PCTrainer_kwargs:
+        update_x_at: "all"
+        optimizer_x_fn: "optim.SGD"
+        optimizer_x_kwargs:
+            lr: 1.0
+        x_lr_discount: 0.5
+
+        update_p_at: "last"
+        optimizer_p_fn: "optim.SGD"
+        optimizer_p_kwargs:
+            lr:
+                grid_search:
+                    - 0.1
+                    - 0.075
+                    - 0.05
+                    - 0.025
+                    - 0.01
+                    - 0.0075
+                    - 0.005
+                    - 0.0025
+                    - 0.001
+                    - 0.00075
+                    - 0.0005
+                    - 0.00025
+                    - 0.0001
+                    - 0.000075
+                    - 0.00005
+                    - 0.000025
+                    - 0.00001
+
+        T: "64"
+
+        plot_progress_at: "[]"
+
+    model_creation_code: |-
+
+        # import
+        import predictive_coding as pc
+        import torch.optim as optim
+
+        # create model
+        self.model = [
+            nn.Linear(784, self.config['hidden_size'], bias=False),
+            pc.PCLayer(),
+            nn.Sigmoid(),
+            nn.Linear(self.config['hidden_size'], self.config['hidden_size'], bias=False),
+            pc.PCLayer(),
+            nn.Sigmoid(),
+            nn.Linear(self.config['hidden_size'], 10, bias=False),
+        ]
+
+        # decide pc_layer
+        for model_ in self.model:
+            if isinstance(model_, pc.PCLayer):
+                if not self.config['predictive_coding']:
+                    self.model.remove(model_)
+
+        # init
+        for model_ in self.model:
+            if isinstance(model_, nn.Linear):
+                torch.nn.init.xavier_uniform_(model_.weight, gain=1)
+
+        # create sequential
+        self.model = nn.Sequential(*self.model).to(self.device)
+
+        # create pc_trainer
+        self.config['PCTrainer_kwargs']['optimizer_x_fn']=eval(
+            self.config['PCTrainer_kwargs']['optimizer_x_fn']
+        )
+        self.config['PCTrainer_kwargs']['optimizer_p_fn']=eval(
+            self.config['PCTrainer_kwargs']['optimizer_p_fn']
+        )
+        self.config['PCTrainer_kwargs']['T']=eval(
+            self.config['PCTrainer_kwargs']['T']
+        )
+        self.config['PCTrainer_kwargs']['plot_progress_at']=eval(
+            self.config['PCTrainer_kwargs']['plot_progress_at']
+        )
+        self.pc_trainer = pc.PCTrainer(
+            self.model,
+            **self.config['PCTrainer_kwargs'],
+        )
+
+    predict_code: |-
+        self.model.eval()
+        prediction = self.model(data)
+        self.classification_error = utils.get_classification_error(
+            prediction, target
+        )
+
+    train_on_batch_kwargs:
+        is_log_progress: False
+
+    learn_code: |-
+        self.model.train()
+
+        def loss_fn(outputs, target):
+            return (outputs - target).pow(2).sum()
+
+        self.pc_trainer.train_on_batch(
+            data, loss_fn,
+            loss_fn_kwargs={
+                'target': target,
+            },
+            **self.config['train_on_batch_kwargs'],
+        )
+
+    log_packs:
+        classification_error:
+            log: "self.classification_error.item()"
+            at_data_pack: "['test']"
