@@ -16,9 +16,10 @@ checkpoint_freq: 0
 checkpoint_at_end: False
 
 config:
-    version: 0.2
-
-    num_iterations: 1024
+    num_iterations:
+        grid_search:
+            # - 2048
+            - 1024
 
     device: "torch.device('cuda')"
 
@@ -202,9 +203,15 @@ config:
     train_on_batch_kwargs:
         is_log_progress: False
 
-    batch_size: 32
+    batch_size:
+        grid_search:
+            - 32
+            # - 8
 
-    drift_intervel: 16
+    drift_intervel:
+        grid_search:
+            - 64
+            # - 16
 
     target_min:
         grid_search:
