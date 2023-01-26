@@ -12,6 +12,21 @@ import uuid
 from utils import *
 
 
+def test_dict_values():
+    test_dict = {
+        'a': 1,
+        'b': {
+            'c': 2,
+            'd': {
+                'e': 3
+            }
+        },
+        'f': 4
+    }
+    expected_output = [1, 2, 3, 4]
+    assert list(dict_values(test_dict)) == expected_output
+
+
 def test_hardcode_w_update_pre():
 
     w = torch.randn(3, 4)
@@ -698,7 +713,7 @@ def test_sigmoid_inverse():
     x = torch.rand(3, 3)
     assert torch.allclose(
         sigmoid_inverse(
-            torch.sigmoid(x),
+            torch.nn.functional.sigmoid(x),
             eps=0.0,
         ),
         x,
@@ -717,9 +732,14 @@ def test_hardtanh_inverse():
 
 
 def test_tanh_inverse():
-    x = torch.zeros(3, 3).uniform_(-1.0, 1.0)
-    assert torch.allclose(tanh_inverse(
-        torch.nn.functional.tanh(x), eps=0.0), x)
+    x = torch.rand(3, 3)
+    assert torch.allclose(
+        tanh_inverse(
+            torch.nn.functional.tanh(x),
+            eps=0.0,
+        ),
+        x,
+    )
 
 
 def test_identity():
@@ -771,6 +791,18 @@ def test_flatten_dict():
     # Test an empty dictionary
     d = {}
     assert flatten_dict(d) == d
+
+
+def test_assert_config_all_valid():
+    config = {"a": 1, "b": "hello", "c": True, "d": {"e": 2.5}}
+    assert_config_all_valid(config)
+
+    config = {"a": 1, "b": "hello", "c": [True], "d": {"e": 2.5}}
+    with pytest.raises(AssertionError) as error:
+        assert_config_all_valid(config)
+
+    config = {"a": {"b": {"c": {"d": {"e": {"f": {"g": {"h": 1}}}}}}}}
+    assert_config_all_valid(config)
 
 
 # def test_controlled_sigmoid():

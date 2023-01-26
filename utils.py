@@ -126,6 +126,16 @@ logger = getLogger(__name__)
 '''
 
 
+def dict_values(d):
+    """Yield all values in a nested dict.
+    """
+    for v in d.values():
+        if isinstance(v, dict):
+            yield from dict_values(v)
+        else:
+            yield v
+
+
 def get_commit_hash():
     return subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode("utf-8")
 
@@ -704,7 +714,7 @@ def tanh_inverse(x, eps=0.03):
     """Inverse of F.tanh.
     """
     x = x.clamp(-1.0 + eps, 1.0 - eps)
-    return torch.tan(x)
+    return torch.atanh(x)
 
 
 def identity(x):
@@ -1096,6 +1106,16 @@ def flatten_dict(d, parent_key='', sep=': ', level_limit=np.inf, level_count=0):
     return dict(items)
 
 
+def assert_config_all_valid(config):
+    """Ray save Trainable.config as experiment_state*.json, which means config cannot containing any memory intensive objects.
+    On the other hand, we want to be able to identify and compare config, so the value of config should be of "regular" types.
+    """
+    for key, value in flatten_dict(config).items():
+        assert isinstance(value, (str, int, float, bool)), (
+            f"Invalid value for {key}: {value} of type {type(value)}"
+        )
+
+
 def prepare_path(path):
     """Check if path exists, if not, create one.
     """
@@ -1135,7 +1155,7 @@ def map_list_by_dict(l, d):
     return l
 
 
-def inquire_confirm(msg):
+def inquire_confirm(msg, default=True):
     # return prompt(
     #     [
     #         {
@@ -1147,9 +1167,21 @@ def inquire_confirm(msg):
     #     ],
     #     style=custom_style_2,
     # )['confirm']
-    return input(
-        msg
+    answer = input(
+        f"[Confirm]: {msg} {'[Y/n]' if default else '[y/N]'}"
     )
+    if len(answer) == 0:
+        answer = default
+    else:
+        if answer.lower() in ['y', 'yes']:
+            answer = True
+        elif answer.lower() in ['n', 'no']:
+            answer = False
+        else:
+            raise ValueError(
+                f"Invalid answer: {answer}"
+            )
+    return answer
 
 
 def prepare_dir(dir):
@@ -1383,14 +1415,6 @@ def tensordataset_data_loader_fn_with_f_inverse(tr, input_, target_, noise_std, 
 #         return min(count_dict(v, reduce) if isinstance(v, dict) else 0 for v in d.values()) + 1
 #     else:
 #         raise NotImplementedError
-
-
-# def dict_values(d):
-#     for v in d.values():
-#         if isinstance(v, dict):
-#             yield from dict_values(v)
-#         else:
-#             yield v
 
 
 # def flatten(x):

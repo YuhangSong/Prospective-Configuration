@@ -1,5 +1,8 @@
 import pytest
 
+import random
+import numpy as np
+
 import torch
 from torch.utils.data import DataLoader
 
@@ -66,6 +69,10 @@ def plot_test_AngleDataset():
 
 
 def test_AngleDataset(get_fig_save_dir, plot_test_AngleDataset):
+
+    random.seed(0)
+    torch.manual_seed(0)
+    np.random.seed(0)
 
     plot_test_AngleDataset(
         AngleDataset(),

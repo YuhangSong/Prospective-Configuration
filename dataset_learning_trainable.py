@@ -53,6 +53,8 @@ class DatasetLearningTrainable(BaseTrainable):
 
     def setup(self, config):
 
+        u.assert_config_all_valid(self.config)
+
         super(DatasetLearningTrainable, self).setup(config)
 
         exec(self.config.get("before_DatasetLearningTrainable_setup_code", "pass"))
@@ -63,6 +65,8 @@ class DatasetLearningTrainable(BaseTrainable):
         self.reset_after_iteration_fn()
 
         exec(self.config.get("after_DatasetLearningTrainable_setup_code", "pass"))
+
+        u.assert_config_all_valid(self.config)
 
     def reset_data_packs(self):
 
@@ -93,21 +97,26 @@ class DatasetLearningTrainable(BaseTrainable):
         for data_pack_key, data_pack in self.data_packs.items():
             # each data_pack is a dict, some entries of which should be eval or have default values
 
+            assert isinstance(data_pack["data_loader"], str), (
+                f"data_loader should be a string, but got {data_pack['data_loader']}"
+            )
             # data_loader should be eval
-            data_pack["data_loader"] = ray.put(
-                eval(
-                    data_pack["data_loader"]
-                )
-            ) if self.is_data_loader_in_raypg else eval(
+            data_loader = eval(
                 data_pack["data_loader"]
             )
 
+            data_pack["data_loader"] = ray.put(
+                data_loader
+            ) if self.is_data_loader_in_raypg else data_loader
+
             # by default, it takes effect at all iterations
-            data_pack["at_iteration"] = eval(
-                data_pack.get(
-                    "at_iteration", "'all'"
-                )
+            at_iteration = data_pack.get(
+                "at_iteration", "'all'"
             )
+            assert isinstance(at_iteration, str), (
+                f"at_iteration should be a string, but got {at_iteration}"
+            )
+            data_pack["at_iteration"] = eval(at_iteration)
             if isinstance(data_pack["at_iteration"], list):
                 for item in data_pack["at_iteration"]:
                     assert isinstance(item, int), (
@@ -123,13 +132,15 @@ class DatasetLearningTrainable(BaseTrainable):
                 )
 
             # by default, it does the following things in order
-            data_pack["do"] = eval(
-                data_pack.get(
-                    "do", "None"
-                    # other options may be specified by subclasses
-                    # see implementation of iteration_step() in subclasses
-                )
+            do = data_pack.get(
+                "do", "None"
+                # other options may be specified by subclasses
+                # see implementation of iteration_step() in subclasses
             )
+            assert isinstance(do, str), (
+                f"do should be a string, but got {do}"
+            )
+            data_pack["do"] = eval(do)
             if data_pack["do"] is None:
                 data_pack["do"] = ['predict', 'learn']
                 logger.warning(
@@ -160,6 +171,9 @@ class DatasetLearningTrainable(BaseTrainable):
         for _, log_pack in self.log_packs.items():
 
             if "log_fn" in log_pack.keys():
+                assert isinstance(log_pack["log_fn"], str), (
+                    f"log_fn should be a string, but got {log_pack['log_fn']}"
+                )
                 log_pack["log_fn"] = eval(log_pack["log_fn"])
                 assert callable(log_pack["log_fn"]), (
                     f"log_fn should be callable, but got {log_pack['log_fn']}"
@@ -177,11 +191,13 @@ class DatasetLearningTrainable(BaseTrainable):
             # each log_pack is a dict, some entries of which should be eval or have default values
             # # log only takes effect at specific iterations
             # # by default, it takes effect at all iterations
-            log_pack["at_iteration"] = eval(
-                log_pack.get(
-                    "at_iteration", "'all'"
-                )
+            at_iteration = log_pack.get(
+                "at_iteration", "'all'"
             )
+            assert isinstance(at_iteration, str), (
+                f"at_iteration should be a string, but got {at_iteration}"
+            )
+            log_pack["at_iteration"] = eval(at_iteration)
             if isinstance(log_pack["at_iteration"], list):
                 for item in log_pack["at_iteration"]:
                     assert isinstance(item, int), (
@@ -198,10 +214,14 @@ class DatasetLearningTrainable(BaseTrainable):
 
             # # log only takes effect for specific data_packs
             # # by default, it takes effect for all data_packs
+            at_data_pack = log_pack.get(
+                "at_data_pack", str(list(self.data_packs.keys()))
+            )
+            assert isinstance(at_data_pack, str), (
+                f"at_data_pack should be a string, but got {at_data_pack}"
+            )
             log_pack["at_data_pack"] = eval(
-                log_pack.get(
-                    "at_data_pack", str(list(self.data_packs.keys()))
-                )
+                at_data_pack
             )
             if isinstance(log_pack["at_data_pack"], list):
                 for item in log_pack["at_data_pack"]:
@@ -216,10 +236,14 @@ class DatasetLearningTrainable(BaseTrainable):
             # # log only takes effect at specific batch_idx
             # # by default, it takes effect at all batch_idx (at_batch_idx="all") and produces a list
             # # such a list is summarized later
+            at_batch_idx = log_pack.get(
+                "at_batch_idx", "'all'"
+            )
+            assert isinstance(at_batch_idx, str), (
+                f"at_batch_idx should be a string, but got {at_batch_idx}"
+            )
             log_pack["at_batch_idx"] = eval(
-                log_pack.get(
-                    "at_batch_idx", "'all'"
-                )
+                at_batch_idx
             )
             if isinstance(log_pack["at_batch_idx"], str):
                 assert log_pack["at_batch_idx"] in ["all"], (
@@ -237,10 +261,14 @@ class DatasetLearningTrainable(BaseTrainable):
 
             # # summarize the logs over batch_idx
             # # by default it is summarized by mean
+            summarize_over_batch_idx_fn = log_pack.get(
+                "summarize_over_batch_idx_fn", "lambda x: np.mean(x)"
+            )
+            assert isinstance(summarize_over_batch_idx_fn, str), (
+                f"summarize_over_batch_idx_fn should be a string, but get {summarize_over_batch_idx_fn}"
+            )
             log_pack["summarize_over_batch_idx_fn"] = eval(
-                log_pack.get(
-                    "summarize_over_batch_idx_fn", "lambda x: np.mean(x)"
-                )
+                summarize_over_batch_idx_fn
             )
             assert callable(log_pack["summarize_over_batch_idx_fn"]), (
                 f"summarize_over_batch_idx_fn should be callable, but get {log_pack['summarize_over_batch_idx_fn']}"
@@ -255,13 +283,21 @@ class DatasetLearningTrainable(BaseTrainable):
     def reset_log_key_holders(self):
         # holders for log_pack that is not logger at the very first start
         # this is a problem from ray
+        log_key_holders = self.config.get("log_key_holders", "[]")
+        assert isinstance(log_key_holders, str), (
+            f"log_key_holders should be a string, but get {log_key_holders}"
+        )
         self._log_key_holders = eval(
-            self.config.get("log_key_holders", "[]")
+            log_key_holders
         )
 
     def reset_after_iteration_fn(self):
+        after_iteration_fn = self.config.get("after_iteration_fn", "None")
+        assert isinstance(after_iteration_fn, str), (
+            f"after_iteration_fn should be a string, but get {after_iteration_fn}"
+        )
         self.after_iteration_fn = eval(
-            self.config.get("after_iteration_fn", "None")
+            after_iteration_fn
         )
 
     def reset_config(self, new_config):
@@ -284,6 +320,8 @@ class DatasetLearningTrainable(BaseTrainable):
             self.reset_after_iteration_fn()
 
         exec(self.config.get("after_DatasetLearningTrainable_reset_config_code", "pass"))
+
+        u.assert_config_all_valid(self.config)
 
         return True
 

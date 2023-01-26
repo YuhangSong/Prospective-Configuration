@@ -92,6 +92,17 @@ if __name__ == '__main__':
 
     name = args.experiment_config.split('/')[0]
 
+    try:
+        exec(
+            f"import experiments.{name}.utils as eu"
+        )
+    except Exception as e:
+        logger.warning((
+            "the recommended workflow is to use eu.Trainable as your <trainable> or <run_or_experiment>, where eu is imported automatically for your from <your_experiment/utils.py>. "
+            f"But `import experiments.{name}.utils as eu` fails with the following error: \n"
+            f"{e} "
+        ))
+
     # before_run_code
     before_run_code = None
     if config.get('before_run_code', None) is not None:
@@ -128,14 +139,34 @@ if __name__ == '__main__':
             logger.warning((
                 f"<Trainable> has been deprecated and replaced by <run_or_experiment>. "
             ))
+            config['run_or_experiment'] = config['Trainable']
         if config.get('run_or_experiment', 'GenTrainable') == "GeneRecTrainable":
             logger.warning((
                 f"<GeneRecTrainable> has been deprecated and replaced by <HandCodedRulesTrainable>. "
             ))
         # # eval run_or_experiment
-        config['run_or_experiment'] = eval(
-            config['run_or_experiment']
-        )
+        run_or_experiment = config.get('run_or_experiment', None)
+        if run_or_experiment is None:
+            try:
+                run_or_experiment = eu.Trainable
+            except Exception as e:
+                raise RuntimeError(
+                    "run_or_experiment not specified, and using eu.Trainable failed with the followig error: \n"
+                    f"{e} "
+                )
+        else:
+            assert isinstance(run_or_experiment, str), (
+                f"run_or_experiment should be a string, but got {run_or_experiment} "
+            )
+            if 'eu.' not in run_or_experiment:
+                logger.warning(
+                    "the recommended workflow is to use eu.Trainable as your <run_or_experiment>, where eu is imported automatically for your from <your_experiment/utils.py>. "
+                    f"But you are using a custom <run_or_experiment>: {run_or_experiment}"
+                )
+            run_or_experiment = eval(
+                run_or_experiment
+            )
+        config['run_or_experiment'] = run_or_experiment
 
         # config['name']
         # # name is the experiment from experiment_config
@@ -185,7 +216,26 @@ if __name__ == '__main__':
 
         if not is_resume:
 
-            config['trainable'] = eval(config['trainable'])
+            trainable = config.get('trainable', None)
+            if trainable is None:
+                try:
+                    trainable = eu.Trainable
+                except Exception as e:
+                    raise RuntimeError(
+                        "trainable not specified, and using eu.Trainable failed with the followig error: \n"
+                        f"{e} "
+                    )
+            else:
+                assert isinstance(trainable, str), (
+                    f"trainable should be a string, but got {type(trainable)}."
+                )
+                if 'eu.' not in trainable:
+                    logger.warning(
+                        "the recommended workflow is to use eu.Trainable as your <trainable>, where eu is imported automatically for your from <your_experiment/utils.py>. "
+                        f"But you are using a custom <trainable>: {trainable}"
+                    )
+                trainable = eval(trainable)
+            config['trainable'] = trainable
             config['tune_config'] = eval(config['tune_config'])
             config['run_config'] = eval(config['run_config'])
 

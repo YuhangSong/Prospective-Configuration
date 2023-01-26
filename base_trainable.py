@@ -43,6 +43,8 @@ class BaseTrainable(Trainable):
 
     def setup(self, config):
 
+        u.assert_config_all_valid(self.config)
+
         exec(self.config.get("before_BaseTrainable_setup_code", "pass"))
 
         if self.config.get("wandb", None) is not None:
@@ -86,6 +88,8 @@ class BaseTrainable(Trainable):
 
         exec(self.config.get("after_BaseTrainable_setup_code", "pass"))
 
+        u.assert_config_all_valid(self.config)
+
     def reset_device(self):
 
         self.device = eval(self.config.get("device", "torch.device('cpu')"))
@@ -124,6 +128,10 @@ class BaseTrainable(Trainable):
             self.reset_device()
 
         exec(self.config.get("after_BaseTrainable_reset_config_code", "pass"))
+
+        u.assert_config_all_valid(self.config)
+
+        return True
 
     def manage_num_iterations(self, result_dict):
 
