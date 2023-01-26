@@ -1,0 +1,268 @@
+main_import_code: |-
+    from supervised_learning_trainable import SupervisedLearningTrainable
+
+run_or_experiment: "SupervisedLearningTrainable"
+
+resources_per_trial:
+    cpu: 1
+    gpu: 0
+stop:
+    training_iteration: 1
+
+config:
+    version: 1.1
+
+    seed: # seed
+        grid_search:
+            - 1482555873
+            - 698841058
+            - 2283198659
+            - 1855152618
+            - 2444264003
+            # - 4191194675
+            # - 2563230118
+            # - 2508066235
+            # - 690101352
+            # - 1489128536
+            # - 193493729
+            # - 3247095100
+            # - 2569134589
+            # - 3859394752
+            # - 3982413761
+            # - 2889788203
+            # - 3507183834
+            # - 1288605031
+            # - 1603403502
+            # - 4110491292
+            # - 3228301166
+            # - 1625209643
+            # - 3229422879
+            # - 4117841395
+            # - 383017664
+            # - 369370935
+            # - 2278516753
+            # - 2326123831
+            # - 3558864999
+            # - 281470168
+
+    device: "torch.device('cpu')"
+
+    batch_size: 1
+
+    l:
+        grid_search:
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+
+    acf: nn.Identity()
+
+    structure: "['Linear', 'PCLayer', 'Acf']"
+
+    norm_layer: nn.Identity()
+    # nn.LayerNorm(h,elementwise_affine=True)
+
+    # number of layers of weights
+    num_layers: 6
+
+    hidden_size: 64
+
+    data_packs:
+        train:
+            data_loader: |-
+                utils.tensordataset_data_loader(
+                    input_=[[0.0]*64],
+                    target_=[[0.0]*64],
+                    noise_std=1.0,
+                    batch_size=1,
+                )
+            do: "['learn']"
+
+    init_fn: "torch.nn.init.xavier_normal_"
+
+    init_fn_kwargs:
+        gain: 1.0
+
+    bias: False
+
+    PCTrainer_kwargs:
+        update_x_at: "list(range(100))"
+        optimizer_x_fn: "SGD"
+        optimizer_x_kwargs:
+            lr: 0.1
+        x_lr_discount: 0.5
+        x_lr_amplifier: 1.0
+
+        update_p_at:
+            grid_search:
+                - "list(range(100,200))"
+                - "list(range(100,101))"
+        optimizer_p_fn: "SGD"
+        optimizer_p_kwargs:
+            lr: 0.01
+
+        T: 200
+
+        plot_progress_at: "[]"
+
+    predictive_coding: True
+
+    model_creation_code: |-
+        # import
+        import predictive_coding as pc
+        import torch.optim as optim
+
+        # create model
+
+        input_size = 64
+
+        hidden_size = self.config['hidden_size']
+
+        self.model = []
+        self.pc_layers = []
+
+        # input and hidden layers
+        for l in range(self.config['num_layers']-1):
+
+            for model_type in eval(self.config['structure']):
+
+                if model_type=='Linear':
+
+                    self.model.append(
+                        nn.Linear(
+                            input_size if (l == 0) else hidden_size,
+                            hidden_size,
+                            bias=self.config['bias'],
+                        )
+                    )
+
+                elif model_type=='PCLayer':
+
+                    self.model.append(
+                        pc.PCLayer(),
+                    )
+                    self.pc_layers.append(self.model[-1])
+
+                elif model_type=='Acf':
+
+                    self.model.append(
+                        eval(self.config['acf'])
+                    )
+
+                elif model_type=='Norm':
+
+                    h = hidden_size
+                    self.model.append(
+                        eval(self.config['norm_layer']),
+                    )
+
+                else:
+
+                    raise NotImplementedError
+
+        # output layer
+        self.model.append(
+            nn.Linear(
+                hidden_size if (self.config['num_layers'] > 1) else input_size, 64,
+                bias=self.config['bias'],
+            )
+        )
+
+        # decide pc_layer
+        for model_ in self.model:
+
+            if isinstance(model_, pc.PCLayer):
+
+                if not self.config['predictive_coding']:
+
+                    self.model.remove(model_)
+
+        # initialize
+        for model_ in self.model:
+
+            if isinstance(model_, nn.Linear):
+
+                eval(self.config['init_fn'])(
+                    model_.weight,
+                    **self.config['init_fn_kwargs'],
+                )
+
+        # create sequential
+        self.model = nn.Sequential(*self.model).to(self.device)
+
+        # create pc_trainer kwargs
+        self.config['PCTrainer_kwargs']['optimizer_x_fn']=eval(
+            'optim.{}'.format(self.config['PCTrainer_kwargs']['optimizer_x_fn'])
+        )
+        self.config['PCTrainer_kwargs']['optimizer_p_fn']=eval(
+            'optim.{}'.format(self.config['PCTrainer_kwargs']['optimizer_p_fn'])
+        )
+        self.config['PCTrainer_kwargs']['update_x_at']=eval(
+            self.config['PCTrainer_kwargs']['update_x_at']
+        )
+        self.config['PCTrainer_kwargs']['update_p_at']=eval(
+            self.config['PCTrainer_kwargs']['update_p_at']
+        )
+        self.config['PCTrainer_kwargs']['plot_progress_at']=eval(
+            self.config['PCTrainer_kwargs']['plot_progress_at']
+        )
+
+        # create pc_trainer
+        self.pc_trainer = pc.PCTrainer(
+            self.model,
+            **self.config['PCTrainer_kwargs'],
+        )
+
+    before_iteration_code: |-
+        data, target = batch
+        self.model.train()
+        for pc_layer in self.pc_trainer.get_model_pc_layers():
+            pc_layer.set_is_sample_x(True)
+        prediction = self.model(data)
+        self.x_start = self.pc_layers[self.config['l']].get_x().clone()[0]
+
+    after_iteration_code: |-
+        data, target = batch
+
+        self.x_used = self.pc_layers[self.config['l']].get_x().clone()[0]
+
+        self.model.train()
+        for pc_layer in self.pc_trainer.get_model_pc_layers():
+            pc_layer.set_is_sample_x(True)
+        prediction = self.model(data)
+        self.x_end=self.pc_layers[self.config['l']].get_x().clone()[0]
+
+        V_prime = (self.x_end-self.x_start)
+
+        V_plus = (self.x_used-self.x_start)
+
+        self.prospective_index = torch.dot(
+            V_prime, V_plus
+        )/(
+            torch.norm(V_prime) * torch.norm(V_plus)
+        )
+
+    train_on_batch_kwargs:
+        is_log_progress: False
+        is_return_results_every_t: False
+        is_checking_after_callback_after_t: False
+
+    learn_code: |-
+        self.model.train()
+
+        def loss_fn(outputs, target):
+            return (outputs - target).pow(2).sum() * 0.5
+
+        self.pc_trainer.train_on_batch(
+            data, loss_fn,
+            loss_fn_kwargs={
+                'target': target,
+            },
+            **self.config['train_on_batch_kwargs'],
+        )
+
+    log_packs:
+        prospective_index:
+            log: "self.prospective_index.item()"
