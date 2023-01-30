@@ -139,7 +139,7 @@ config:
             return DataLoader(
                 dataset_utils.partial_dateset(
                     eval(f"datasets.{dataset}")(
-                        os.path.join(os.environ.get('WORKING_HOME'),'data'),
+                        os.environ.get('DATA_DIR'),
                         train=train,
                         download=False,
                         transform=transforms.Compose(

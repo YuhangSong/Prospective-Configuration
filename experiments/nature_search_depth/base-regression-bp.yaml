@@ -39,6 +39,7 @@ config:
         |- # exec-code before/after the setup of the specified Trainable
 
 
+
         def data_loader_fn(dataset, train, batch_size, partial_num=-1):
 
             transform = []
@@ -59,7 +60,7 @@ config:
                     eval(
                         'datasets.{}'.format(dataset)
                     )(
-                        os.path.join(os.environ.get('WORKING_HOME'),'data'),
+                        os.environ.get('DATA_DIR'),
                         train=train,
                         download=False,
                         transform=transforms.Compose(transform),

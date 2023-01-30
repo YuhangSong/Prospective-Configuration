@@ -11,7 +11,7 @@ python main.py -c nature_coin_fig3_new/base-train
 ```bash
 python analysis_v1.py \
 -t "base-train-best_fit" \
--l "../general-energy-nets-results/nature_coin_fig3_new/" \
+-l "$RESULTS_DIR/nature_coin_fig3_new/" \
 -m "eval(df['value-along-index'].iloc[-1])" \
 -f "./experiments/nature_coin_fig3_new/base-train.yaml" \
 -v \
@@ -24,7 +24,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "base-train-best_fit-strip" \
--l "../general-energy-nets-results/nature_coin_fig3_new/" \
+-l "$RESULTS_DIR/nature_coin_fig3_new/" \
 -m "eval(df['value-along-index'].iloc[-1])" \
 -f "./experiments/nature_coin_fig3_new/base-train.yaml" \
 -v \
@@ -46,7 +46,7 @@ Watch out the best fit results from different groups are all in the search range
 ```bash
 python analysis_v1.py \
 -t "base-train-init_std-best_fit" \
--l "../general-energy-nets-results/nature_coin_fig3_new/" \
+-l "$RESULTS_DIR/nature_coin_fig3_new/" \
 -m "eval(df['value-along-index'].iloc[-1])" \
 -f "./experiments/nature_coin_fig3_new/base-train.yaml" \
 -g 'init_std' \
@@ -60,7 +60,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "base-train-init_std-best_fit-strip" \
--l "../general-energy-nets-results/nature_coin_fig3_new/" \
+-l "$RESULTS_DIR/nature_coin_fig3_new/" \
 -m "eval(df['value-along-index'].iloc[-1])" \
 -f "./experiments/nature_coin_fig3_new/base-train.yaml" \
 -g 'init_std' \
@@ -87,7 +87,7 @@ python main.py -c nature_coin_fig3_new/base-train-fc
 ```bash
 python analysis_v1.py \
 -t "base-train-fc-best_fit" \
--l "../general-energy-nets-results/nature_coin_fig3_new/" \
+-l "$RESULTS_DIR/nature_coin_fig3_new/" \
 -m "eval(df['value-along-index'].iloc[-1])" \
 -f "./experiments/nature_coin_fig3_new/base-train-fc.yaml" \
 -g 'is_fc' 'hidden_size' \

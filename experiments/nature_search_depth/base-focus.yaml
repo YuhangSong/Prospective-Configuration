@@ -58,7 +58,7 @@ config:
                     eval(
                         'datasets.{}'.format(dataset)
                     )(
-                        os.path.join(os.environ.get('WORKING_HOME'),'data'),
+                        os.environ.get('DATA_DIR'),
                         train=train,
                         download=False,
                         transform=transforms.Compose(transform),

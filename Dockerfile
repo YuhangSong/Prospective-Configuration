@@ -26,7 +26,7 @@ RUN conda install pytorch==1.10.0 torchvision==0.11.0 torchaudio==0.10.0 -c pyto
 RUN pip install memtorch-cpu scikit-learn
 
 # others
-RUN pip install seaborn tqdm visdom 
+RUN pip install seaborn tqdm visdom plotly tabulate
 
 # ray
 # # NOTE: remove [all] will cause no dashboard, at least need [default]

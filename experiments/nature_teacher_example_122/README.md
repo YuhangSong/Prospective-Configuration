@@ -10,7 +10,7 @@ python main.py -c nature_teacher_example_122/base
 ```bash
 python analysis_v1.py \
 -t "train__loss" \
--l "../general-energy-nets-results/nature_teacher_example_122/" \
+-l "$RESULTS_DIR/nature_teacher_example_122/" \
 -m "compress_plot('train__loss', 'training_iteration')" \
 -f "./experiments/nature_teacher_example_122/base.yaml" \
 -v \
@@ -23,7 +23,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "train__loss-min" \
--l "../general-energy-nets-results/nature_teacher_example_122/" \
+-l "$RESULTS_DIR/nature_teacher_example_122/" \
 -m "df['train__loss'].min()" \
 -f "./experiments/nature_teacher_example_122/base.yaml" \
 -v \

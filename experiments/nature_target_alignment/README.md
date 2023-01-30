@@ -16,7 +16,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "plot" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "df['train__target_alignment'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base.yaml" \
 -v \
@@ -38,7 +38,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "plot-iteration" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "compress_plot('train__target_alignment','training_iteration')" \
 -f "./experiments/nature_target_alignment/base-iteration.yaml" \
 -v \
@@ -53,7 +53,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "plot-loss-iteration" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "compress_plot('train:loss','training_iteration')" \
 -f "./experiments/nature_target_alignment/base-iteration.yaml" \
 -v \
@@ -78,7 +78,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "plot-acf" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "df['train:prediction_std'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-acf-Sigmoid.yaml" "./experiments/nature_target_alignment/base-acf-Tanh.yaml" "./experiments/nature_target_alignment/base-acf-ReLU.yaml" "./experiments/nature_target_alignment/base-acf-None.yaml" \
 -v \
@@ -99,7 +99,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "plot-depth-width" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "df['train__target_alignment'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-depth-width.yaml" \
 -v \
@@ -120,7 +120,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "plot-depth-width-linear" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "df['train__target_alignment'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-depth-width-linear.yaml" \
 -g "batch_size" \
@@ -146,7 +146,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 
 python analysis_v1.py \
 -t "plot-width-linear" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "df['train__target_alignment'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-width-linear.yaml" \
 -g "batch_size" \
@@ -164,7 +164,7 @@ This still does not provide insights on why PC performs better with smaller hidd
 ```bash
 python analysis_v1.py \
 -t "plot-prediction_std-depth-width" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "df['train:prediction_std'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-depth-width.yaml" \
 -v \
@@ -186,7 +186,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "plot-acf-init" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "df['train__target_alignment'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-acf-init.yaml" \
 -v \
@@ -210,7 +210,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "plot-112" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "compress_plot('prediction','training_iteration')" \
 -f "./experiments/nature_target_alignment/base-112.yaml" \
 -v \
@@ -233,7 +233,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 # done
 python analysis_v1.py \
 -t "plot-112-lr" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "compress_plot('prediction','training_iteration')" \
 -f "./experiments/nature_target_alignment/base-112-lr.yaml" \
 -v \
@@ -258,7 +258,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 # done
 python analysis_v1.py \
 -t "plot-112-lr-first" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "compress_plot('prediction','training_iteration')" \
 -f "./experiments/nature_target_alignment/base-112-lr-first-bp.yaml" "./experiments/nature_target_alignment/base-112-lr-first-pc.yaml" \
 -v \
@@ -281,7 +281,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 # done
 python analysis_v1.py \
 -t "plot-112-heatmap-traj" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "compress_plot('prediction','training_iteration')" \
 -f "./experiments/nature_target_alignment/base-112-heatmap-traj.yaml" \
 -v \
@@ -304,7 +304,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 # done
 python analysis_v1.py \
 -t "plot-112-heatmap" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "df['loss'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-112-heatmap.yaml" \
 -v \
@@ -330,7 +330,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-depth" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "df['train__target_alignment'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-depth.yaml" "./experiments/nature_target_alignment/base-depth-tp.yaml" \
 -v \
@@ -349,7 +349,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-depth-acf" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "df['train__target_alignment'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-depth-acf.yaml" \
 -v \
@@ -374,7 +374,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-depth-init" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "df['train__target_alignment'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-depth-init.yaml" \
 -v \
@@ -395,7 +395,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-depth-orth-init" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "df['train__target_alignment'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-depth-orth-init.yaml" \
 -v \
@@ -418,7 +418,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 # waiting
 python analysis_v1.py \
 -t "base-prospective-index" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "df['train__prospective_index'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-prospective-index.yaml" \
 -v \
@@ -432,7 +432,7 @@ python analysis_v1.py \
 # waiting
 python analysis_v1.py \
 -t "base-target-alignment" \
--l "../general-energy-nets-results/nature_target_alignment/" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
 -m "df['train__target_alignment'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-prospective-index.yaml" \
 -v \

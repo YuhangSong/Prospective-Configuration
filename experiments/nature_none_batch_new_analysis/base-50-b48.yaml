@@ -2,7 +2,7 @@ run_or_experiment: "SupervisedLearningTrainable"
 
 resources_per_trial:
     cpu: 1
-    gpu: 'fit_cpu'
+    gpu: "fit_cpu"
     # debug
     # gpu: 0
 stop:
@@ -11,7 +11,6 @@ checkpoint_freq: 0
 checkpoint_at_end: False
 
 config:
-
     version: 1.1
 
     num_iterations: 64
@@ -129,7 +128,8 @@ config:
 
     num_batch_per_iteration: 50
 
-    before_DatasetLearningTrainable_setup_code: |- # exec-code before/after the setup of the specified Trainable
+    before_DatasetLearningTrainable_setup_code:
+        |- # exec-code before/after the setup of the specified Trainable
         def data_loader_fn(dataset, train, batch_size):
             transform_list = []
             if dataset=="CIFAR10":
@@ -139,7 +139,7 @@ config:
             return DataLoader(
                 dataset_utils.partial_dateset(
                     eval(f"datasets.{dataset}")(
-                        os.path.join(os.environ.get('WORKING_HOME'),'data'),
+                        os.environ.get('DATA_DIR'),
                         train=train,
                         download=False,
                         transform=transforms.Compose(
@@ -178,7 +178,6 @@ config:
     T: 64
 
     PCTrainer_kwargs:
-
         T: "self.config['T'] if self.config['predictive_coding'] else 1"
 
         update_x_at: "all"

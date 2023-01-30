@@ -15,7 +15,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-curve" \
--l "../general-energy-nets-results/nature_cnn_v2/" \
+-l "$RESULTS_DIR/nature_cnn_v2/" \
 -m "compress_plot('test__classification_error','training_iteration')" \
 -f "./experiments/nature_cnn_v2/base-rbp.yaml" "./experiments/nature_cnn_v2/base-ppc.yaml" \
 -v \
@@ -31,7 +31,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "base-min" \
--l "../general-energy-nets-results/nature_cnn_v2/" \
+-l "$RESULTS_DIR/nature_cnn_v2/" \
 -m "df['test__classification_error'].min()" \
 -f "./experiments/nature_cnn_v2/base-rbp.yaml" "./experiments/nature_cnn_v2/base-ppc.yaml" \
 -v \

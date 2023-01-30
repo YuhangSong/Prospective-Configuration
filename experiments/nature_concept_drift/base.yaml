@@ -16,9 +16,9 @@ checkpoint_freq: 0
 checkpoint_at_end: False
 
 config:
-    version: 0.2
+    version: 0.4
 
-    num_iterations: 1024
+    num_iterations: 3200
 
     device: "torch.device('cuda')"
 
@@ -42,7 +42,7 @@ config:
                         eval(
                             'datasets.{}'.format(dataset)
                         )(
-                            os.path.join(os.environ.get('WORKING_HOME'),'data'),
+                            os.environ.get('DATA_DIR'),
                             train=train,
                             download=False,
                             transform=transforms.Compose(
@@ -109,7 +109,7 @@ config:
         optimizer_p_kwargs:
             lr:
                 grid_search:
-                    - 0.5
+                    # - 0.5
                     - 0.1
                     - 0.05
                     - 0.01
@@ -145,6 +145,7 @@ config:
             eval('nn.{}()'.format(self.config['acf'])),
             nn.Linear(self.config['hidden_size'], 10, bias=False),
         ]
+        self.linears = [model_ for model_ in self.model if isinstance(model_, nn.Linear)]
 
         # decide pc_layer
         for model_ in self.model:
@@ -198,18 +199,19 @@ config:
         self.classification_error = utils.get_classification_error(
             prediction, target
         )
+        self.weight_norm = sum([
+            torch.norm(linear.weight).item()
+            for linear in self.linears
+        ])
 
     train_on_batch_kwargs:
         is_log_progress: False
 
     batch_size: 32
 
-    drift_intervel: 16
+    drift_intervel: 64
 
-    target_min:
-        grid_search:
-            - -1.0
-            - 0.0
+    target_min: 0.0
 
     learn_code: |-
         self.model.train()
@@ -246,4 +248,7 @@ config:
     log_packs:
         classification_error:
             log: "self.classification_error.item()"
+            at_data_pack: "['test']"
+        weight_norm:
+            log: "self.weight_norm"
             at_data_pack: "['test']"

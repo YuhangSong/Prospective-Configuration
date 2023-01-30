@@ -12,6 +12,41 @@ import uuid
 from utils import *
 
 
+def test_init_yuhang():
+
+    f_in = 100
+    f_out = 20
+    C = 0.1
+    A = 3.2
+
+    w = torch.empty(f_out, f_in)
+
+    init_yuhang(w, C=C, A=A)
+
+    w = w.view(-1)
+
+    w_positive = w[w > 0]
+    assert w_positive.size(0) > 0
+    assert w_positive.dim() == 1
+    assert w_positive.max() < A/f_in
+    assert w_positive.min() > A/f_in*C
+    w_negative = w[w < 0]
+    assert w_negative.size(0) > 0
+    assert w_negative.dim() == 1
+    assert w_negative.max() < -A/f_in*C
+    assert w_negative.min() > -A/f_in
+
+
+def test_get_error_undershot_only():
+    target = torch.tensor([[1.0, 2.0, 1.0], [4.0, 3.0, 3.0]])
+    prediction = torch.tensor([[1.5, 1.5, 1.5], [4.5, 2.0, 3.5]])
+    expected_output = torch.tensor([[-0.5, 0.5, -0.5], [0.0, 0.0, -0.5]])
+    assert torch.allclose(
+        get_error_undershot_only(target=target, prediction=prediction),
+        expected_output
+    )
+
+
 def test_dict_values():
     test_dict = {
         'a': 1,
@@ -63,14 +98,14 @@ def test_hardcode_w_update_pre_optimizer():
     def forward_fn(w):
         return torch.matmul(acf(x_pre), w)
 
-    optimizer = torch.optim.SGD([w_optimizer_update], lr=lr)
+    optimizer = torch.optim.SGD([w_optimizer_update], lr=lr, weight_decay=0.01)
     optimizer.zero_grad()
     loss = (forward_fn(w_optimizer_update)-target).pow(2).sum()*0.5
     loss.backward()
     optimizer.step()
 
     hardcode_w_update(w_hardcode_w_update, x_pre,
-                      forward_fn(w_hardcode_w_update)-target, lr, acf, acf_at)
+                      forward_fn(w_hardcode_w_update)-target, lr, acf, acf_at, weight_decay=0.01)
 
     assert torch.allclose(w_optimizer_update.data, w_hardcode_w_update)
 

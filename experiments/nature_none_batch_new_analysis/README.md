@@ -25,7 +25,7 @@ This plot is to make sure the laerning rates searched are good.
 ```bash
 python analysis_v1.py \
 -t "batch_size-mean" \
--l "../general-energy-nets-results/nature_none_batch_new_analysis/" \
+-l "$RESULTS_DIR/nature_none_batch_new_analysis/" \
 -m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_none_batch_new_analysis/base-b1.yaml" "./experiments/nature_none_batch_new_analysis/base-b8.yaml" "./experiments/nature_none_batch_new_analysis/base-b16.yaml" "./experiments/nature_none_batch_new_analysis/base-b32.yaml" "./experiments/nature_none_batch_new_analysis/base-b64.yaml" \
 -v \
@@ -42,7 +42,7 @@ This plot is to make sure the desired effects can be observed.
 ```bash
 python analysis_v1.py \
 -t "batch_size-mean-best" \
--l "../general-energy-nets-results/nature_none_batch_new_analysis/" \
+-l "$RESULTS_DIR/nature_none_batch_new_analysis/" \
 -m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_none_batch_new_analysis/base-b1.yaml" "./experiments/nature_none_batch_new_analysis/base-b8.yaml" "./experiments/nature_none_batch_new_analysis/base-b16.yaml" "./experiments/nature_none_batch_new_analysis/base-b32.yaml" "./experiments/nature_none_batch_new_analysis/base-b64.yaml" \
 -v \
@@ -59,7 +59,7 @@ This plot is to make sure the laerning rates searched are good.
 ```bash
 python analysis_v1.py \
 -t "batch_size-min" \
--l "../general-energy-nets-results/nature_none_batch_new_analysis/" \
+-l "$RESULTS_DIR/nature_none_batch_new_analysis/" \
 -m "df['test__classification_error'].min()" \
 -f "./experiments/nature_none_batch_new_analysis/base-b1.yaml" \
 -v \
@@ -74,7 +74,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "batch_size-curve" \
--l "../general-energy-nets-results/nature_none_batch_new_analysis/" \
+-l "$RESULTS_DIR/nature_none_batch_new_analysis/" \
 -m "compress_plot('test__classification_error','training_iteration')" "df['test__classification_error'].mean()" \
 -f "./experiments/nature_none_batch_new_analysis/base-b1.yaml" \
 -v \
@@ -115,7 +115,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 ray job submit --runtime-env runtime_envs/runtime_e
 ```bash
 python analysis_v1.py \
 -t "batch_size-50-mean" \
--l "../general-energy-nets-results/nature_none_batch_new_analysis/" \
+-l "$RESULTS_DIR/nature_none_batch_new_analysis/" \
 -m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_none_batch_new_analysis/base-50-b1.yaml" "./experiments/nature_none_batch_new_analysis/base-50-b8.yaml" "./experiments/nature_none_batch_new_analysis/base-50-b32.yaml" "./experiments/nature_none_batch_new_analysis/base-50-b48.yaml" "./experiments/nature_none_batch_new_analysis/base-50-b64.yaml" "./experiments/nature_none_batch_new_analysis/base-50-b128.yaml" \
 -v \
@@ -130,7 +130,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "batch_size-50-mean-best" \
--l "../general-energy-nets-results/nature_none_batch_new_analysis/" \
+-l "$RESULTS_DIR/nature_none_batch_new_analysis/" \
 -m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_none_batch_new_analysis/base-50-b1.yaml" "./experiments/nature_none_batch_new_analysis/base-50-b8.yaml" "./experiments/nature_none_batch_new_analysis/base-50-b32.yaml" "./experiments/nature_none_batch_new_analysis/base-50-b48.yaml" "./experiments/nature_none_batch_new_analysis/base-50-b64.yaml" "./experiments/nature_none_batch_new_analysis/base-50-b128.yaml" \
 -v \
@@ -145,7 +145,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "batch_size-50-curve-best" \
--l "../general-energy-nets-results/nature_none_batch_new_analysis/" \
+-l "$RESULTS_DIR/nature_none_batch_new_analysis/" \
 -m "compress_plot('test__classification_error','training_iteration')" "df['test__classification_error'].mean()" \
 -f "./experiments/nature_none_batch_new_analysis/base-50-b1.yaml" "./experiments/nature_none_batch_new_analysis/base-50-b8.yaml" "./experiments/nature_none_batch_new_analysis/base-50-b32.yaml" "./experiments/nature_none_batch_new_analysis/base-50-b64.yaml" \
 -v \

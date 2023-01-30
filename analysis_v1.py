@@ -380,7 +380,7 @@ if __name__ == "__main__":
 
         # id is a tuple, e.g., (0.1, 0.5), so format a friendly str from it
         id_str = au.format_friendly_string(str(id))
-        if len(id_str) > 100:
+        if len(id_str) > 200:
             id_str = au.format_friendly_string(str(id), is_abbr=True)
         # e.g., 0_1_0_5
 

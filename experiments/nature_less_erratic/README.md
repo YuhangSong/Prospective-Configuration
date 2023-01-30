@@ -23,7 +23,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 running
 python analysis_v1.py \
 -t "rand-data-all" \
--l "../general-energy-nets-results/nature_less_erratic/" \
+-l "$RESULTS_DIR/nature_less_erratic/" \
 -m "df['measure_result'].iloc[-1]" \
 -f "./experiments/nature_less_erratic/rand-data-all.yaml" \
 -g 'measure' \
@@ -50,7 +50,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base" \
--l "../general-energy-nets-results/nature_less_erratic/" \
+-l "$RESULTS_DIR/nature_less_erratic/" \
 -m "df['consistency'].iloc[-1]" \
 -f "./experiments/nature_less_erratic/base.yaml" \
 -v \
@@ -74,7 +74,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-nature" \
--l "../general-energy-nets-results/nature_less_erratic/" \
+-l "$RESULTS_DIR/nature_less_erratic/" \
 -m "df['consistency'].iloc[-1]" \
 -f "./experiments/nature_less_erratic/base-nature.yaml" \
 -v \
@@ -96,7 +96,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-apgr" \
--l "../general-energy-nets-results/nature_less_erratic/" \
+-l "$RESULTS_DIR/nature_less_erratic/" \
 -m "df['consistency'].iloc[-1]" \
 -f "./experiments/nature_less_erratic/base-apgr.yaml" \
 -v \
@@ -121,7 +121,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-path-rand-data" \
--l "../general-energy-nets-results/nature_less_erratic/" \
+-l "$RESULTS_DIR/nature_less_erratic/" \
 -m "df['trace_rate'].iloc[-1]" \
 -f "./experiments/nature_less_erratic/base-path-rand-data.yaml" \
 -v \
@@ -139,7 +139,7 @@ length of final vector as the x axis
 ```bash
 python analysis_v1.py \
 -t "base-path-rand-data-x-length" \
--l "../general-energy-nets-results/nature_less_erratic/" \
+-l "$RESULTS_DIR/nature_less_erratic/" \
 -m "df['traj_length'].iloc[-1]" "df['final_length'].iloc[-1]" \
 -f "./experiments/nature_less_erratic/base-path-rand-data.yaml" \
 -g "pc_learning_rate" \
@@ -153,7 +153,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "base-path-rand-data-x-length-focus" \
--l "../general-energy-nets-results/nature_less_erratic/" \
+-l "$RESULTS_DIR/nature_less_erratic/" \
 -m "df['traj_length'].iloc[-1]" "df['final_length'].iloc[-1]" \
 -f "./experiments/nature_less_erratic/base-path-rand-data.yaml" \
 -v \
@@ -171,7 +171,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-path-rand-data-x-length-focus-new" \
--l "../general-energy-nets-results/nature_less_erratic/" \
+-l "$RESULTS_DIR/nature_less_erratic/" \
 -m "df['traj_length'].iloc[-1]" "df['final_length'].iloc[-1]" \
 -f "./experiments/nature_less_erratic/base-path-rand-data.yaml" \
 -v \
@@ -192,7 +192,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-path-rand-one-data" \
--l "../general-energy-nets-results/nature_less_erratic/" \
+-l "$RESULTS_DIR/nature_less_erratic/" \
 -m "df['trace_rate'].iloc[-1]" \
 -f "./experiments/nature_less_erratic/base-path-rand-one-data.yaml" \
 -v \
@@ -215,7 +215,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 <!-- ```bash
 python analysis_v1.py \
 -t "traj-learning-rate" \
--l "../general-energy-nets-results/nature_less_erratic/" \
+-l "$RESULTS_DIR/nature_less_erratic/" \
 -m "df['traj_length'].iloc[-1]" "df['final_length'].iloc[-1]" \
 -f "./experiments/nature_less_erratic/traj-learning-rate-pc.yaml" "./experiments/nature_less_erratic/traj-learning-rate-bp.yaml" \
 -v \
@@ -230,7 +230,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "traj-learning-rate-two-ebars" \
--l "../general-energy-nets-results/nature_less_erratic/" \
+-l "$RESULTS_DIR/nature_less_erratic/" \
 -m "df['traj_length'].iloc[-1]" "df['final_length'].iloc[-1]" \
 -f "./experiments/nature_less_erratic/traj-learning-rate-pc.yaml" "./experiments/nature_less_erratic/traj-learning-rate-bp.yaml" \
 -v \
@@ -253,7 +253,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "traj-learning-rate-apgr-two-ebars" \
--l "../general-energy-nets-results/nature_less_erratic/" \
+-l "$RESULTS_DIR/nature_less_erratic/" \
 -m "df['traj_length'].iloc[-1]" "df['final_length'].iloc[-1]" \
 -f "./experiments/nature_less_erratic/traj-learning-rate-ap.yaml" "./experiments/nature_less_erratic/traj-learning-rate-gr.yaml" \
 -v \

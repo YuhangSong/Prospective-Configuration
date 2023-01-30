@@ -21,7 +21,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "bp-il-min" \
--l "../general-energy-nets-results/nature_small-arch-small-data/" \
+-l "$RESULTS_DIR/nature_small-arch-small-data/" \
 -m "df['test__classification_error'].min()" \
 -f "./experiments/nature_small-arch-small-data/bp-il.yaml" \
 -v \
@@ -35,7 +35,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "bp-il-min-reduce" \
--l "../general-energy-nets-results/nature_small-arch-small-data/" \
+-l "$RESULTS_DIR/nature_small-arch-small-data/" \
 -m "df['test__classification_error'].min()" \
 -f "./experiments/nature_small-arch-small-data/bp-il.yaml" \
 -v \
@@ -56,7 +56,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "bp-il-sum" \
--l "../general-energy-nets-results/nature_small-arch-small-data/" \
+-l "$RESULTS_DIR/nature_small-arch-small-data/" \
 -m "df['test__classification_error'].sum()" \
 -f "./experiments/nature_small-arch-small-data/bp-il.yaml" \
 -d \
@@ -71,7 +71,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "bp-il-sum-reduce" \
--l "../general-energy-nets-results/nature_small-arch-small-data/" \
+-l "$RESULTS_DIR/nature_small-arch-small-data/" \
 -m "df['test__classification_error'].sum()" \
 -f "./experiments/nature_small-arch-small-data/bp-il.yaml" \
 -v \

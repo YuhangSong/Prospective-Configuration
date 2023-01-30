@@ -17,7 +17,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base" \
--l "../general-energy-nets-results/nature_pc_pi_layered/" \
+-l "$RESULTS_DIR/nature_pc_pi_layered/" \
 -m "df['train__prospective_index'].mean()" \
 -f "./experiments/nature_pc_pi_layered/base.yaml" \
 -v \

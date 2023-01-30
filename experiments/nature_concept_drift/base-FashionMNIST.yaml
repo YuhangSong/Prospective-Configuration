@@ -2,14 +2,13 @@ run_or_experiment: "SupervisedLearningTrainable"
 
 resources_per_trial:
     cpu: 1
-    gpu: 'fit_cpu'
+    gpu: "fit_cpu"
 stop:
     is_num_iterations_reached: 1
 checkpoint_freq: 0
 checkpoint_at_end: False
 
 config:
-
     version: 0.4
 
     num_iterations: 4096
@@ -30,7 +29,8 @@ config:
 
     dataset: FashionMNIST
 
-    before_DatasetLearningTrainable_setup_code: |- # exec-code before/after the setup of the specified Trainable
+    before_DatasetLearningTrainable_setup_code:
+        |- # exec-code before/after the setup of the specified Trainable
         def data_loader_fn(dataset, train, batch_size, partial_num=-1, mapper=None):
             return DataLoader(
                 dataset_utils.map_dataset_targets(
@@ -38,7 +38,7 @@ config:
                         eval(
                             'datasets.{}'.format(dataset)
                         )(
-                            os.path.join(os.environ.get('WORKING_HOME'),'data'),
+                            os.environ.get('DATA_DIR'),
                             train=train,
                             download=False,
                             transform=transforms.Compose(
@@ -190,7 +190,7 @@ config:
 
         self.get_model_linear_only = get_model_linear_only
 
-        self.model_dir = os.path.join(os.environ.get('WORKING_HOME'),'general-energy-nets','experiments','concept_drift')
+        self.model_dir = os.path.join(os.environ.get('CODE_DIR'),'experiments','concept_drift')
 
         checkpoint_path = os.path.join(self.model_dir, "pre_model-FashionMNIST.pth")
         self.get_model_linear_only(self.model).load_state_dict(torch.load(checkpoint_path))

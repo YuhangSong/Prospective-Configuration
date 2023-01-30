@@ -2,7 +2,7 @@ run_or_experiment: "SupervisedLearningTrainable"
 
 resources_per_trial:
     cpu: 1
-    gpu: 'fit_cpu'
+    gpu: "fit_cpu"
     # debug
     # gpu: 0
 stop:
@@ -11,7 +11,6 @@ checkpoint_freq: 0
 checkpoint_at_end: False
 
 config:
-
     version: 0.7
 
     device: "torch.device('cuda')"
@@ -57,7 +56,9 @@ config:
 
     block_error_unused_output: False
 
-    after_DatasetLearningTrainable_creating_data_packs_code: |- # exec-code before/after the setup of the specified Trainable
+    after_DatasetLearningTrainable_creating_data_packs_code:
+        |- # exec-code before/after the setup of the specified Trainable
+
 
         def data_loader_fn(dataset, train, batch_size, partial_dateset_kwargs, num_targets_per_task, mapper, share_output_across_tasks, shuffle_mapper):
 
@@ -65,7 +66,7 @@ config:
                 eval(
                     'datasets.{}'.format(dataset)
                 )(
-                    os.path.join(os.environ.get('WORKING_HOME'),'data'),
+                    os.environ.get('DATA_DIR'),
                     train=train,
                     download=False,
                     transform=transforms.Compose(
@@ -211,7 +212,7 @@ config:
 
     structure: "['Linear', 'PCLayer', 'Acf']"
 
-    norm_layer: 'BatchNorm1d(h,affine=True,track_running_stats=True)'
+    norm_layer: "BatchNorm1d(h,affine=True,track_running_stats=True)"
 
     num_layers: 4
 

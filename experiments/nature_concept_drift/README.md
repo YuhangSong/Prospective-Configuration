@@ -20,7 +20,7 @@ CUDA_VISIBLE_DEVICES=0 ray job submit --runtime-env runtime_envs/runtime_env_wit
 ```bash
 python analysis_v1.py \
 -t "curve-pre-FashionMNIST" \
--l "../general-energy-nets-results/nature_concept_drift/" \
+-l "$RESULTS_DIR/nature_concept_drift/" \
 -m "compress_plot('test__classification_error','training_iteration')" "df['test__classification_error'].mean()" \
 -f "./experiments/nature_concept_drift/pre-FashionMNIST.yaml" \
 -v \
@@ -43,7 +43,7 @@ python split_config.py -c nature_concept_drift/base-FashionMNIST -m dgx
 ```bash
 python analysis_v1.py \
 -t "mean-FashionMNIST" \
--l "../general-energy-nets-results/nature_concept_drift/" \
+-l "$RESULTS_DIR/nature_concept_drift/" \
 -m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_concept_drift/base-FashionMNIST.yaml" \
 -v \
@@ -58,7 +58,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "curve-FashionMNIST" \
--l "../general-energy-nets-results/nature_concept_drift/" \
+-l "$RESULTS_DIR/nature_concept_drift/" \
 -m "compress_plot('test__classification_error','training_iteration')" "df['test__classification_error'].mean()" \
 -f "./experiments/nature_concept_drift/base-FashionMNIST.yaml" \
 -v \
@@ -81,9 +81,7 @@ python main.py -c nature_concept_drift/pre-FashionMNIST
 ```
 
 ```bash
-# waiting rafal reply
 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_concept_drift/base
-# backlog: num_iterations 1024->2048 slighlty better, batch_size 32->8 is slightly better, driff_interval 64-16 is a lot better, target_min -1->0 is slightly better
 ```
 
 ## curve
@@ -91,7 +89,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "curve" \
--l "../general-energy-nets-results/nature_concept_drift/" \
+-l "$RESULTS_DIR/nature_concept_drift/" \
 -m "compress_plot('test__classification_error','training_iteration')" \
 -f "./experiments/nature_concept_drift/base.yaml" \
 -v \
@@ -109,7 +107,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "mean" \
--l "../general-energy-nets-results/nature_concept_drift/" \
+-l "$RESULTS_DIR/nature_concept_drift/" \
 -m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_concept_drift/base.yaml" \
 -v \
@@ -119,3 +117,21 @@ python analysis_v1.py \
 ```
 
 ![](./mean-.png)
+
+<!-- ## curve-weight_norm
+
+```bash
+python analysis_v1.py \
+-t "curve-weight_norm" \
+-l "$RESULTS_DIR/nature_concept_drift/" \
+-m "compress_plot('test__weight_norm','training_iteration')" \
+-f "./experiments/nature_concept_drift/base.yaml" \
+-v \
+"df=au.nature_pre(df)" \
+"df=pd.concat([au.filter_dataframe_by_dict(df,{'Rule':'PC','pc_learning_rate':0.01}),au.filter_dataframe_by_dict(df,{'Rule':'BP','pc_learning_rate':0.01})])" \
+"df=au.extract_plot(df,'test__weight_norm','training_iteration')" \
+"g=au.nature_relplot_curve(data=df,x='training_iteration',y='test__weight_norm',hue='Rule',style='Rule')" \
+"au.nature_post(g,is_grid=False)"
+```
+
+![](./curve-weight_norm-.png) -->

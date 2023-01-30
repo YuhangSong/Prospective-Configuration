@@ -29,7 +29,7 @@ config:
                     eval(
                         'datasets.{}'.format(dataset)
                     )(
-                        os.path.join(os.environ.get('WORKING_HOME'),'data'),
+                        os.environ.get('DATA_DIR'),
                         train=train,
                         download=False,
                         transform=transforms.Compose(
@@ -160,7 +160,7 @@ config:
 
         self.get_model_linear_only = get_model_linear_only
 
-        self.model_dir = os.path.join(os.environ.get('WORKING_HOME'),'general-energy-nets','experiments','concept_drift')
+        self.model_dir = os.path.join(os.environ.get('CODE_DIR'),'experiments','concept_drift')
 
     save_checkpoint_code: |- # exec-code for saving checkpoint
         checkpoint_path = os.path.join(self.model_dir, "pre_model.pth")

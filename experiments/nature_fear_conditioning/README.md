@@ -12,7 +12,7 @@ python main.py -c nature_fear_conditioning/base
 # done
 python analysis_v1.py \
 -t "base" \
--l "../general-energy-nets-results/nature_fear_conditioning/" \
+-l "$RESULTS_DIR/nature_fear_conditioning/" \
 -m "df['extinction__fear_to_N'].iloc[-1]" \
 -f "./experiments/nature_fear_conditioning/base.yaml" \
 -g 'init_std' \
@@ -27,7 +27,7 @@ python analysis_v1.py \
 # done
 python analysis_v1.py \
 -t "base-strip" \
--l "../general-energy-nets-results/nature_fear_conditioning/" \
+-l "$RESULTS_DIR/nature_fear_conditioning/" \
 -m "df['extinction__fear_to_N'].iloc[-1]" \
 -f "./experiments/nature_fear_conditioning/base.yaml" \
 -g 'init_std' \
@@ -45,7 +45,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "base" \
--l "../general-energy-nets-results/nature_fear_conditioning/" \
+-l "$RESULTS_DIR/nature_fear_conditioning/" \
 -m "df['extinction__fear_to_N'].iloc[-1]" \
 -f "./experiments/nature_fear_conditioning/base.yaml" \
 -v \
@@ -66,7 +66,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-init_std" \
--l "../general-energy-nets-results/nature_fear_conditioning/" \
+-l "$RESULTS_DIR/nature_fear_conditioning/" \
 -m "df['extinction__fear_to_N'].iloc[-1]" \
 -f "./experiments/nature_fear_conditioning/base-init_std.yaml" \
 -v \
@@ -87,7 +87,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-hidden_size" \
--l "../general-energy-nets-results/nature_fear_conditioning/" \
+-l "$RESULTS_DIR/nature_fear_conditioning/" \
 -m "df['extinction__fear_to_N'].iloc[-1]" \
 -f "./experiments/nature_fear_conditioning/base-hidden_size.yaml" \
 -v \
@@ -108,7 +108,7 @@ python main.py -c nature_fear_conditioning/base-hidden_size-fc
 # done
 python analysis_v1.py \
 -t "base-hidden_size-fc" \
--l "../general-energy-nets-results/nature_fear_conditioning/" \
+-l "$RESULTS_DIR/nature_fear_conditioning/" \
 -m "df['extinction__fear_to_N'].iloc[-1]" \
 -f "./experiments/nature_fear_conditioning/base-hidden_size-fc.yaml" \
 -v \

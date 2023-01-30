@@ -12,7 +12,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-mean" \
--l "../general-energy-nets-results/nature_simple_dqn_new/" \
+-l "$RESULTS_DIR/nature_simple_dqn_new/" \
 -m "df['Episode Reward'].mean()" \
 -f "./experiments/nature_simple_dqn_new/base.yaml" \
 -g "Optimizer for inference" "Optimizer for learn" "is_q_target" "bias" "Inference rate" "is_norm_obs" "is_norm_rew" "batch_size" "buffer_limit" "gamma" "num_learn_epochs_per_eposide" "interval_update_target_q" "is_detach_target" "MainT" "pc_layer_at" "acf" \
@@ -29,7 +29,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "base-max" \
--l "../general-energy-nets-results/nature_simple_dqn_new/" \
+-l "$RESULTS_DIR/nature_simple_dqn_new/" \
 -m "df['Episode Reward'].max()" \
 -f "./experiments/nature_simple_dqn_new/base.yaml" \
 -g "Optimizer for inference" "Optimizer for learn" "is_q_target" "bias" "Inference rate" "is_norm_obs" "is_norm_rew" "batch_size" "buffer_limit" "gamma" "num_learn_epochs_per_eposide" "interval_update_target_q" "is_detach_target" "MainT" "pc_layer_at" "acf" \
@@ -46,7 +46,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "base-curve" \
--l "../general-energy-nets-results/nature_simple_dqn_new/" \
+-l "$RESULTS_DIR/nature_simple_dqn_new/" \
 -m "compress_plot('Episode Reward','training_iteration')" "df['Episode Reward'].mean()" \
 -f "./experiments/nature_simple_dqn_new/base.yaml" \
 -g "Optimizer for inference" "Optimizer for learn" "is_q_target" "bias" "Inference rate" "is_norm_obs" "is_norm_rew" "batch_size" "buffer_limit" "gamma" "num_learn_epochs_per_eposide" "interval_update_target_q" "is_detach_target" "MainT" "pc_layer_at" "acf" \
@@ -70,7 +70,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-focus-mean" \
--l "../general-energy-nets-results/nature_simple_dqn_new/" \
+-l "$RESULTS_DIR/nature_simple_dqn_new/" \
 -m "df['Episode Reward'].mean()" \
 -f "./experiments/nature_simple_dqn_new/base-focus.yaml" \
 -g "Optimizer for inference" "Optimizer for learn" "is_q_target" "bias" "Inference rate" "is_norm_obs" "is_norm_rew" "batch_size" "buffer_limit" "gamma" "num_learn_epochs_per_eposide" "interval_update_target_q" "is_detach_target" "MainT" "pc_layer_at" "acf" \
@@ -87,7 +87,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "base-focus-max" \
--l "../general-energy-nets-results/nature_simple_dqn_new/" \
+-l "$RESULTS_DIR/nature_simple_dqn_new/" \
 -m "df['Episode Reward'].max()" \
 -f "./experiments/nature_simple_dqn_new/base-focus.yaml" \
 -g "Optimizer for inference" "Optimizer for learn" "is_q_target" "bias" "Inference rate" "is_norm_obs" "is_norm_rew" "batch_size" "buffer_limit" "gamma" "num_learn_epochs_per_eposide" "interval_update_target_q" "is_detach_target" "MainT" "pc_layer_at" "acf" \
@@ -104,7 +104,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "base-focus-curve" \
--l "../general-energy-nets-results/nature_simple_dqn_new/" \
+-l "$RESULTS_DIR/nature_simple_dqn_new/" \
 -m "compress_plot('Episode Reward','training_iteration')" "df['Episode Reward'].mean()" \
 -f "./experiments/nature_simple_dqn_new/base-focus.yaml" \
 -g "Optimizer for inference" "Optimizer for learn" "is_q_target" "bias" "Inference rate" "is_norm_obs" "is_norm_rew" "batch_size" "buffer_limit" "gamma" "num_learn_epochs_per_eposide" "interval_update_target_q" "is_detach_target" "MainT" "pc_layer_at" "acf" \
@@ -130,7 +130,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-ffocus-mean" \
--l "../general-energy-nets-results/nature_simple_dqn_new/" \
+-l "$RESULTS_DIR/nature_simple_dqn_new/" \
 -m "df['Episode Reward'].mean()" \
 -f "./experiments/nature_simple_dqn_new/base-ffocus.yaml" \
 -g "Optimizer for inference" "Optimizer for learn" "is_q_target" "bias" "Inference rate" "is_norm_obs" "is_norm_rew" "batch_size" "buffer_limit" "gamma" "num_learn_epochs_per_eposide" "interval_update_target_q" "is_detach_target" "MainT" "pc_layer_at" "acf" \
@@ -147,7 +147,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "base-ffocus-max" \
--l "../general-energy-nets-results/nature_simple_dqn_new/" \
+-l "$RESULTS_DIR/nature_simple_dqn_new/" \
 -m "df['Episode Reward'].max()" \
 -f "./experiments/nature_simple_dqn_new/base-ffocus.yaml" \
 -g "Optimizer for inference" "Optimizer for learn" "is_q_target" "bias" "Inference rate" "is_norm_obs" "is_norm_rew" "batch_size" "buffer_limit" "gamma" "num_learn_epochs_per_eposide" "interval_update_target_q" "is_detach_target" "MainT" "pc_layer_at" "acf" \
@@ -164,7 +164,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "base-ffocus-curve" \
--l "../general-energy-nets-results/nature_simple_dqn_new/" \
+-l "$RESULTS_DIR/nature_simple_dqn_new/" \
 -m "compress_plot('Episode Reward','training_iteration')" "df['Episode Reward'].mean()" \
 -f "./experiments/nature_simple_dqn_new/base-ffocus.yaml" \
 -g "Optimizer for inference" "Optimizer for learn" "is_q_target" "bias" "Inference rate" "is_norm_obs" "is_norm_rew" "batch_size" "buffer_limit" "gamma" "num_learn_epochs_per_eposide" "interval_update_target_q" "is_detach_target" "MainT" "pc_layer_at" "acf" \
@@ -180,7 +180,7 @@ python analysis_v1.py \
 ```bash
 python analysis_v1.py \
 -t "base-ffocus-curve-loss" \
--l "../general-energy-nets-results/nature_simple_dqn_new/" \
+-l "$RESULTS_DIR/nature_simple_dqn_new/" \
 -m "compress_plot('Episode Loss','training_iteration')" "df['Episode Reward'].mean()" \
 -f "./experiments/nature_simple_dqn_new/base-ffocus.yaml" \
 -g "Optimizer for inference" "Optimizer for learn" "is_q_target" "bias" "Inference rate" "is_norm_obs" "is_norm_rew" "batch_size" "buffer_limit" "gamma" "num_learn_epochs_per_eposide" "interval_update_target_q" "is_detach_target" "MainT" "pc_layer_at" "acf" \

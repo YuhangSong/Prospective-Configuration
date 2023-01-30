@@ -126,6 +126,41 @@ logger = getLogger(__name__)
 '''
 
 
+def init_yuhang(w, C=0.01, A=1.0):
+
+    assert isinstance(w, torch.Tensor)
+    assert w.dim() == 2
+
+    assert isinstance(C, float)
+    assert 1 > C > 0
+
+    fan_in = w.size(1)
+    fan_out = w.size(0)
+
+    sign = torch.normal(
+        mean=torch.zeros_like(w),
+        std=torch.ones_like(w),
+    ).sign()
+
+    w.uniform_(
+        A/fan_in*C,
+        A/fan_in,
+    )
+
+    w.mul_(sign)
+
+
+def get_error_undershot_only(target, prediction):
+    """Get error, but only for undershot cases."""
+    error = target-prediction
+    undershot_sign = (
+        target-target.mean(dim=1, keepdim=True)
+    ).sign()
+    error_sign = error.sign()
+    sign_match = (undershot_sign*error_sign).clamp(min=0)
+    return error*sign_match
+
+
 def dict_values(d):
     """Yield all values in a nested dict.
     """
@@ -140,7 +175,7 @@ def get_commit_hash():
     return subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode("utf-8")
 
 
-def hardcode_w_update(w, x_pre, e_post, lr, acf, acf_at):
+def hardcode_w_update(w, x_pre, e_post, lr, acf, acf_at, weight_decay=0.0):
     """
     Hardcode w update.
     """
@@ -167,6 +202,11 @@ def hardcode_w_update(w, x_pre, e_post, lr, acf, acf_at):
         f'Expected acf to be a nn.Module, but got {type(acf)}')
     assert isinstance(acf_at, str), (
         f'Expected acf_at to be a str, but got {type(acf)}')
+
+    assert isinstance(weight_decay, float), (
+        f'Expected weight_decay to be a float, but got {type(weight_decay)}')
+    assert 0.0 <= weight_decay, (
+        f'Expected weight_decay to be non-negative, but got {weight_decay}')
 
     if acf_at == 'pre':
 
@@ -235,7 +275,14 @@ def hardcode_w_update(w, x_pre, e_post, lr, acf, acf_at):
     else:
         raise NotImplementedError
 
-    w -= bmm_result.sum(dim=0).mul(lr)
+    d_p = bmm_result.sum(dim=0)
+
+    if weight_decay != 0:
+        d_p = d_p.add(w, alpha=weight_decay)
+
+    w.add_(d_p, alpha=-lr)
+
+    return bmm_result
 
 
 def get_dicts_keys_overlap(dict1, dict2):
@@ -1181,6 +1228,15 @@ def inquire_confirm(msg, default=True):
             raise ValueError(
                 f"Invalid answer: {answer}"
             )
+    return answer
+
+
+def inquire_input(msg, default=None):
+    answer = input(
+        f"[Input]: {msg} {'[Default: <' + default + '>]' + ' ' if default is not None else ''}"
+    )
+    if len(answer) == 0:
+        answer = default
     return answer
 
 

@@ -418,7 +418,19 @@ def nature_relplot(kind='line', sharey=True, sharex=True, legend_out=False, **kw
     """
     return sns.relplot(
         # standard error
-        errorbar=('ci', 68),
+        # historically, I was using errorbar=('ci', 68),
+        # this is because 68%CI = Score ±SEM, see https://www.statisticshowto.com/standard-error-of-measurement/
+        # but latter Rafal noticed that the error bars could be asymmetric,
+        # the reason is that
+        # Seaborn's errorbar function produces asymmetric error bars by default because it uses the bootstrapped confidence intervals for the error bars.
+        # This means that it samples the data with replacement to calculate the confidence intervals.
+        # Bootstrapping is a way to estimate the sampling distribution of a statistic (such as the mean or standard deviation) using the data itself,
+        # without making assumptions about the underlying distribution.
+        # This is a robust method that can work well even when the underlying distribution is not normal.
+        # However, it can result in asymmetric error bars.
+        # seaborn's documentation: https://seaborn.pydata.org/tutorial/error_bars.html#confidence-interval-error-bars
+        # so I switched to 'se'
+        errorbar=("se"),
         # line
         kind=kind,
         # with markers
@@ -448,7 +460,7 @@ def nature_relplot_curve(sharey=True, sharex=True, legend_out=False, **kwargs):
     """
     return sns.relplot(
         # standard error
-        errorbar=('ci', 68),
+        errorbar=("se"),
         # line
         kind='line',
         # without markers
@@ -472,7 +484,7 @@ def nature_catplot(**kwargs):
     """
     return sns.catplot(
         # standard error
-        errorbar=('ci', 68),
+        errorbar=("se"),
         # legend inside
         legend_out=False,
         # titles of row and col on margins
@@ -487,7 +499,7 @@ def nature_catplot_sharey(*args, **kwargs):
     return sns.catplot(
         *args, **kwargs,
         # standard error
-        errorbar=('ci', 68),
+        errorbar=("se"),
         # bar
         kind='bar',
         # legend inside
@@ -562,11 +574,25 @@ def format_friendly_string(string, is_abbr=False):
             friendly_string = friendly_string[:-1]
 
     if is_abbr:
-        friendly_string = ''.join(
-            [
-                w[0] if len(w) > 0 else '' for w in friendly_string.split('_')
-            ]
+        logger.warning(
+            "Replacing some long names with abbreviations, which should not cause any confusion, but be careful with this. "
+            "If you saw some images got overwritten (flashes while running <analysis_v1.py>), it is because of this. "
+            "You then need to turn this off or check if the following replacing is causing some confusion: different configs got the same abbreviation. "
         )
+        friendly_string = friendly_string.replace('True', 'T')
+        friendly_string = friendly_string.replace('False', 'F')
+        friendly_string = friendly_string.replace(
+            'test__classification_error', 'te_ce')
+        friendly_string = friendly_string.replace(
+            'train__classification_error', 'tr_ce')
+        friendly_string = friendly_string.replace('M', 'M')
+        friendly_string = friendly_string.replace('FashionMNIST', 'FM')
+        friendly_string = friendly_string.replace('CIFAR10', 'C10')
+        friendly_string = friendly_string.replace('CIFAR100', 'C100')
+        friendly_string = friendly_string.replace('optim_', '')
+        friendly_string = friendly_string.replace('torch_nn_init_', '')
+        friendly_string = friendly_string.replace('lambda x: ', '')
+        friendly_string = friendly_string.replace('F.', '')
     return friendly_string
 
 
@@ -985,7 +1011,7 @@ def get_analysis_df(analysis, metrics, is_log_progress=True, silent_broken_trial
                 -v \
                 "df=extract_plot(df,'test__test_split__error','training_iteration')" \
                 ...
-                "sns.lineplot(data=df,x='training_iteration',y='test__test_split__error',hue='algorithm',errorbar=('ci', 68))"
+                "sns.lineplot(data=df,x='training_iteration',y='test__test_split__error',hue='algorithm',errorbar=("se"))"
 
                 WARNING: when using with
                         -m "compress_plot('test__test_split__error','training_iteration')" \
@@ -1736,13 +1762,13 @@ def parallel_coordinates(
 def my_catplot(*args, **kwargs):
     """See https://github.com/YuhangSong/general-energy-nets/tree/master/experiments#my_catplot
     """
-    return sns.catplot(*args, **kwargs, errorbar=('ci', 68), kind='point', capsize=0.4, legend_out=False)
+    return sns.catplot(*args, **kwargs, errorbar=("se"), kind='point', capsize=0.4, legend_out=False)
 
 
 def my_relplot(*args, **kwargs):
     """See https://github.com/YuhangSong/general-energy-nets/tree/master/experiments#my_relplot
     """
-    return sns.relplot(*args, **kwargs, errorbar=('ci', 68), kind='line')
+    return sns.relplot(*args, **kwargs, errorbar=("se"), kind='line')
 
 
 def df2tb(df):

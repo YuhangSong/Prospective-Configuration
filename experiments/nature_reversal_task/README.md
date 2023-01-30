@@ -20,7 +20,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base" \
--l "../general-energy-nets-results/nature_reversal_task/" \
+-l "$RESULTS_DIR/nature_reversal_task/" \
 -m "compress_plot('log','training_iteration')" \
 -f "./experiments/nature_reversal_task/base.yaml" \
 -g "init_std" \
@@ -46,7 +46,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-plot" \
--l "../general-energy-nets-results/nature_reversal_task/" \
+-l "$RESULTS_DIR/nature_reversal_task/" \
 -m "compress_plot('log','training_iteration')" \
 -f "./experiments/nature_reversal_task/base-plot-pc.yaml" "./experiments/nature_reversal_task/base-plot-bp.yaml" \
 -v \
@@ -66,7 +66,7 @@ Data in biological experiments is defined in ```.utils.py```.
 ```bash
 python analysis_v1.py \
 -t "base-plot-fit" \
--l "../general-energy-nets-results/nature_reversal_task/" \
+-l "$RESULTS_DIR/nature_reversal_task/" \
 -m "compress_plot('log','training_iteration')" \
 -f "./experiments/nature_reversal_task/base-plot-pc.yaml" "./experiments/nature_reversal_task/base-plot-bp.yaml" \
 -g "PC" \
@@ -87,7 +87,7 @@ Make sure the ```fit_data_w``` and ```fit_data_b``` are within the range of the 
 ```bash
 python analysis_v1.py \
 -t "base-plot-fit-plot" \
--l "../general-energy-nets-results/nature_reversal_task/" \
+-l "$RESULTS_DIR/nature_reversal_task/" \
 -m "compress_plot('log','training_iteration')" \
 -f "./experiments/nature_reversal_task/base-plot-pc.yaml" "./experiments/nature_reversal_task/base-plot-bp.yaml" \
 -v \
@@ -112,7 +112,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-plot-fit-plot-reason" \
--l "../general-energy-nets-results/nature_reversal_task/" \
+-l "$RESULTS_DIR/nature_reversal_task/" \
 -m "compress_plot('weight','training_iteration')" \
 -f "./experiments/nature_reversal_task/base-plot-reason-pc.yaml" "./experiments/nature_reversal_task/base-plot-reason-bp.yaml" \
 -v \
@@ -126,7 +126,7 @@ python analysis_v1.py \
 <!-- ```bash
 python analysis_v1.py \
 -t "base-plot-fit-plot-reason-seed" \
--l "../general-energy-nets-results/nature_reversal_task/" \
+-l "$RESULTS_DIR/nature_reversal_task/" \
 -m "compress_plot('weight','training_iteration')" \
 -f "./experiments/nature_reversal_task/base-plot-reason-pc.yaml" "./experiments/nature_reversal_task/base-plot-reason-bp.yaml" \
 -v \
@@ -140,7 +140,7 @@ python analysis_v1.py \
 <!-- ```bash
 python analysis_v1.py \
 -t "base-plot-fit-plot-reason-seed-id" \
--l "../general-energy-nets-results/nature_reversal_task/" \
+-l "$RESULTS_DIR/nature_reversal_task/" \
 -m "compress_plot('correct_id','training_iteration')" \
 -f "./experiments/nature_reversal_task/base-plot-reason-pc.yaml" "./experiments/nature_reversal_task/base-plot-reason-bp.yaml" \
 -v \
@@ -162,7 +162,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-reason-simple" \
--l "../general-energy-nets-results/nature_reversal_task/" \
+-l "$RESULTS_DIR/nature_reversal_task/" \
 -m "compress_plot('weight','training_iteration')" \
 -f "./experiments/nature_reversal_task/base-reason-simple.yaml" \
 -v \
@@ -184,7 +184,7 @@ ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address 
 ```bash
 python analysis_v1.py \
 -t "base-reason-simple-inference" \
--l "../general-energy-nets-results/nature_reversal_task/" \
+-l "$RESULTS_DIR/nature_reversal_task/" \
 -m "eval(df['value-along-t'].iloc[-1])" \
 -f "./experiments/nature_reversal_task/base-reason-simple-inference.yaml" \
 -v \
