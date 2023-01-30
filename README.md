@@ -64,7 +64,7 @@ You need to set up the following environment variables:
 
 - `DATA_DIR`: The directory where you want to store the datasets.
 - `RESULTS_DIR`: The directory where you want to store the results.
-- `CODE_DIR`: The directory where you want to store the code.
+- `CODE_DIR`: The directory where you clone and store the code.
 
 Of course, make sure that the directories exist.
 Exactly how to set up environment variables depends on your system (a quick search on internet should give you the answer).
