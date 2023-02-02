@@ -14,7 +14,7 @@
 
 ```bash
 /* master */
-CUDA_VISIBLE_DEVICES=0 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_concept_drift/pre-FashionMNIST
+CUDA_VISIBLE_DEVICES=0 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_concept_drift/pre-FashionMNIST
 ```
 
 ```bash
@@ -34,7 +34,7 @@ python analysis_v1.py \
 
 ```bash
 /* master */
-CUDA_VISIBLE_DEVICES=1,2,3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_concept_drift/base-FashionMNIST -m T1
+CUDA_VISIBLE_DEVICES=1,2,3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_concept_drift/base-FashionMNIST -m T1
 python split_config.py -c nature_concept_drift/base-FashionMNIST -m dgx
 ```
 
@@ -71,7 +71,7 @@ python analysis_v1.py \
 <!-- # pre
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_concept_drift/pre
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_concept_drift/pre
 ``` -->
 
 # base
@@ -81,7 +81,7 @@ python main.py -c nature_concept_drift/pre-FashionMNIST
 ```
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_concept_drift/base
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_concept_drift/base
 ```
 
 ## curve
@@ -96,7 +96,7 @@ python analysis_v1.py \
 "df=au.nature_pre(df)" \
 "df=pd.concat([au.filter_dataframe_by_dict(df,{'Rule':'PC','pc_learning_rate':0.01}),au.filter_dataframe_by_dict(df,{'Rule':'BP','pc_learning_rate':0.01})])" \
 "df=au.extract_plot(df,'test__classification_error','training_iteration')" \
-"g=au.nature_relplot_curve(data=df,x='training_iteration',y='test__classification_error',hue='Rule',style='Rule')" \
+"g=au.nature_relplot_curve(data=df,x='training_iteration',y='test__classification_error',hue='Rule',style='Rule',aspect=1.5)" \
 "au.nature_post(g,is_grid=False)"
 ```
 

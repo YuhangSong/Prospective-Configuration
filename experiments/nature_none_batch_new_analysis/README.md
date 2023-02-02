@@ -11,11 +11,11 @@
 Search over batch_size and num_batch_per_iteration.
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_none_batch_new_analysis/base-b1
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_none_batch_new_analysis/base-b8
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_none_batch_new_analysis/base-b16
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_none_batch_new_analysis/base-b32
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_none_batch_new_analysis/base-b64
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_none_batch_new_analysis/base-b1
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_none_batch_new_analysis/base-b8
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_none_batch_new_analysis/base-b16
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_none_batch_new_analysis/base-b32
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_none_batch_new_analysis/base-b64
 ```
 
 <!-- ## mean
@@ -92,22 +92,22 @@ Search over batch_size. Fixing num_batch_per_iteration to 50.
 
 ```bash
 /* master */
-CUDA_VISIBLE_DEVICES=0,1 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_none_batch_new_analysis/base-50-b1
+CUDA_VISIBLE_DEVICES=0,1 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_none_batch_new_analysis/base-50-b1
 
 /* mater */
-CUDA_VISIBLE_DEVICES=3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_none_batch_new_analysis/base-50-b8
+CUDA_VISIBLE_DEVICES=3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_none_batch_new_analysis/base-50-b8
 
 /* master */
-CUDA_VISIBLE_DEVICES=3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_none_batch_new_analysis/base-50-b32
+CUDA_VISIBLE_DEVICES=3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_none_batch_new_analysis/base-50-b32
 
 /* master */
-CUDA_VISIBLE_DEVICES=1,3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_none_batch_new_analysis/base-50-b48
+CUDA_VISIBLE_DEVICES=1,3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_none_batch_new_analysis/base-50-b48
 
 /* master */
-CUDA_VISIBLE_DEVICES=0,1,2,3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_none_batch_new_analysis/base-50-b64
+CUDA_VISIBLE_DEVICES=0,1,2,3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_none_batch_new_analysis/base-50-b64
 
 /* master */
-CUDA_VISIBLE_DEVICES=0,1,2,3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_none_batch_new_analysis/base-50-b128
+CUDA_VISIBLE_DEVICES=0,1,2,3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_none_batch_new_analysis/base-50-b128
 ```
 
 ## mean

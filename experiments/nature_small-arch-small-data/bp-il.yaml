@@ -17,9 +17,10 @@ config:
 
     partial_num:
         grid_search:
-            - 6
             - 60
+            - 300
             - 600
+            - 3000
             - 6000
 
     hidden_size:
@@ -183,7 +184,7 @@ config:
         self.model.train()
 
         def loss_fn(outputs, target):
-            return (outputs - target).pow(2).sum()
+            return (outputs - target).pow(2).sum() * 0.5
 
         self.pc_trainer.train_on_batch(
             data, loss_fn,

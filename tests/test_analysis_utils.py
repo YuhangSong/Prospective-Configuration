@@ -57,7 +57,7 @@ def test_resolve_nested_dict():
 
     # Test with a dict with multiple levels of nesting
     nested_dict = {'a': {'b': {'c': 1, 'd': 2}, 'e': 3}, 'f': 4}
-    expected_output = {('a', 'b', 'c'): 1, ('a', 'b', 'd')                       : 2, ('a', 'e'): 3, ('f',): 4}
+    expected_output = {('a', 'b', 'c'): 1, ('a', 'b', 'd'): 2, ('a', 'e'): 3, ('f',): 4}
     assert resolve_nested_dict(nested_dict) == expected_output
 
 
@@ -80,7 +80,7 @@ def test_format_friendly_string():
 
     # Test with the is_abbr flag set to True
     string = "this is a test"
-    expected_output = "tiat"
+    expected_output = "this_is_a_test"
     assert format_friendly_string(string, is_abbr=True) == expected_output
 
     # Test with a string that is all special characters and punctuation

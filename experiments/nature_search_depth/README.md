@@ -32,7 +32,7 @@ python analysis_v1.py \
 # base-focus
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_search_depth/base-focus
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_search_depth/base-focus
 ```
 
 ## mean

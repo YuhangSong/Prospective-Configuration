@@ -6,8 +6,8 @@
 Evaluate RBP and PPC for response of nature neuroscience.
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_cnn_v2/base-rbp
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_cnn_v2/base-ppc
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_cnn_v2/base-rbp
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_cnn_v2/base-ppc
 ```
 
 <!-- ## curve

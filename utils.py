@@ -1,3 +1,4 @@
+import math
 import glob
 import logging
 import os
@@ -20,9 +21,14 @@ import requests
 
 from email.mime.text import MIMEText
 from PIL import Image
-from torch import nn
+
 import torch
+from torch import nn
+from torch import optim
+from torch.nn import functional as F
+from torch.nn.init import _calculate_fan_in_and_fan_out, _no_grad_uniform_
 from torch.utils.data import DataLoader, TensorDataset
+
 from torchvision import transforms
 
 matplotlib.use('agg')
@@ -148,6 +154,49 @@ def init_yuhang(w, C=0.01, A=1.0):
     )
 
     w.mul_(sign)
+
+
+def init_xavier_uniform_reciprocal_friendly_(w, gain=1, C=0.01, is_test=False):
+    """Initialize w using Xavier uniform reciprocal friendly.
+
+    Args:
+        w (torch.Tensor): Weights.
+        gain (float): Gain.
+        C (float): Minimul absolute value / maximual absolute value.
+        is_test (bool): Whether it is test mode.
+    """
+    assert isinstance(w, torch.Tensor)
+
+    fan_in, fan_out = _calculate_fan_in_and_fan_out(w)
+    std = gain * math.sqrt(2.0 / float(fan_in + fan_out))
+    # Calculate uniform bounds from standard deviation
+    a = math.sqrt(3.0) * std
+
+    sign = torch.normal(
+        mean=torch.zeros_like(w),
+        std=torch.ones_like(w),
+    ).sign()
+
+    if is_test:
+        sign[0].fill_(1.0)
+        sign[1].fill_(1.0)
+        sign[2].fill_(-1.0)
+        sign[3].fill_(-1.0)
+
+    w.uniform_(
+        a*C,
+        a,
+    )
+
+    if is_test:
+        w[0].fill_(a*C)
+        w[1].fill_(a)
+        w[2].fill_(a*C)
+        w[3].fill_(a)
+
+    w.mul_(sign)
+
+    return a*a*C
 
 
 def get_error_undershot_only(target, prediction):

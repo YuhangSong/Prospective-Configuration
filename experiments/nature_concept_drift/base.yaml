@@ -18,7 +18,7 @@ checkpoint_at_end: False
 config:
     version: 0.4
 
-    num_iterations: 3200
+    num_iterations: 3000
 
     device: "torch.device('cuda')"
 

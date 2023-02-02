@@ -12,6 +12,58 @@ import uuid
 from utils import *
 
 
+def test_init_xavier_uniform_reciprocal_friendly_():
+
+    f_in = 1
+    f_out = 4
+    C = 0.1
+    gain = 2.0
+
+    w = torch.empty(f_out, f_in)
+
+    w_fb_product = init_xavier_uniform_reciprocal_friendly_(
+        w, gain=gain, C=C, is_test=True
+    )
+
+    w = w.view(-1)
+
+    w_positive = w[w > 0]
+    assert torch.allclose(
+        torch.max(
+            w_positive
+        ),
+        torch.max(
+            w_fb_product/w_positive
+        )
+    )
+    assert torch.allclose(
+        torch.min(
+            w_positive
+        ),
+        torch.min(
+            w_fb_product/w_positive
+        )
+    )
+
+    w_negative = w[w < 0]
+    assert torch.allclose(
+        torch.max(
+            w_negative
+        ),
+        torch.max(
+            w_fb_product/w_negative
+        )
+    )
+    assert torch.allclose(
+        torch.min(
+            w_negative
+        ),
+        torch.min(
+            w_fb_product/w_negative
+        )
+    )
+
+
 def test_init_yuhang():
 
     f_in = 100

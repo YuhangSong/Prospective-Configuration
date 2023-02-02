@@ -13,7 +13,7 @@
 # Comparing BP and IL (Nature Results)
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_small-arch-small-data/bp-il
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_small-arch-small-data/bp-il
 ```
 
 ## min error
@@ -46,7 +46,12 @@ python analysis_v1.py \
 "df=select_rows_per_group(df,groups,lambda df: df['Mean Per Group']==df['Mean Per Group'].min())" \
 "df=df.sort_values(['Rule'], ascending=False)" \
 "g=nature_relplot(data=df,x='partial_num',y='Min of test__classification_error',hue='Rule',style='Rule',col='hidden_size').set(xscale='log')" \
-"nature_post(g,xticks=[6,60,600,6000],is_grid=False)"
+"nature_post(g,xticks=[60,300,600,3000,6000],is_grid=False)"
+
+# "df=df.sort_values(['partial_num'], ascending=True)" \
+# "df=au.new_col(df,'partial_num_text',lambda row: str(row['partial_num']))" \
+# "g=au.nature_relplot(data=df,x='partial_num_text',y='Min of test__classification_error',hue='Rule',style='Rule',col='hidden_size')" \
+# "nature_post(g,xticks=['60','300','600','3000','6000'],is_grid=False)"
 ```
 
 ![](./bp-il-min-reduce-.png)
@@ -90,7 +95,7 @@ python analysis_v1.py \
 <!-- # Comparing BP and IL, test loss co
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_small-arch-small-data/bp-il-test-loss-co.yaml
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_small-arch-small-data/bp-il-test-loss-co.yaml
 sbatch -J ./experiments/nature_small-arch-small-data/bp-il-test-loss-co.yaml ./submit.sh
 ```
 
@@ -116,7 +121,7 @@ CONCLUSION:
 # Comparing BP and IL, test inference rate and T
 
 ```bash
-CUDA_VISIBLE_DEVICES=0,1,2,4,5,6,7 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_small-arch-small-data/bp-il-test-inference-rate-T.yaml
+CUDA_VISIBLE_DEVICES=0,1,2,4,5,6,7 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_small-arch-small-data/bp-il-test-inference-rate-T.yaml
 sbatch -J ./experiments/nature_small-arch-small-data/bp-il-test-inference-rate-T.yaml ./submit.sh
 ```
 
@@ -142,7 +147,7 @@ CONCLUSION:
 # Comparing RBP and Sa-Z-IL (x_lr_discount=0.5)
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_small-arch-small-data/rbp-sazil.yaml
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_small-arch-small-data/rbp-sazil.yaml
 ```
 
 ## sample efficiency
@@ -180,7 +185,7 @@ python analysis_v1.py \
 # Comparing RBP and Sa-Z-IL (x_lr_discount=1.0)
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_small-arch-small-data/rbp-sazil-nd.yaml
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_small-arch-small-data/rbp-sazil-nd.yaml
 ```
 
 ## sample efficiency
@@ -220,7 +225,7 @@ python analysis_v1.py \
 (tune sazil)
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_small-arch-small-data/rbp-sazil-wiw.yaml
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_small-arch-small-data/rbp-sazil-wiw.yaml
 ```
 
 ## sample efficiency

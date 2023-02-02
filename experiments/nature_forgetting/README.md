@@ -5,7 +5,7 @@
 <!-- # base
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_forgetting/base
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_forgetting/base
 ```
 
 ## mean
@@ -47,7 +47,7 @@ python analysis_v1.py \
 # base-1
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_forgetting/base-1
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_forgetting/base-1
 ```
 
 ## mean
@@ -89,7 +89,7 @@ python analysis_v1.py \
 # base-2
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_forgetting/base-2
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_forgetting/base-2
 ```
 
 ## mean
@@ -131,7 +131,7 @@ Shuffle task to cancel bias across task selection.
 # base-shuffle-task
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_forgetting/base-shuffle-task
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_forgetting/base-shuffle-task
 ```
 
 ## mean
@@ -171,7 +171,7 @@ python analysis_v1.py \
 # base-shuffle-task-1
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_forgetting/base-shuffle-task-1
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_forgetting/base-shuffle-task-1
 ```
 
 ## mean
@@ -220,7 +220,7 @@ These two looks nice, keep going.
 I feel this one is most appropriate.
 
 ```bash
-CUDA_VISIBLE_DEVICES=1,2,3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_forgetting/base-shuffle-task-2
+CUDA_VISIBLE_DEVICES=1,2,3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_forgetting/base-shuffle-task-2
 ```
 
 ## mean
@@ -263,8 +263,8 @@ python analysis_v1.py \
 'partial_num': 6000 for CIFAR10
 
 ```bash
-CUDA_VISIBLE_DEVICES=1 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_forgetting/base-shuffle-task-3-FashionMNIST
-CUDA_VISIBLE_DEVICES=3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_forgetting/base-shuffle-task-3-CIFAR10
+CUDA_VISIBLE_DEVICES=1 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_forgetting/base-shuffle-task-3-FashionMNIST
+CUDA_VISIBLE_DEVICES=3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_forgetting/base-shuffle-task-3-CIFAR10
 ```
 
 ## mean
@@ -304,8 +304,8 @@ python analysis_v1.py \
 looking at both 'num_repeatations': 20 and 4
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_forgetting/base-shuffle-task-4-FashionMNIST
-CUDA_VISIBLE_DEVICES=0,3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_forgetting/base-shuffle-task-4-CIFAR10
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_forgetting/base-shuffle-task-4-FashionMNIST
+CUDA_VISIBLE_DEVICES=0,3 ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_forgetting/base-shuffle-task-4-CIFAR10
 ```
 
 ## mean
@@ -345,8 +345,8 @@ python analysis_v1.py \
 forcus on 'num_repeatations': 20 for publication
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_forgetting/base-shuffle-task-5-FashionMNIST
-# ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_forgetting/base-shuffle-task-5-CIFAR10
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_forgetting/base-shuffle-task-5-FashionMNIST
+# ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_forgetting/base-shuffle-task-5-CIFAR10
 ```
 
 ## mean
@@ -390,8 +390,8 @@ python analysis_v1.py \
 split by resuming and nature_forgetting
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_forgetting/base-shuffle-task-5-FashionMNIST-fr
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_forgetting/base-shuffle-task-5-CIFAR10-fr
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_forgetting/base-shuffle-task-5-FashionMNIST-fr
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_forgetting/base-shuffle-task-5-CIFAR10-fr
 ```
 
 ```bash

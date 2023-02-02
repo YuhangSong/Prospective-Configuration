@@ -16,7 +16,7 @@
 random data, all measurements are studied
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_less_erratic/rand-data-all
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_less_erratic/rand-data-all
 ```
 
 ```bash
@@ -44,7 +44,7 @@ python analysis_v1.py \
 with some search
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_less_erratic/base
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_less_erratic/base
 ```
 
 ```bash
@@ -68,7 +68,7 @@ focus on one config
 weird, try random data, quit, not applied in nature
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_less_erratic/base-nature
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_less_erratic/base-nature
 ```
 
 ```bash
@@ -90,7 +90,7 @@ python analysis_v1.py \
 same as the above but ap and gr
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_less_erratic/base-apgr
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_less_erratic/base-apgr
 ```
 
 ```bash
@@ -115,7 +115,7 @@ randomly generated a batch of data
 ### base-path-rand-data
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_less_erratic/base-path-rand-data -m T1
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_less_erratic/base-path-rand-data -m T1
 ```
 
 ```bash
@@ -165,7 +165,7 @@ python analysis_v1.py \
 ![](./base-path-rand-data-x-length-focus-.png)
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_less_erratic/base-path-rand-data -m T1
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_less_erratic/base-path-rand-data -m T1
 ```
 
 ```bash
@@ -186,7 +186,7 @@ python analysis_v1.py \
 randomly generated one single data
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_less_erratic/base-path-rand-one-data
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_less_erratic/base-path-rand-one-data
 ```
 
 ```bash
@@ -208,8 +208,8 @@ python analysis_v1.py \
 try to put traj length and learning rate into the same plot
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_less_erratic/traj-learning-rate-pc
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_less_erratic/traj-learning-rate-bp
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_less_erratic/traj-learning-rate-pc
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_less_erratic/traj-learning-rate-bp
 ```
 
 <!-- ```bash
@@ -244,8 +244,8 @@ python analysis_v1.py \
 ## traj-learning-rate-apgr
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_less_erratic/traj-learning-rate-ap
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_less_erratic/traj-learning-rate-gr
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_less_erratic/traj-learning-rate-ap
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_less_erratic/traj-learning-rate-gr
 ```
 
 ### two error bars (nature)

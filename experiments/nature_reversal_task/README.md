@@ -14,7 +14,7 @@
 Initial investigation: search different configurations and get possible configurations that can produce similar pattern in the data from biological experiments.
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_reversal_task/base
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_reversal_task/base
 ```
 
 ```bash
@@ -39,8 +39,8 @@ Successful. -->
 Plot the best fit pattern from the above base.
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_reversal_task/base-plot-bp
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_reversal_task/base-plot-pc
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_reversal_task/base-plot-bp
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_reversal_task/base-plot-pc
 ```
 
 ```bash
@@ -105,8 +105,8 @@ python analysis_v1.py \
 Show the reason of such learnign effects.
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_reversal_task/base-plot-reason-bp
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_reversal_task/base-plot-reason-pc
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_reversal_task/base-plot-reason-bp
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_reversal_task/base-plot-reason-pc
 ```
 
 ```bash
@@ -156,7 +156,7 @@ python analysis_v1.py \
 Show the reason of such learnign effects with a simple example.
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_reversal_task/base-reason-simple
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_reversal_task/base-reason-simple
 ```
 
 ```bash
@@ -178,7 +178,7 @@ python analysis_v1.py \
 Show the reason of such learnign effects with a simple example, the inference of the hidden neuron.
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_reversal_task/base-reason-simple-inference
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_reversal_task/base-reason-simple-inference
 ```
 
 ```bash

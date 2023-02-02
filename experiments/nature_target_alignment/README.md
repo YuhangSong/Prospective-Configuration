@@ -8,7 +8,7 @@
 
 ```bash
 
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base
 ```
 
 ## plot
@@ -30,7 +30,7 @@ python analysis_v1.py \
 
 ```bash
 
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-iteration
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-iteration
 ```
 
 ## plot
@@ -67,10 +67,10 @@ python analysis_v1.py \
 
 ```bash
 
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-acf-Sigmoid
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-acf-Tanh
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-acf-ReLU
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-acf-None
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-acf-Sigmoid
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-acf-Tanh
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-acf-ReLU
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-acf-None
 ```
 
 ## plot
@@ -91,7 +91,7 @@ python analysis_v1.py \
 <!-- # base-depth-width
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-depth-width
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-depth-width
 ``` -->
 
 <!-- ## plot
@@ -112,7 +112,7 @@ python analysis_v1.py \
 ## base-depth-width-linear (nature)
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-depth-width-linear
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-depth-width-linear
 ```
 
 ### plot (nature)
@@ -137,7 +137,7 @@ python analysis_v1.py \
 
 ```bash
 
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-width-linear
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-width-linear
 ```
 
 ### plot
@@ -178,7 +178,7 @@ python analysis_v1.py \
 
 ```bash
 
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-acf-init
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-acf-init
 ```
 
 ## plot-acf-init
@@ -202,7 +202,7 @@ Simulating the problem in figure 1 about interference.
 
 ```bash
 
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-112
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-112
 ```
 
 ## plot-112
@@ -226,7 +226,7 @@ Simulating the problem in figure 1 about interference, with search on learning r
 
 ```bash
 # done
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-112-lr
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-112-lr
 ```
 
 ```bash
@@ -249,9 +249,9 @@ Simulating the problem in figure 1 about interference, with search on learning r
 
 ```bash
 # done
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-112-lr-first-bp
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-112-lr-first-bp
 # done
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-112-lr-first-pc
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-112-lr-first-pc
 ```
 
 ```bash
@@ -274,7 +274,7 @@ Simulating the problem in figure 1 about interference, for a traj in hearmap
 
 ```bash
 # done
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-112-heatmap-traj
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-112-heatmap-traj
 ```
 
 ```bash
@@ -297,7 +297,7 @@ Simulating the problem in figure 1 about interference, for a heatmap
 
 ```bash
 # done
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-112-heatmap
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-112-heatmap
 ```
 
 ```bash
@@ -323,8 +323,8 @@ for levelmap, refers to experiment nature_target_alignment_levelmap
 Target alignment of bp, pc and tp (target propropagation)
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-depth
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-depth-tp
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-depth
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-depth-tp
 ```
 
 ```bash
@@ -343,7 +343,7 @@ python analysis_v1.py \
 ## base-depth-acf (nature)
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-depth-acf
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-depth-acf
 ```
 
 ```bash
@@ -368,7 +368,7 @@ Notes:
 As suggested by the reviewer, use orthogonal init as in Exact solutions to the nonlinear dynamics of learning in deep linear neural networks - Saxe, A. et al. (2013).
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-depth-init
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-depth-init
 ```
 
 ```bash
@@ -389,7 +389,7 @@ python analysis_v1.py \
 Look at if orth init have difference with different learning rates.
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-depth-orth-init
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-depth-orth-init
 ```
 
 ```bash
@@ -411,7 +411,7 @@ I suggested to compute the prospective index for hidden layers in one of the sim
 
 ```bash
 # pending: learning rate 0.1
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_target_alignment/base-prospective-index
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-prospective-index
 ```
 
 ```bash

@@ -11,7 +11,7 @@ e218fde351853aaa9a133a1b5a721656f4bd8c22
 # base
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- python main.py -c nature_pc_pi_layered/base
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- python main.py -c nature_pc_pi_layered/base
 ```
 
 ```bash

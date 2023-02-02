@@ -106,9 +106,9 @@ Before looking at each experiment folder, we explain the shared underlying logic
 In each experiment folder, the `README.md` documents two kinds of commands to run:
 
 - `python main.py -c <config_file.yaml>`: This command will launch the experiment. The experiment will be launched in parallel with multiple processes (with ray as backend), and the results will be saved to `$RESULTS_DIR` in your environment variable.
-  - You will see command `ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR -- ` before `python main.py -c <config_file.yaml>`, it is to submit the job to ray cluster to run instead of run locally. 
+  - You will see command `ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr -- ` before `python main.py -c <config_file.yaml>`, it is to submit the job to ray cluster to run instead of run locally. 
     - If you want to run locally, you can simply remove this command, and run `python main.py -c <config_file.yaml>` on your local machine.
-    - If you want to run on a ray cluster, you will need to get yourself educated about [ray cluster](https://docs.ray.io/en/latest/cluster/getting-started.html). Then you need to set up a ray cluster and set the environment variable `$PSSR` to the address of the ray cluster.
+    - If you want to run on a ray cluster, you will need to get yourself educated about [ray cluster](https://docs.ray.io/en/latest/cluster/getting-started.html). Then you need to set up a ray cluster and set the environment variable `$pssr` to the address of the ray cluster.
 - `python analysis_v1.py -c <config_file.yaml>`: This command will load the results from `$RESULTS_DIR` and plot the figures. The figures will be saved to the experiment folder.
   - This command does not limit to produce figures though, it loads the results as a pandas dataframe and do anything with it, depending on the exec commands you passed to it. For example, it is sometimes used to produced tables as well.
 

@@ -4,7 +4,7 @@
 <!-- # base
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_simple_dqn_new/base
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_simple_dqn_new/base
 ```
 
 ## mean
@@ -62,7 +62,7 @@ python analysis_v1.py \
 <!-- 'Optimizer for inference': 'SGD', 'Optimizer for learn': 'SGD', 'is_q_target': False, 'bias': True, 'Inference rate': 0.05, 'is_norm_obs': True, 'is_norm_rew': False, 'batch_size': 60, 'buffer_limit': 50000, 'gamma': 0.98, 'num_learn_epochs_per_eposide': 10, 'interval_update_target_q': 20, 'is_detach_target': True, 'MainT': 32, 'pc_layer_at': 'before_acf', 'acf': 'Sigmoid' -->
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_simple_dqn_new/base-focus
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_simple_dqn_new/base-focus
 ```
 
 <!-- ## mean
@@ -122,7 +122,7 @@ python analysis_v1.py \
 'Inference rate': 0.05, 'MainT': 32
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $PSSR --  python main.py -c nature_simple_dqn_new/base-ffocus -m T0
+ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_simple_dqn_new/base-ffocus -m T0
 ``` -->
 
 <!-- ## mean
