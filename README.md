@@ -23,7 +23,7 @@ Under 2nd round peer-review at _Nature Neuroscience_.
     - [Warning and error messages](#warning-and-error-messages)
     - [Reproducibility](#reproducibility)
   - [Citation](#citation)
-
+  - [Contact](#contact)
 
 ## Setting up environment
 
@@ -138,15 +138,21 @@ We kindly ask you to cite our paper if you use our code in your research.
 
 ```bib
 @article {Song2022.05.17.492325,
-	author = {Song, Yuhang and Millidge, Beren and Salvatori, Tommaso and Lukasiewicz, Thomas and Xu, Zhenghua and Bogacz, Rafal},
-	title = {Inferring Neural Activity Before Plasticity: A Foundation for Learning Beyond Backpropagation},
-	elocation-id = {2022.05.17.492325},
-	year = {2022},
-	doi = {10.1101/2022.05.17.492325},
-	publisher = {Cold Spring Harbor Laboratory},
-	abstract = {For both humans and machines, the essence of learning is to pinpoint which components in its information processing pipeline are responsible for an error in its output {\textemdash} a challenge that is known as credit assignment1. How the brain solves credit assignment is a key question in neuroscience, and also of significant importance for artificial intelligence. Many recent studies1{\textendash}12 presuppose that it is solved by backpropagation13{\textendash}16, which is also the foundation of modern machine learning17{\textendash}22. However, it has been questioned whether it is possible for the brain to implement backpropagation23, 24, and learning in the brain may actually be more efficient and effective than backpropagation25. Here, we set out a fundamentally different principle on credit assignment, called prospective configuration. In prospective configuration, the network first infers the pattern of neural activity that should result from learning, and then the synaptic weights are modified to consolidate the change in neural activity. We demonstrate that this distinct mechanism, in contrast to backpropagation, (1) underlies learning in a well-established family of models of cortical circuits, (2) enables learning that is more efficient and effective in many contexts faced by biological organisms, and (3) reproduces surprising patterns of neural activity and behaviour observed in diverse human and animal learning experiments. Our findings establish a new foundation for learning beyond backpropagation, for both understanding biological learning and building artificial intelligence.Competing Interest StatementThe authors have declared no competing interest.},
-	URL = {https://www.biorxiv.org/content/early/2022/05/18/2022.05.17.492325},
-	eprint = {https://www.biorxiv.org/content/early/2022/05/18/2022.05.17.492325.full.pdf},
-	journal = {bioRxiv}
+    author = {Song, Yuhang and Millidge, Beren and Salvatori, Tommaso and Lukasiewicz, Thomas and Xu, Zhenghua and Bogacz, Rafal},
+    title = {Inferring Neural Activity Before Plasticity: A Foundation for Learning Beyond Backpropagation},
+    elocation-id = {2022.05.17.492325},
+    year = {2022},
+    doi = {10.1101/2022.05.17.492325},
+    publisher = {Cold Spring Harbor Laboratory},
+    abstract = {For both humans and machines, the essence of learning is to pinpoint which components in its information processing pipeline are responsible for an error in its output {\textemdash} a challenge that is known as credit assignment1. How the brain solves credit assignment is a key question in neuroscience, and also of significant importance for artificial intelligence. Many recent studies1{\textendash}12 presuppose that it is solved by backpropagation13{\textendash}16, which is also the foundation of modern machine learning17{\textendash}22. However, it has been questioned whether it is possible for the brain to implement backpropagation23, 24, and learning in the brain may actually be more efficient and effective than backpropagation25. Here, we set out a fundamentally different principle on credit assignment, called prospective configuration. In prospective configuration, the network first infers the pattern of neural activity that should result from learning, and then the synaptic weights are modified to consolidate the change in neural activity. We demonstrate that this distinct mechanism, in contrast to backpropagation, (1) underlies learning in a well-established family of models of cortical circuits, (2) enables learning that is more efficient and effective in many contexts faced by biological organisms, and (3) reproduces surprising patterns of neural activity and behaviour observed in diverse human and animal learning experiments. Our findings establish a new foundation for learning beyond backpropagation, for both understanding biological learning and building artificial intelligence.Competing Interest StatementThe authors have declared no competing interest.},
+    URL = {https://www.biorxiv.org/content/early/2022/05/18/2022.05.17.492325},
+    eprint = {https://www.biorxiv.org/content/early/2022/05/18/2022.05.17.492325.full.pdf},
+    journal = {bioRxiv}
 }
 ```
+
+## Contact
+
+For questionts about the code, please open an issue in this repository.
+
+For questions about the paper, please [contact Yuhang Song and Rafal Bogacz](mailto:yuhang.song@bndu.ox.ac.uk;rafal.bogacz@ndcn.ox.ac.uk).
