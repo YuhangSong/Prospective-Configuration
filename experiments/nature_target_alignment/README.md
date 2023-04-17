@@ -141,7 +141,7 @@ python main.py -c nature_target_alignment/base-depth-width-linear-angle
 
 ### plot (nature)
 
-```bash
+<!-- ```bash
 python analysis_v1.py \
 -t "plot-depth-width-linear-angle" \
 -l "$RESULTS_DIR/nature_target_alignment/" \
@@ -152,7 +152,7 @@ python analysis_v1.py \
 "u.plot_depth_width_linear_angle(df)"
 ```
 
-![](./plot-depth-width-linear-angle-.png)
+![](./plot-depth-width-linear-angle-.png) -->
 
 ```bash
 python analysis_v1.py \
