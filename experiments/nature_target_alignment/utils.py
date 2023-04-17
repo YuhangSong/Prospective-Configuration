@@ -138,6 +138,50 @@ def plot_depth_width_linear(df, id='target_alignment'):
     au.nature_post(g, is_grid=True)
 
 
+def plot_depth_width_linear_angle(df, id='target_alignment_angle'):
+
+    df = au.nature_pre(df)
+
+    g = au.nature_relplot(
+        kind='scatter',
+        data=df,
+        x='num_layers',
+        y=f'{id}',
+        hue='Rule', style='Rule',
+        # col='acf',
+        # row='gain_lg',
+        # aspect=0.8,
+        # sharey=False,
+    )
+
+    # [ax.set_ylim(0, 1.02) for ax in g.axes.flat]
+
+    au.nature_post(g, is_grid=True)
+
+
+def plot_depth_width_linear_angle_alignment(df, id='target_alignment'):
+
+    df = au.nature_pre(df)
+
+    g = au.nature_relplot(
+        kind='scatter',
+        data=df,
+        x='num_layers',
+        y=f'{id}',
+        hue='Rule', style='Rule',
+        col='acf',
+        row='gain_lg',
+        aspect=0.9,
+        sharey=False,
+        alpha=0.8,
+        s=30,
+    )
+
+    # [ax.set_ylim(0, 1.02) for ax in g.axes.flat]
+
+    au.nature_post(g, is_grid=True)
+
+
 def plot_acf_init(df):
 
     df = au.nature_pre(df)

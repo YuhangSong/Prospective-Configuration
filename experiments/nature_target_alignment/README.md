@@ -91,7 +91,7 @@ python analysis_v1.py \
 <!-- # base-depth-width
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-depth-width
+python main.py -c nature_target_alignment/base-depth-width
 ``` -->
 
 <!-- ## plot
@@ -112,7 +112,7 @@ python analysis_v1.py \
 ## base-depth-width-linear (nature)
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-depth-width-linear
+python main.py -c nature_target_alignment/base-depth-width-linear
 ```
 
 ### plot (nature)
@@ -132,6 +132,40 @@ python analysis_v1.py \
 [doc](./plot-depth-width-linear.md)
 
 ![](./plot-depth-width-linear-1.png)
+
+## base-depth-width-linear-angle (nature)
+
+```bash
+python main.py -c nature_target_alignment/base-depth-width-linear-angle
+```
+
+### plot (nature)
+
+```bash
+python analysis_v1.py \
+-t "plot-depth-width-linear-angle" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
+-m "df['train__target_alignment_angle'].iloc[-1]" \
+-f "./experiments/nature_target_alignment/base-depth-width-linear-angle.yaml" \
+-v \
+"import experiments.nature_target_alignment.utils as u" \
+"u.plot_depth_width_linear_angle(df)"
+```
+
+![](./plot-depth-width-linear-angle-.png)
+
+```bash
+python analysis_v1.py \
+-t "plot-depth-width-linear-angle_alignment" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
+-m "df['train__target_alignment'].iloc[-1]" \
+-f "./experiments/nature_target_alignment/base-depth-width-linear-angle.yaml" \
+-v \
+"import experiments.nature_target_alignment.utils as u" \
+"u.plot_depth_width_linear_angle_alignment(df)"
+```
+
+![](./plot-depth-width-linear-angle_alignment-.png)
 
 <!-- ## base-width-linear
 
