@@ -1,11 +1,8 @@
 {
     "name": "devcontainer",
-    "image": "dryuhangsong/prospective-configuration:latest"
-    // "env": {
-    //     "RESULTS_DIR": "/workspace/results"
-    // },
-    // "mounts": [
-    //     "source=${localWorkspaceFolder}/results,target=/workspace/results,type=bind",
-    //     "source=${localWorkspaceFolder}/code,target=/workspace/code,type=bind"
-    // ]
+    "image": "dryuhangsong/prospective-configuration:latest",
+    "containerEnv": {
+        "RESULTS_DIR": "/workspaces/Prospective-Configuration/results",
+        "CODE_DIR": "/workspaces/Prospective-Configuration/"
+    }
 }
