@@ -177,6 +177,8 @@ cython_debug/
 # static files generated from Django application using `collectstatic`
 media
 static
-data/.DS_Store
-.DS_Store
-.DS_Store
+
+# all DS_Store files
+**/.DS_Store
+
+results/
