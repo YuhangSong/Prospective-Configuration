@@ -1,31 +1,7 @@
-- [Base](#base)
-- [With small learning rate](#with-small-learning-rate)
-
-
-<!-- # Energy machine
-
-```bash
-python main.py -c nature_example_122/machine -l
-``` -->
+-   [Base](#base)
+-   [With small learning rate](#with-small-learning-rate)
 
 # Base
-
-<!-- ```bash
-python main.py -c nature_example_122/levelmap
-```
-
-```bash
-python analysis_v1.py \
--t "plot-levelmap" \
--l "$RESULTS_DIR/nature_example_122/" \
--m "df['w_2'].iloc[-1]" \
--f "./experiments/nature_example_122/levelmap.yaml" \
--v \
-"import experiments.nature_example_122.utils as u" \
-"u.plot_levelmap(df)"
-```
-
-![](./plot-levelmap-.png) -->
 
 ```bash
 python main.py -c nature_example_122/traj-bp
@@ -45,23 +21,6 @@ python analysis_v1.py \
 
 ![](./plot-traj-.png)
 
-<!-- ```bash
-python main.py -c nature_example_122/levelmap-output
-```
-
-```bash
-python analysis_v1.py \
--t "plot-levelmap-output" \
--l "$RESULTS_DIR/nature_example_122/" \
--m "df['x_2'].iloc[-1]" \
--f "./experiments/nature_example_122/levelmap-output.yaml" \
--v \
-"import experiments.nature_example_122.utils as u" \
-"u.plot_levelmap(df,id='x')"
-```
-
-![](./plot-levelmap-output-.png) -->
-
 ```bash
 python main.py -c nature_example_122/traj-output-bp
 python main.py -c nature_example_122/traj-output-pc
@@ -78,26 +37,7 @@ python analysis_v1.py \
 "u.plot_traj(df,id='x')"
 ```
 
-
 ![](./plot-traj-output-.png)
-
-<!-- ```bash
-
-python main.py -c nature_example_122/traj-output-learn_last
-
-
-python analysis_v1.py \
--t "plot-traj-output-learn_last" \
--l "$RESULTS_DIR/nature_example_122/" \
--m "df['train__x_1'].iloc[-1]" "df['train__x_2'].iloc[-1]" \
--f "./experiments/nature_example_122/traj-output-learn_last.yaml" \
--v \
-"import experiments.nature_example_122.utils as u" \
-"u.plot_traj(df,id='x')"
-    
-```
-
-![](./plot-traj-output-learn_last-.png) -->
 
 # With small learning rate
 
@@ -134,6 +74,5 @@ python analysis_v1.py \
 "import experiments.nature_example_122.utils as u" \
 "u.plot_traj(df,id='x',is_style_rule=False)"
 ```
-
 
 ![](./plot-traj-small-lr-output-.png)
