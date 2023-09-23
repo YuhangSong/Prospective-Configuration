@@ -431,7 +431,7 @@ if __name__ == "__main__":
             'Optimizer for inference',
         ]
         for col in source_data_exclude_columns:
-            if col in df_source_data.columns or 'code' in col:
+            if (col in df_source_data.columns or 'code' in col) and (col in df_source_data.columns):
                 df_source_data = df_source_data.drop(columns=col)
         # input(df_source_data.columns)
         df_source_data.to_csv(
