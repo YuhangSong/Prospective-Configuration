@@ -1,5 +1,5 @@
-- [base](#base)
-- [init\_std](#init_std)
+-   [base](#base)
+-   [init_std](#init_std)
 
 <!-- # base
 
@@ -60,7 +60,7 @@ python analysis_v1.py \
 More init_std for the response of nature neuroscience
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_fear_conditioning/base-init_std
+python main.py -c nature_fear_conditioning/base-init_std
 ```
 
 ```bash
@@ -81,7 +81,7 @@ python analysis_v1.py \
 More hidden neurons for the response of nature neuroscience
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_fear_conditioning/base-hidden_size
+python main.py -c nature_fear_conditioning/base-hidden_size
 ```
 
 ```bash
