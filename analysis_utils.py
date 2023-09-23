@@ -416,8 +416,8 @@ def nature_pre(df, our_name='PC', base_name='BP'):
 def nature_relplot(kind='line', sharey=True, sharex=True, legend_out=False, **kwargs):
     """
     """
-    return sns.relplot(
-        errorbar=('ci', 68),
+    additional_kwargs = dict()
+    if kind=='line':
         # standard error
         # historically, I was using errorbar=('ci', 68),
         # this is because 68%CI = Score ±SEM, see https://www.statisticshowto.com/standard-error-of-measurement/
@@ -432,7 +432,15 @@ def nature_relplot(kind='line', sharey=True, sharex=True, legend_out=False, **kw
         # seaborn's documentation: https://seaborn.pydata.org/tutorial/error_bars.html#confidence-interval-error-bars
         # so I switched to 'se'
         # errorbar=("se"),
-        # line
+        additional_kwargs['errorbar']=('ci', 68)
+        # bars for error
+        additional_kwargs['err_style']='bars'
+        additional_kwargs['err_kws']={
+            # settings for error bars
+            'capsize': 6,
+            'capthick': 2,
+        }
+    return sns.relplot(
         kind=kind,
         # with markers
         markers=True,
@@ -445,14 +453,8 @@ def nature_relplot(kind='line', sharey=True, sharex=True, legend_out=False, **kw
             'sharey': sharey,
             'sharex': sharex,
         },
-        # bars for error
-        err_style='bars',
-        err_kws={
-            # settings for error bars
-            'capsize': 6,
-            'capthick': 2,
-        },
         **kwargs,
+        **additional_kwargs,
     )
 
 
