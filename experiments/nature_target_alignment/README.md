@@ -4,6 +4,55 @@
     -   [base-depth-init (nature)](#base-depth-init-nature)
     -   [base-depth-orth-init (nature)](#base-depth-orth-init-nature)
 
+# base-112
+
+Simulating the problem in figure 1 about interference.
+
+```bash
+
+python main.py -c nature_target_alignment/base-112
+```
+
+## plot-112
+
+```bash
+python analysis_v1.py \
+-t "plot-112" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
+-m "compress_plot('prediction','training_iteration')" \
+-f "./experiments/nature_target_alignment/base-112.yaml" \
+--fig-name fig3-a \
+--source-exclude-columns acf batch_size hidden_size num_iterations num_layers seed pc_learning_rate \
+-v \
+"import experiments.nature_target_alignment.utils as u" \
+"u.plot_112(df)"
+```
+
+![](./plot-112-.png)
+
+# base-112-lr
+
+Simulating the problem in figure 1 about interference, with search on learning rate.
+
+```bash
+python main.py -c nature_target_alignment/base-112-lr
+```
+
+```bash
+python analysis_v1.py \
+-t "plot-112-lr" \
+-l "$RESULTS_DIR/nature_target_alignment/" \
+-m "compress_plot('prediction','training_iteration')" \
+-f "./experiments/nature_target_alignment/base-112-lr.yaml" \
+--fig-name fig3-d \
+--source-exclude-columns acf batch_size hidden_size num_iterations num_layers seed \
+-v \
+"import experiments.nature_target_alignment.utils as u" \
+"u.plot_112_lr(df)"
+```
+
+![](./plot-112-lr-.png)
+
 ## base-depth-width-linear (nature)
 
 ```bash
@@ -58,8 +107,8 @@ for levelmap, refers to experiment nature_target_alignment_levelmap
 Target alignment of bp, pc and tp (target propropagation)
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-depth
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-depth-tp
+python main.py -c nature_target_alignment/base-depth
+python main.py -c nature_target_alignment/base-depth-tp
 ```
 
 ```bash
@@ -78,7 +127,7 @@ python analysis_v1.py \
 ## base-depth-acf (nature)
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-depth-acf
+python main.py -c nature_target_alignment/base-depth-acf
 ```
 
 ```bash
@@ -104,7 +153,7 @@ Notes:
 As suggested by the reviewer, use orthogonal init as in Exact solutions to the nonlinear dynamics of learning in deep linear neural networks - Saxe, A. et al. (2013).
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-depth-init
+python main.py -c nature_target_alignment/base-depth-init
 ```
 
 ```bash
@@ -125,7 +174,7 @@ python analysis_v1.py \
 Look at if orth init have difference with different learning rates.
 
 ```bash
-ray job submit --runtime-env runtime_envs/runtime_env_without_ip.yaml --address $pssr --  python main.py -c nature_target_alignment/base-depth-orth-init
+python main.py -c nature_target_alignment/base-depth-orth-init
 ```
 
 ```bash

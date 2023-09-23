@@ -9,7 +9,6 @@ checkpoint_freq: 0
 checkpoint_at_end: False
 
 config:
-
     version: 1.2
 
     device: "torch.device('cpu')"
@@ -64,11 +63,11 @@ config:
         # debug
         # plot_progress_at: "np.arange(0,64*600*10,6000).tolist()"
 
-    acf: 'None'
+    acf: "None"
 
     structure: "['Linear', 'PCLayer', 'Acf']"
 
-    norm_layer: 'None()'
+    norm_layer: "None()"
 
     num_layers: 2
 
@@ -180,7 +179,7 @@ config:
     learn_code: |-
 
         self.model.eval()
-        self.prediction = self.model(data)[0].squeeze(1).tolist()[0]
+        self.prediction = self.model(data)[0].tolist()
 
         self.model.train()
 
