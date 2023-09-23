@@ -182,3 +182,4 @@ static
 **/.DS_Store
 
 results/
+experiments/nature_coin_fig3_new/base-train-fc-best_fit.pkl
