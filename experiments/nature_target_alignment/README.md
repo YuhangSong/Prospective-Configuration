@@ -22,10 +22,10 @@ python analysis_v1.py \
 -m "compress_plot('prediction','training_iteration')" \
 -f "./experiments/nature_target_alignment/base-112.yaml" \
 --fig-name fig3-a \
---source-exclude-columns acf batch_size hidden_size num_iterations num_layers seed pc_learning_rate \
+--source-include-columns "Rule" "training_iteration" "x_0" "x_1" \
 -v \
 "import experiments.nature_target_alignment.utils as u" \
-"u.plot_112(df)"
+"df=u.plot_112(df)"
 ```
 
 ![](./plot-112-.png)
@@ -48,7 +48,7 @@ python analysis_v1.py \
 --source-exclude-columns acf batch_size hidden_size num_iterations num_layers seed \
 -v \
 "import experiments.nature_target_alignment.utils as u" \
-"u.plot_112_lr(df)"
+"df=u.plot_112_lr(df)"
 ```
 
 ![](./plot-112-lr-.png)

@@ -244,6 +244,8 @@ def plot_112(df):
 
     au.nature_post(g, is_grid=True)
 
+    return df
+
 
 def plot_112_lr(df):
 
@@ -278,6 +280,8 @@ def plot_112_lr(df):
     )
 
     au.nature_post(g, is_grid=True)
+
+    return df
 
 
 def plot_112_lr_first(df):
