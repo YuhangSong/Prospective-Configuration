@@ -14,7 +14,7 @@ python analysis_v1.py \
 -f "./experiments/nature_search_depth/base-focus.yaml" \
 -g "init_fn" \
 --fig-name fig3-g \
---source-include-columns num_layers pc_learning_rate Rule "Mean of test__classification_error" \
+--source-include-columns num_layers pc_learning_rate Rule "Mean of test__classification_error" seed \
 -v \
 "import experiments.nature_search_depth.utils as u" \
 "df=u.plot_mean(df)"
@@ -30,13 +30,13 @@ python analysis_v1.py \
 -l "$RESULTS_DIR/nature_search_depth/" \
 -m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_search_depth/base-focus.yaml" \
+--fig-name fig3-h \
+--source-include-columns num_layers Rule "Mean of test__classification_error" seed \
 -g "init_fn" \
 -v \
 "import experiments.nature_search_depth.utils as u" \
-"u.plot_mean_select_lr(df, config_columns)"
+"df=u.plot_mean_select_lr(df, config_columns)"
 ```
-
-[doc](./mean-focus-select_lr.md)
 
 ![](./mean-focus-select_lr-torch_nn_init_xavier_normal.png)
 
@@ -49,11 +49,11 @@ python analysis_v1.py \
 -m "compress_plot('test__classification_error','training_iteration')" "df['test__classification_error'].mean()" \
 -f "./experiments/nature_search_depth/base-focus.yaml" \
 -g "init_fn" \
+--fig-name fig3-f \
+--source-include-columns num_layers Rule training_iteration seed \
 -v \
 "import experiments.nature_search_depth.utils as u" \
-"u.plot_curve(df, config_columns)"
+"df=u.plot_curve(df, config_columns)"
 ```
-
-[doc](./curve-focus-select_lr.md)
 
 ![](./curve-focus-select_lr-torch_nn_init_xavier_normal.png)
