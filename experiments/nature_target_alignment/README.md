@@ -45,7 +45,7 @@ python analysis_v1.py \
 -m "compress_plot('prediction','training_iteration')" \
 -f "./experiments/nature_target_alignment/base-112-lr.yaml" \
 --fig-name fig3-d \
---source-exclude-columns acf batch_size hidden_size num_iterations num_layers seed \
+--source-include-columns "Rule" "training_iteration" "x_0" "x_1" "pc_learning_rate" \
 -v \
 "import experiments.nature_target_alignment.utils as u" \
 "df=u.plot_112_lr(df)"
