@@ -181,11 +181,11 @@ if __name__ == "__main__":
         ))
 
     parser.add_argument(
-        "--source-exclude-columns",
+        "--source-include-columns",
         default=[],
         type=str,
         nargs="*",
-        help="Cols to exclude when save to source csv.")
+        help="Cols to include when save to source csv.")
 
     args = parser.parse_args()
 
@@ -422,38 +422,46 @@ if __name__ == "__main__":
         if args.fig_name is not None:
             # save df to csv, as nature requires source data
             df_source_data = df.copy()
-            # remove columns that are not source data
-            source_data_exclude_columns = [
-                'logdir', 
-                'T', 'Optimizer for learn',
-                'PCTrainer_kwargs: plot_progress_at', 'update_p_at',
-                'PCTrainer_kwargs: update_x_at', 'x_lr_amplifier', 'x_lr_discount',
-                'MainT', 
-                'before_DatasetLearningTrainable_creating_data_packs_code',
-                'data_packs: train: data_loader', 'data_packs: train: do',
-                'dataset_kwargs: data', 'dataset_kwargs: target', 'device',
-                'learn_code', 'log_packs: w_1: at_data_pack', 'log_packs: w_1: log',
-                'log_packs: w_2: at_data_pack', 'log_packs: w_2: log',
-                'model_creation_code', 
-                'train_on_batch_kwargs: is_checking_after_callback_after_t',
-                'train_on_batch_kwargs: is_log_progress',
-                'train_on_batch_kwargs: is_return_results_every_t', 'version',
-                'Optimizer for inference',
-                'Inference rate',
-                'bias',
-                'structure',
-                'norm_layer',
-                'PC',
-            ] + args.source_exclude_columns
-            for col in df_source_data.columns:
-                if col in source_data_exclude_columns or 'code' in col:
-                    df_source_data = df_source_data.drop(columns=col)
-            # input(df_source_data.columns)
-            df_source_data_file = os.path.join(
-                "source_data",
-                "{}.csv".format(args.fig_name)
-            )
-            df_source_data.to_csv(df_source_data_file, index=False)
+            # # remove columns that are not source data
+            # source_data_exclude_columns = [
+            #     'logdir', 
+            #     'T', 'Optimizer for learn',
+            #     'PCTrainer_kwargs: plot_progress_at', 'update_p_at',
+            #     'PCTrainer_kwargs: update_x_at', 'x_lr_amplifier', 'x_lr_discount',
+            #     'MainT', 
+            #     'before_DatasetLearningTrainable_creating_data_packs_code',
+            #     'data_packs: train: data_loader', 'data_packs: train: do',
+            #     'dataset_kwargs: data', 'dataset_kwargs: target', 'device',
+            #     'learn_code', 'log_packs: w_1: at_data_pack', 'log_packs: w_1: log',
+            #     'log_packs: w_2: at_data_pack', 'log_packs: w_2: log',
+            #     'model_creation_code', 
+            #     'train_on_batch_kwargs: is_checking_after_callback_after_t',
+            #     'train_on_batch_kwargs: is_log_progress',
+            #     'train_on_batch_kwargs: is_return_results_every_t', 'version',
+            #     'Optimizer for inference',
+            #     'Inference rate',
+            #     'bias',
+            #     'structure',
+            #     'norm_layer',
+            #     'PC',
+            # ] + args.source_exclude_columns
+            # for col in df_source_data.columns:
+            #     if col in source_data_exclude_columns or 'code' in col:
+            #         df_source_data = df_source_data.drop(columns=col)
+            # # input(df_source_data.columns)
+            if args.source_include_columns:
+                df_source_data = df_source_data[args.source_include_columns]
+                df_source_data_file = os.path.join(
+                    "source_data",
+                    "{}.csv".format(args.fig_name)
+                )
+                df_source_data.to_csv(df_source_data_file, index=False)
+            else:
+                cols_str = ' '.join(
+                    [f'"{col}"' for col in df_source_data.columns]
+                )
+                input(f"Specify --source-include-columns from \n{cols_str}.")
+            
 
         if args.visdom:
             def get_viz_kwargs(prefix):
