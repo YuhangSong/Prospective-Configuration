@@ -68,7 +68,7 @@ python analysis_v1.py \
 -m "df['train__target_alignment'].iloc[-1]" \
 -f "./experiments/nature_target_alignment/base-depth-width-linear-angle.yaml" \
 --fig-name fig3-e \
---source-exclude-columns pc_learning_rate acf batch_size gain_lg hidden_size init_fn input_target_std 'log_packs: prediction_std: at_data_pack' 'log_packs: prediction_std: log' 'log_packs: target_alignment: at_data_pack' 'log_packs: target_alignment: log' 'log_packs: target_alignment_angle: at_data_pack' 'log_packs: target_alignment_angle: log' num_iterations \
+--source-include-columns "num_layers" "Rule" "target_alignment" "seed" \
 -v \
 "import experiments.nature_target_alignment.utils as u" \
 "u.plot_depth_width_linear_angle_alignment(df)"
