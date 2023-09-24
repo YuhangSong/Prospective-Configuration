@@ -51,7 +51,7 @@ python analysis_v1.py \
 -f "./experiments/nature_search_depth/base-focus.yaml" \
 -g "init_fn" \
 --fig-name fig3-f \
---source-include-columns num_layers Rule training_iteration seed \
+--source-include-columns test__classification_error num_layers Rule training_iteration seed \
 -v \
 "import experiments.nature_search_depth.utils as u" \
 "df=u.plot_curve(df, config_columns)"
