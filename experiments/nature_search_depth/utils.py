@@ -28,6 +28,8 @@ def plot_mean(df, id='test'):
 
     au.nature_post(g, is_grid=True)
 
+    return df
+
 
 def plot_mean_select_lr(df, config_columns, id='test'):
 

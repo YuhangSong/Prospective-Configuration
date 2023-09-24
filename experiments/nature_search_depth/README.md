@@ -14,10 +14,10 @@ python analysis_v1.py \
 -f "./experiments/nature_search_depth/base-focus.yaml" \
 -g "init_fn" \
 --fig-name fig3-g \
---source-exclude-columns 'data_packs: test: data_loader' 'data_packs: test: do' Dataset gain_lg init_fn 'log_packs: classification_error: at_data_pack' 'log_packs: classification_error: log' partial_num acf batch_size hidden_size num_iterations \
+--source-include-columns num_layers pc_learning_rate Rule "Mean of test__classification_error" \
 -v \
 "import experiments.nature_search_depth.utils as u" \
-"u.plot_mean(df)"
+"df=u.plot_mean(df)"
 ```
 
 ![](./mean-focus-torch_nn_init_xavier_normal.png)
