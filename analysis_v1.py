@@ -198,6 +198,13 @@ if __name__ == "__main__":
         help="Rename source dataframe columns, as a JSON-formatted string, e.g., '{\"old_col_name\": \"new_col_name\", \"another_old_col_name\": \"another_new_col_name\"}'"
     )
 
+    parser.add_argument(
+        "--source-df-filter",
+        type=json_dict,
+        default={},
+        help="Filter source dataframe, as a JSON-formatted string, e.g., '{\"col_name\": \"required_value\", \"another_col_name\": \"another_required_value\"}'"
+    )
+
     args = parser.parse_args()
 
     # generate or process some args
@@ -461,6 +468,11 @@ if __name__ == "__main__":
             #         df_source_data = df_source_data.drop(columns=col)
             # # input(df_source_data.columns)
             if args.source_include_columns:
+                if args.source_df_filter:
+                    for col, val in args.source_df_filter.items():
+                        if not isinstance(val, list):
+                            val = [val]
+                        df_source_data = df_source_data[df_source_data[col].isin(val)]
                 df_source_data = df_source_data[args.source_include_columns]
                 if args.source_columns_rename:
                     df_source_data = df_source_data.rename(columns=args.source_columns_rename)

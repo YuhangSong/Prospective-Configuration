@@ -14,8 +14,9 @@ python analysis_v1.py \
 -f "./experiments/nature_search_depth/base-focus.yaml" \
 -g "init_fn" \
 --fig-name fig3-g \
---source-include-columns num_layers pc_learning_rate Rule "Mean of test__classification_error" seed \
+--source-include-columns pc_learning_rate Rule "Mean of test__classification_error" seed \
 --source-columns-rename '{"pc_learning_rate": "learning rate"}' \
+--source-df-filter '{"num_layers": 15}' \
 -v \
 "import experiments.nature_search_depth.utils as u" \
 "df=u.plot_mean(df)"
