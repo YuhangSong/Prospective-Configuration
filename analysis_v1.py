@@ -18,6 +18,7 @@ import tqdm
 import pickle
 import argparse
 import time
+import json
 
 # historically, we import these functions from analysis_utils for direct usage in exec commands, but it is better to use au.<the function>
 from analysis_utils import df2tb
@@ -186,6 +187,16 @@ if __name__ == "__main__":
         type=str,
         nargs="*",
         help="Cols to include when save to source csv.")
+
+    def json_dict(value):
+        return json.loads(value)
+
+    parser.add_argument(
+        "--source-columns-rename",
+        type=json_dict,
+        default={},
+        help="Rename source dataframe columns, as a JSON-formatted string, e.g., '{\"old_col_name\": \"new_col_name\", \"another_old_col_name\": \"another_new_col_name\"}'"
+    )
 
     args = parser.parse_args()
 
@@ -451,6 +462,8 @@ if __name__ == "__main__":
             # # input(df_source_data.columns)
             if args.source_include_columns:
                 df_source_data = df_source_data[args.source_include_columns]
+                if args.source_columns_rename:
+                    df_source_data = df_source_data.rename(columns=args.source_columns_rename)
                 df_source_data_file = os.path.join(
                     "source_data",
                     "{}.csv".format(args.fig_name)

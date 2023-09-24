@@ -15,6 +15,7 @@ python analysis_v1.py \
 -g "init_fn" \
 --fig-name fig3-g \
 --source-include-columns num_layers pc_learning_rate Rule "Mean of test__classification_error" seed \
+--source-columns-rename '{"pc_learning_rate": "learning rate"}' \
 -v \
 "import experiments.nature_search_depth.utils as u" \
 "df=u.plot_mean(df)"
