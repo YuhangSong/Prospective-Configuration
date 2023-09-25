@@ -40,6 +40,8 @@ def plot_min(df):
     ).set(xscale='log')
     au.nature_post(g, is_grid=True)
 
+    return df
+
 
 def select_best_lr(df):
 

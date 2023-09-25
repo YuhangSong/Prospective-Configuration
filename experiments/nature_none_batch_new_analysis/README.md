@@ -64,9 +64,12 @@ python analysis_v1.py \
 -l "$RESULTS_DIR/nature_none_batch_new_analysis/" \
 -m "df['test__classification_error'].min()" \
 -f "./experiments/nature_none_batch_new_analysis/base-b1.yaml" \
+--fig-name fig4-c \
+--source-include-columns pc_learning_rate Rule "Min of test__classification_error" seed \
+--source-columns-rename '{"pc_learning_rate": "learning rate"}' \
 -v \
 "import experiments.nature_none_batch_new_analysis.utils as u" \
-"u.plot_min(df)"
+"df=u.plot_min(df)"
 ```
 
 ![](./batch_size-min-.png)
