@@ -88,6 +88,8 @@ def plot_mean_best(df):
 
     au.nature_post(g, is_grid=True)
 
+    return df
+
 
 def plot_curve(df):
 

@@ -1,8 +1,8 @@
 <!-- TOC -->
 
-- [base (nature)](#base-nature)
-  - [mean-best (nature)](#mean-best-nature)
-  - [min (nature)](#min-nature)
+-   [base (nature)](#base-nature)
+    -   [mean-best (nature)](#mean-best-nature)
+    -   [min (nature)](#min-nature)
 
 <!-- /TOC -->
 
@@ -45,9 +45,11 @@ python analysis_v1.py \
 -l "$RESULTS_DIR/nature_none_batch_new_analysis/" \
 -m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_none_batch_new_analysis/base-b1.yaml" "./experiments/nature_none_batch_new_analysis/base-b8.yaml" "./experiments/nature_none_batch_new_analysis/base-b16.yaml" "./experiments/nature_none_batch_new_analysis/base-b32.yaml" "./experiments/nature_none_batch_new_analysis/base-b64.yaml" \
+--fig-name fig4-b \
+--source-include-columns batch_size_str Rule "Mean of test__classification_error" seed \
 -v \
 "import experiments.nature_none_batch_new_analysis.utils as u" \
-"u.plot_mean_best(df)"
+"df=u.plot_mean_best(df)"
 ```
 
 ![](./batch_size-mean-best-.png)
