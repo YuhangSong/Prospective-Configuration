@@ -5,7 +5,7 @@ run_or_experiment: "BaseTrainable"
 
 resources_per_trial:
     cpu: 1
-    gpu: "fit_cpu"
+    gpu: 0.0
 stop:
     is_stop: 1
 checkpoint_freq: 0
