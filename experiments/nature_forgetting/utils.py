@@ -127,6 +127,8 @@ def plot_mean_shuffle_task_5(df):
 
     au.nature_post(g, is_grid=True)
 
+    return df
+
 
 def plot_shuffle_task_5(df):
 
@@ -169,6 +171,8 @@ def plot_shuffle_task_5(df):
     )
 
     au.nature_post(g, is_grid=True)
+
+    return df
 
 
 def plot_mean_shuffle_task_5_fr(df):

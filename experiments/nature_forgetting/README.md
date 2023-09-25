@@ -1,6 +1,6 @@
-- [base-shuffle-task-5](#base-shuffle-task-5)
-  - [mean](#mean)
-  - [plot](#plot)
+-   [base-shuffle-task-5](#base-shuffle-task-5)
+    -   [mean](#mean)
+    -   [plot](#plot)
 
 <!-- # base
 
@@ -358,12 +358,15 @@ python analysis_v1.py \
 -m "df['test__classification_error'][:84].mean()" \
 -f "./experiments/nature_forgetting/base-shuffle-task-5-FashionMNIST.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" "num_repeatations" \
+--fig-name fig4-e \
+--source-include-columns pc_learning_rate Rule "Mean of test__classification_error" seed \
+--source-columns-rename '{"pc_learning_rate": "learning rate"}' \
 -v \
 "import experiments.nature_forgetting.utils as u" \
 "u.plot_mean_shuffle_task_5(df)"
 ```
 
-[doc](./base-shuffle-task-5-mean.md)
+<!-- [doc](./base-shuffle-task-5-mean.md) -->
 
 ![](./base-shuffle-task-5-mean-False_True_500_20.png)
 
@@ -376,12 +379,15 @@ python analysis_v1.py \
 -m "compress_plot('test__classification_error','training_iteration')" "df['test__classification_error'][:84].mean()" \
 -f "./experiments/nature_forgetting/base-shuffle-task-5-FashionMNIST.yaml" \
 -g "block_error_unused_output" "share_output_across_tasks" "batch_size" "num_repeatations" \
+--fig-name fig4-d \
+--source-include-columns training_iteration Rule "test__classification_error" seed log_task_i \
+--source-columns-rename '{"pc_learning_rate": "learning rate", "log_task_i": "Test error of"}' \
 -v \
 "import experiments.nature_forgetting.utils as u" \
-"u.plot_shuffle_task_5(df)"
+"df=u.plot_shuffle_task_5(df)"
 ```
 
-[doc](./base-shuffle-task-5-plot.md)
+<!-- [doc](./base-shuffle-task-5-plot.md) -->
 
 ![](./base-shuffle-task-5-plot-False_True_500_20.png)
 
