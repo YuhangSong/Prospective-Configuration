@@ -1,11 +1,11 @@
 <!-- TOC -->
 
-- [base-plot](#base-plot)
-  - [Fit plot to data](#fit-plot-to-data)
-  - [Apply fit data and plot](#apply-fit-data-and-plot)
-- [base-plot-fit-plot-reason](#base-plot-fit-plot-reason)
-- [base-reason-simple](#base-reason-simple)
-- [base-reason-simple-inference](#base-reason-simple-inference)
+-   [base-plot](#base-plot)
+    -   [Fit plot to data](#fit-plot-to-data)
+    -   [Apply fit data and plot](#apply-fit-data-and-plot)
+-   [base-plot-fit-plot-reason](#base-plot-fit-plot-reason)
+-   [base-reason-simple](#base-reason-simple)
+-   [base-reason-simple-inference](#base-reason-simple-inference)
 
 <!-- /TOC -->
 
@@ -61,7 +61,7 @@ python analysis_v1.py \
 
 Fit the above plot to the data in biological experiments.
 
-Data in biological experiments is defined in ```.utils.py```.
+Data in biological experiments is defined in `.utils.py`.
 
 ```bash
 python analysis_v1.py \
@@ -80,7 +80,7 @@ python analysis_v1.py \
 "print(df2tb(df.head(3)))"
 ```
 
-Make sure the ```fit_data_w``` and ```fit_data_b``` are within the range of the search defined in ```.utils.py```.
+Make sure the `fit_data_w` and `fit_data_b` are within the range of the search defined in `.utils.py`.
 
 ## Apply fit data and plot
 
@@ -90,6 +90,9 @@ python analysis_v1.py \
 -l "$RESULTS_DIR/nature_reversal_task/" \
 -m "compress_plot('log','training_iteration')" \
 -f "./experiments/nature_reversal_task/base-plot-pc.yaml" "./experiments/nature_reversal_task/base-plot-bp.yaml" \
+--fig-name fig6-c \
+--source-include-columns seed PC at value is_switch \
+--source-columns-rename '{"PC": "PC (True) / BP (False) / Data (Data)"}' \
 -v \
 "import experiments.nature_reversal_task.utils as u" \
 "df=u.prepare_df(df)" \
