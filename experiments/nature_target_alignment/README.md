@@ -46,6 +46,7 @@ python analysis_v1.py \
 -f "./experiments/nature_target_alignment/base-112-lr.yaml" \
 --fig-name fig3-d \
 --source-include-columns "Rule" "training_iteration" "x_0" "x_1" "pc_learning_rate" \
+--source-columns-rename '{"pc_learning_rate": "learning rate"}' \
 -v \
 "import experiments.nature_target_alignment.utils as u" \
 "df=u.plot_112_lr(df)"
