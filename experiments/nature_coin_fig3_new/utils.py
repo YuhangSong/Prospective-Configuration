@@ -166,3 +166,5 @@ def fit_data_and_plot(df, kind='bar'):
         )
 
     # [ax.set_ylim(-0.1, 1.0) for ax in g.axes.flat]
+
+    return df

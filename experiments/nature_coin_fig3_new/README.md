@@ -1,6 +1,6 @@
-- [base-train](#base-train)
-  - [search init\_std](#search-init_std)
-- [base-train-fc](#base-train-fc)
+-   [base-train](#base-train)
+    -   [search init_std](#search-init_std)
+-   [base-train-fc](#base-train-fc)
 
 # base-train
 
@@ -27,6 +27,9 @@ python analysis_v1.py \
 -l "$RESULTS_DIR/nature_coin_fig3_new/" \
 -m "eval(df['value-along-index'].iloc[-1])" \
 -f "./experiments/nature_coin_fig3_new/base-train.yaml" \
+--fig-name fig5-f \
+--source-include-columns seed PC index "value: fitted" \
+--source-columns-rename '{"PC": "PC (True) / BP (False) / Data (Data)", "index": "group", "value: fitted": "| Change of adaptation |"}' \
 -v \
 "import experiments.nature_coin_fig3_new.utils as eu" \
 "eu.fit_data_and_plot(df,kind='strip')"
