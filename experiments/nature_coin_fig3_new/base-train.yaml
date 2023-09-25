@@ -43,7 +43,7 @@ config:
             - 3229422879
             - 4117841395
 
-    device: "torch.device('cuda')"
+    device: "torch.device('cpu')"
 
     init_std:
         grid_search:
