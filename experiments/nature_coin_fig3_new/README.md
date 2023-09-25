@@ -32,7 +32,7 @@ python analysis_v1.py \
 --source-columns-rename '{"PC": "PC (True) / BP (False) / Data (Data)", "index": "group", "value: fitted": "| Change of adaptation |"}' \
 -v \
 "import experiments.nature_coin_fig3_new.utils as eu" \
-"eu.fit_data_and_plot(df,kind='strip')"
+"df=eu.fit_data_and_plot(df,kind='strip')"
 ```
 
 ![](./base-train-best_fit-strip-.png)
