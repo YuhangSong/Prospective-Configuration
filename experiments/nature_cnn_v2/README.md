@@ -1,5 +1,5 @@
-- [base](#base)
-  - [min](#min)
+-   [base](#base)
+    -   [min](#min)
 
 # base
 
@@ -34,6 +34,9 @@ python analysis_v1.py \
 -l "$RESULTS_DIR/nature_cnn_v2/" \
 -m "df['test__classification_error'].min()" \
 -f "./experiments/nature_cnn_v2/base-rbp.yaml" "./experiments/nature_cnn_v2/base-ppc.yaml" \
+--fig-name fig4-i \
+--source-include-columns Rule seed pc_learning_rate "Min of test__classification_error" \
+--source-columns-rename '{"pc_learning_rate": "learning rate"}' \
 -v \
 "import analysis_utils as au" \
 "df=au.nature_pre(df)" \

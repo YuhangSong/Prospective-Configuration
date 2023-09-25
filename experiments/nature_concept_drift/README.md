@@ -1,12 +1,12 @@
 <!-- TOC -->
 
-- [pre-FashionMNIST](#pre-fashionmnist)
-- [base-FashionMNIST](#base-fashionmnist)
-  - [mean-FashionMNIST](#mean-fashionmnist)
-  - [curve-FashionMNIST](#curve-fashionmnist)
-- [pre](#pre)
-- [base](#base)
-  - [mean (nature)](#mean-nature)
+-   [pre-FashionMNIST](#pre-fashionmnist)
+-   [base-FashionMNIST](#base-fashionmnist)
+    -   [mean-FashionMNIST](#mean-fashionmnist)
+    -   [curve-FashionMNIST](#curve-fashionmnist)
+-   [pre](#pre)
+-   [base](#base)
+    -   [mean (nature)](#mean-nature)
 
 <!-- /TOC -->
 
@@ -92,6 +92,8 @@ python analysis_v1.py \
 -l "$RESULTS_DIR/nature_concept_drift/" \
 -m "compress_plot('test__classification_error','training_iteration')" \
 -f "./experiments/nature_concept_drift/base.yaml" \
+--fig-name fig4-f \
+--source-include-columns training_iteration Rule seed test__classification_error \
 -v \
 "df=au.nature_pre(df)" \
 "df=pd.concat([au.filter_dataframe_by_dict(df,{'Rule':'PC','pc_learning_rate':0.01}),au.filter_dataframe_by_dict(df,{'Rule':'BP','pc_learning_rate':0.01})])" \
@@ -110,6 +112,9 @@ python analysis_v1.py \
 -l "$RESULTS_DIR/nature_concept_drift/" \
 -m "df['test__classification_error'].mean()" \
 -f "./experiments/nature_concept_drift/base.yaml" \
+--fig-name fig4-g \
+--source-include-columns pc_learning_rate Rule "Mean of test__classification_error" seed \
+--source-columns-rename '{"pc_learning_rate": "learning rate"}' \
 -v \
 "df=au.nature_pre(df)" \
 "g=au.nature_relplot(data=df,x='pc_learning_rate',y='Mean of test__classification_error',hue='Rule',style='Rule').set(xscale='log')" \

@@ -1,8 +1,7 @@
 <!-- TOC -->
 
-- [Comparing BP and IL (Nature Results)](#comparing-bp-and-il-nature-results)
-  - [min error](#min-error)
-
+-   [Comparing BP and IL (Nature Results)](#comparing-bp-and-il-nature-results)
+    -   [min error](#min-error)
 
 <!-- /TOC -->
 
@@ -38,6 +37,8 @@ python analysis_v1.py \
 -l "$RESULTS_DIR/nature_small-arch-small-data/" \
 -m "df['test__classification_error'].min()" \
 -f "./experiments/nature_small-arch-small-data/bp-il.yaml" \
+--fig-name fig4-h \
+--source-include-columns Rule seed partial_num "Min of test__classification_error" \
 -v \
 "df=nature_pre(df)" \
 "groups=['Rule','hidden_size','partial_num','pc_learning_rate']" \
