@@ -51,6 +51,8 @@ def plot(df, plot="Reward"):
 
     au.nature_post(g, is_grid=True)
 
+    return df
+
 
 class RunningStats(object):
     """Computes running mean and standard deviation
