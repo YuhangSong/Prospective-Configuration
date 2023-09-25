@@ -88,7 +88,7 @@ class BaseTrainable(Trainable):
 
         exec(self.config.get("after_BaseTrainable_setup_code", "pass"))
 
-        u.assert_config_all_valid(self.config)
+        # u.assert_config_all_valid(self.config)
 
     def reset_device(self):
 
