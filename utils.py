@@ -894,12 +894,12 @@ def report_via_email(subject='None', text='None', from_='mailgun', to_='yuhang.s
             from_={
                 '163': {
                     'address': 'yuhangsong_machine@163.com',
-                    'password': 'RJUNSTDKWDMYWRLB',
+                    'password': 'xxx',
                     'smtp_server': 'smtp.163.com',
                 },
                 'gmail': {
                     'address': 'yuhangsong.machine@gmail.com',
-                    'password': 'Pinmoh-gizjeb-4dymsy',
+                    'password': 'xxx',
                     'smtp_server': 'smtp.gmail.com',
                 },
             }[from_],
