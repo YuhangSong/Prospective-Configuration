@@ -22,6 +22,7 @@ python analysis_v1.py \
 ![](./base-train-best_fit-.png)
 
 ```bash
+# running
 python analysis_v1.py \
 -t "base-train-best_fit-strip" \
 -l "$RESULTS_DIR/nature_coin_fig3_new/" \
