@@ -18,9 +18,9 @@
 
 # Inferring Neural Activity Before Plasticity: A Foundation for Learning Beyond Backpropagation
 
-This repository contains the code for the paper [Inferring Neural Activity Before Plasticity as a Foundation for Learning Beyond Backpropagation](https://www.biorxiv.org/content/10.1101/2022.05.17.492325v1).
+This repository contains the code for the paper [Inferring Neural Activity Before Plasticity as a Foundation for Learning Beyond Backpropagation](https://www.nature.com/articles/s41593-023-01514-1).
 By _Yuhang Song\*_, _Beren Millidge_, _Tommaso Salvatori_, _Thomas Lukasiewicz_, _Zhenghua Xu_, _Rafal Bogacz\*_.
-**doi**: https://doi.org/10.1101/2022.05.17.492325. Published at _Nature Neuroscience_.
+**doi**: https://doi.org/10.1038/s41593-023-01514-1. Published at _Nature Neuroscience_.
 
 ![](./interfere.png)
 
